@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="google-site-verification" content="CJVFgKvg7DR1-BcZBWyXCBGarPIaFkj6TCRZfg5koC0">
+
+
+    <meta name="keywords" content="blog,个人博客,博客">
+
+<meta name="baidu-site-verification" content="Y5fkV0dnwS">
+
+<title>Swagger集成及常用注解使用场景 | brbai</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">brbai&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">brbai&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Swagger集成及常用注解使用场景</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">brbai</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">October 24, 2019&nbsp;&nbsp;17:47:41</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/服务部署/">服务部署</a>
+                            
+                        </span>
+                    
+ 		   
+       			 <!-- 不蒜子统计 -->
+       		        <span id="busuanzi_container_page_pv" style="display:none" ">
+                         Views:
+				<a href="#"><span id="busuanzi_value_page_pv"></span></a>
+        		</span>
+		   
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h3 id="环境集成"><a href="#环境集成" class="headerlink" title="环境集成"></a>环境集成</h3><h5 id="先引入相关依赖"><a href="#先引入相关依赖" class="headerlink" title="先引入相关依赖"></a>先引入相关依赖</h5><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- swagger --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.springfox<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>springfox-swagger2<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.9.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- swagger-ui --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.springfox<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>springfox-swagger-ui<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.9.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- 解决swagger2中guava默认版本18.0产生 The following method did not exist:FluentIterable.class --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.google.guava<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>guava<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>20.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="Swagger2配置类"><a href="#Swagger2配置类" class="headerlink" title="Swagger2配置类"></a>Swagger2配置类</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span>: brbai</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@create</span>: 2019-05-15 22:07:55</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span>: Swagger配置类</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableSwagger</span>2</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SwaggerConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//读取properties配置文件中swagger.is.enable的值</span></span><br><span class="line">    <span class="meta">@Value</span>(<span class="string">"$&#123;swagger.is.enable&#125;"</span>)</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> swaggerIsEnable;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Docket <span class="title">api</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Docket(DocumentationType.SWAGGER_2)</span><br><span class="line">                .enable(swaggerIsEnable)</span><br><span class="line">                .apiInfo(apiInfo())</span><br><span class="line"><span class="comment">//                .useDefaultResponseMessages(false)</span></span><br><span class="line">                .pathMapping(<span class="string">"/"</span>)</span><br><span class="line">                .select()</span><br><span class="line">                .apis(RequestHandlerSelectors.basePackage(<span class="string">"com.bhy702.jfkj.controller"</span>))</span><br><span class="line">                .paths(PathSelectors.any())</span><br><span class="line">                .build();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> ApiInfo <span class="title">apiInfo</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> ApiInfoBuilder()</span><br><span class="line">                .title(<span class="string">"JFKJ-CRM 接口文档"</span>)</span><br><span class="line">                .contact(<span class="keyword">new</span> Contact(<span class="string">"brbai"</span>,<span class="string">"https://www.bhy702.com"</span>,<span class="string">"baihongyuan702@163.com"</span>))</span><br><span class="line">                .description(<span class="string">"JFKJ-CRM swagger接口文档"</span>)</span><br><span class="line">                .version(<span class="string">"1.0"</span>)</span><br><span class="line">                .build();</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<hr>
+<h3 id="Swagger注解使用场景"><a href="#Swagger注解使用场景" class="headerlink" title="Swagger注解使用场景"></a>Swagger注解使用场景</h3><h5 id="常用注解解释："><a href="#常用注解解释：" class="headerlink" title="常用注解解释："></a>常用注解解释：</h5><p>@ApiImplicitParams：用在方法上包含一组参数说明<br>@ApiImplicitParam：用在@ApiImplicitParams注解中，指定一个请求参数的各个方面，可以单独使用<br>paramType：参数放在哪个地方<br>header–&gt;请求参数的获取：@RequestHeader<br>query–&gt;请求参数的获取：@RequestParam<br>path（用于restful接口）–&gt;请求参数的获取：@PathVariable<br>body（不常用）<br>form（不常用）<br>name：参数名<br>dataType：参数类型<br>required：参数是否必须传<br>value：参数的意思<br>defaultValue：参数的默认值<br>@ApiResponses：用于表示一组响应<br>@ApiResponse：只能用在@ApiResponses中，用于表达一个错误的响应信息<br>code：数字，状态码<br>message：提示信息<br>response：抛出的异常</p>
+<hr>
+<h5 id="生成实体model："><a href="#生成实体model：" class="headerlink" title="生成实体model："></a>生成实体model：</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ApiModel</span>(value = <span class="string">"用户model"</span>, description = <span class="string">"用户实体"</span>)</span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SysUserVo</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@ApiModelProperty</span>(value = <span class="string">"实体id"</span>,example = <span class="string">"1"</span>,required = <span class="keyword">false</span>)</span><br><span class="line">    <span class="keyword">private</span> Integer id;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@ApiModelProperty</span>(value = <span class="string">"实体名称"</span>)</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>【例】生成效果：<br><img src="https://img-blog.csdnimg.cn/20191024165447971.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<hr>
+<h5 id="常用接口注解使用"><a href="#常用接口注解使用" class="headerlink" title="常用接口注解使用"></a>常用接口注解使用</h5><h6 id="状态响应信息"><a href="#状态响应信息" class="headerlink" title="状态响应信息"></a>状态响应信息</h6><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ApiResponses</span>(value = &#123;</span><br><span class="line">       <span class="meta">@ApiResponse</span>(code = <span class="number">0</span>, message = <span class="string">"响应成功"</span>),</span><br><span class="line">       <span class="meta">@ApiResponse</span>(code = <span class="number">200</span>, message = <span class="string">"响应成功"</span>),</span><br><span class="line">       <span class="meta">@ApiResponse</span>(code = <span class="number">401</span>, message = <span class="string">"认证失败"</span>),</span><br><span class="line">       <span class="meta">@ApiResponse</span>(code = <span class="number">403</span>, message = <span class="string">"权限不足"</span>),</span><br><span class="line">       <span class="meta">@ApiResponse</span>(code = <span class="number">404</span>, message = <span class="string">"访问路径错误"</span>),</span><br><span class="line">       <span class="meta">@ApiResponse</span>(code = <span class="number">500</span>, message = <span class="string">"服务器内部错误"</span>)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<h6 id="修饰类："><a href="#修饰类：" class="headerlink" title="修饰类："></a>修饰类：</h6><p><code>@Api(tags = &quot;用户管理&quot;, description = &quot;系统用户管理相关接口&quot;)</code></p>
+<h6 id="修饰方法："><a href="#修饰方法：" class="headerlink" title="修饰方法："></a>修饰方法：</h6><p><code>@ApiOperation(value = &quot;添加用户&quot;, notes=&quot;管理员添加用户&quot;, httpMethod = &quot;POST&quot;)</code></p>
+<h6 id="修饰参数："><a href="#修饰参数：" class="headerlink" title="修饰参数："></a>修饰参数：</h6><ul>
+<li><p>单个普通参数</p>
+  <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ApiImplicitParam</span>(name = <span class="string">"username"</span>, value = <span class="string">"用户名"</span>, required = <span class="keyword">true</span>, dataType = <span class="string">"String"</span>, paramType = <span class="string">"query"</span>)</span><br><span class="line">或</span><br><span class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/find"</span>)</span><br><span class="line">  <span class="function"><span class="keyword">public</span> JsonResult <span class="title">add</span><span class="params">(@ApiParam(name = <span class="string">"username"</span>, value = <span class="string">"用户名"</span>, required = <span class="keyword">true</span>)</span> @<span class="title">RequestParam</span><span class="params">(<span class="string">"username"</span>)</span> String username)</span>&#123;</span><br><span class="line">	<span class="comment">//.....</span></span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>单个对象参数</p>
+  <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ApiImplicitParam</span>(name = <span class="string">"user"</span>, value = <span class="string">"用户信息"</span>, required = <span class="keyword">true</span>, dataType = <span class="string">"User"</span>, paramType = <span class="string">"body"</span>)</span><br><span class="line">	或</span><br><span class="line">	<span class="meta">@RequestMapping</span>(<span class="string">"/add"</span>)</span><br><span class="line">   <span class="function"><span class="keyword">public</span> JsonResult <span class="title">add</span><span class="params">(@ApiParam(name = <span class="string">"user"</span>, value = <span class="string">"用户信息"</span>, required = <span class="keyword">true</span>)</span> @RequestBody User user)</span>&#123;</span><br><span class="line">		<span class="comment">//.....</span></span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>单个数组参数<br>  <code>@ApiImplicitParam(name = &quot;userIds&quot;, value = &quot;用户id数组&quot;, required = true, dataType = &quot;int&quot;,allowMultiple = true)</code></p>
+<ul>
+<li><p>多个参数</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ApiImplicitParams</span>(&#123;</span><br><span class="line">          <span class="meta">@ApiImplicitParam</span>(name = <span class="string">"userIds"</span>, value = <span class="string">"用户id数组"</span>, required = <span class="keyword">true</span>, dataType = <span class="string">"int"</span>,allowMultiple = <span class="keyword">true</span>),</span><br><span class="line">          <span class="meta">@ApiImplicitParam</span>(name = <span class="string">"isAgree"</span>, value = <span class="string">"是否审批通过，1:通过，-1:拒绝"</span>, required = <span class="keyword">true</span>, dataType = <span class="string">"int"</span>, paramType = <span class="string">"body"</span>),</span><br><span class="line">          <span class="meta">@ApiImplicitParam</span>(name = <span class="string">"role"</span>, value = <span class="string">"用户角色"</span>, required = <span class="keyword">true</span>, dataType = <span class="string">"String"</span>, paramType = <span class="string">"body"</span>)</span><br><span class="line">  &#125;)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h5 id="【注意】-ApiImplicitParam与-ApiParam修饰对象参数的区别"><a href="#【注意】-ApiImplicitParam与-ApiParam修饰对象参数的区别" class="headerlink" title="【注意】@ApiImplicitParam与@ApiParam修饰对象参数的区别"></a>【注意】@ApiImplicitParam与@ApiParam修饰对象参数的区别</h5><p>@使用ApiImplicitParam文档中无对象结构：<br><img src="https://img-blog.csdnimg.cn/20191024193305207.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>@使用ApiParam修饰对象时含对象json结构：<br><img src="https://img-blog.csdnimg.cn/20191024193420672.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>brbai</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://br-bai.github.io/2019/10/24/Swagger集成及常用注解使用场景/">https://br-bai.github.io/2019/10/24/Swagger集成及常用注解使用场景/</a></span>
+                    </p>
+                
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Make excellence a habit.</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Swagger/"># Swagger</a>
+                    
+                        <a href="/tags/Swagger-UI/"># Swagger UI</a>
+                    
+                        <a href="/tags/Swagger2/"># Swagger2</a>
+                    
+                        <a href="/tags/API/"># API</a>
+                    
+                        <a href="/tags/RESTful/"># RESTful</a>
+                    
+                        <a href="/tags/开发文档/"># 开发文档</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2019/11/06/Centos7快速搭建mongodb集群/">CentOS7快速搭建MongoDB集群</a>
+            
+            
+            <a class="next" rel="next" href="/2019/09/29/使用react-router-dom路由实现页面跳转传参/">使用react-router-dom路由实现页面跳转传参</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+   
+
+    <div class="copyright">
+        <span>© 2019 <a href="https://www.bhy702.com" target="_blank">brbai</a> | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    
+	
+       		 <span class="post-meta-divider"> | </span>
+		 <!-- 不蒜子统计 -->
+       		 <span id="busuanzi_container_site_pv">
+                	Pageviews:<span id="busuanzi_value_site_pv"></span>
+	        </span>
+        	<span class="post-meta-divider">&</span>
+       		 <span id="busuanzi_container_site_uv" style="display:none">
+                	Visitors:<span id="busuanzi_value_site_uv"></span>
+        	</span>
+        	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+   	 
+
+
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

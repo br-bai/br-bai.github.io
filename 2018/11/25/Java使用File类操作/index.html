@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="google-site-verification" content="CJVFgKvg7DR1-BcZBWyXCBGarPIaFkj6TCRZfg5koC0">
+
+
+    <meta name="keywords" content="blog,个人博客,博客">
+
+<meta name="baidu-site-verification" content="Y5fkV0dnwS">
+
+<title>Java使用File类操作 | brbai</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">brbai&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">brbai&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Java使用File类操作</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">brbai</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">November 25, 2018&nbsp;&nbsp;23:17:03</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/Java-SE/">Java SE</a>
+                            
+                        </span>
+                    
+ 		   
+       			 <!-- 不蒜子统计 -->
+       		        <span id="busuanzi_container_page_pv" style="display:none" ">
+                         Views:
+				<a href="#"><span id="busuanzi_value_page_pv"></span></a>
+        		</span>
+		   
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h3 id="File类："><a href="#File类：" class="headerlink" title="File类："></a>File类：</h3><ul>
+<li>将文件系统中的文件和文件夹封装成了对象。</li>
+<li>提供了更多的属性和行为可以对这些文件和文件夹进行操作。</li>
+<li>这些是流对象办不到的，因为流只操作数据。</li>
+</ul>
+<hr>
+<blockquote>
+<h4 id="File类常见方法："><a href="#File类常见方法：" class="headerlink" title="File类常见方法："></a>File类常见方法：</h4></blockquote>
+<ol>
+<li><p>创建。    </p>
+<ul>
+<li><code>boolean createNewFile()</code>:  //==在指定目录下创建文件，如果该文件已存在，则不创建==。而<strong>对操作文件的输出流而言</strong>，输出流对象已建立，就会创建文件，如果文件已存在，会覆盖。除非续写。</li>
+<li><code>boolean mkdir()</code>：//创建此抽象路径名<strong>指定的目录</strong>。</li>
+<li>boolean mkdirs()：//创建<strong>多级目录</strong>。 </li>
+</ul>
+</li>
+<li><p>删除。</p>
+<ul>
+<li><code>boolean delete()</code>：删除此抽象路径名表示的文件或目录。</li>
+<li><code>void deleteOnExit()</code>：在虚拟机退出时删除。</li>
+<li>==【注意】：在删除文件夹时，必须保证这个文件夹中没有任何内容，才可以将该文件夹用delete删除。window的删除动作，是从里往外删。==</li>
+<li>==【注意】：java删除文件不走回收站。要慎用。==</li>
+</ul>
+</li>
+<li><p>获取:</p>
+<ul>
+<li><code>long length()</code>：//获取<strong>文件大小</strong>。</li>
+<li><code>String getName()</code>：//返回由此抽象路径名表示的文件或目录的名称。</li>
+<li><code>String getPath()</code>：//将此抽象路径名转换为一个<strong>路径名字符串</strong>。</li>
+<li><code>String getAbsolutePath()</code>：//返回此抽象路径名的绝对路径名字符串。</li>
+<li><code>String getParent()</code>：//返回此抽象路径名父目录的抽象路径名，如果此路径名没有指定父目录，则返回 null。</li>
+<li><code>long lastModified()</code>：//返回此抽象路径名表示的文件最后一次被修改的时间。</li>
+<li><code>File.pathSeparator</code>：//返回当前系统默认的路径分隔符，windows默认为 “；”。</li>
+<li><code>File.Separator</code>：//返回当前系统默认的目录分隔符，windows默认为 “\”。</li>
+</ul>
+</li>
+<li><p>判断：</p>
+<ul>
+<li><code>boolean exists()</code>：//判断文件或者文件夹是否存在。</li>
+<li><code>boolean isDirectory()</code>：//测试此抽象路径名表示的文件是否是一个<strong>文件夹</strong>。</li>
+<li><code>boolean isFile()</code>：//测试此抽象路径名表示的文件是否是一个标准<strong>文件</strong>。</li>
+<li><code>boolean isHidden()</code>：//测试此抽象路径名指定的文件是否是一个<strong>隐藏文件</strong>。</li>
+<li><code>boolean isAbsolute()</code>：//测试此抽象路径名是否为<strong>绝对路径名</strong>。</li>
+</ul>
+</li>
+<li><p>重命名。</p>
+<ul>
+<li><p><code>boolean renameTo(File dest)</code>：//可以实现移动的效果。剪切+重命名。</p>
+</li>
+<li><p><code>String[] list()</code>：// ==列出指定目录下的当前的文件和文件夹的名称。== 包含隐藏文件。<br>如果调用list方法的File对象中封装的是一个文件，那么list方法返回数组为null。如果封装的对象不存在也会返回null。<strong>只有封装的对象存在并且是文件夹时，这个方法才有效。</strong></p>
+</li>
+</ul>
+</li>
+</ol>
+<hr>
+<blockquote>
+<h4 id="File类常用方法–测试代码"><a href="#File类常用方法–测试代码" class="headerlink" title="File类常用方法–测试代码:"></a>File类常用方法–测试代码:</h4></blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.bhy.test_file;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.File;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * File类常用方法的测试</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> bhy</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestFile</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">		File f = <span class="keyword">new</span> File(<span class="string">"F:/abc.txt"</span>);</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">if</span>(!f.exists()) &#123;</span><br><span class="line">			<span class="keyword">try</span> &#123;</span><br><span class="line">				System.out.println(f.exists()?<span class="string">"存在"</span>:<span class="string">"不存在"</span>);</span><br><span class="line">				f.createNewFile();</span><br><span class="line">			&#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">				e.printStackTrace();</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line"><span class="comment">//		f.setReadable(true);</span></span><br><span class="line">		f.setWritable(<span class="keyword">false</span>);</span><br><span class="line"><span class="comment">//		f.setReadOnly();</span></span><br><span class="line">		System.out.println(f.canWrite()?<span class="string">"可写"</span>:<span class="string">"不可写"</span>);</span><br><span class="line">		System.out.println(f.canRead()?<span class="string">"可读"</span>:<span class="string">"不可读"</span>);</span><br><span class="line">		System.out.println(f.canExecute()?<span class="string">"可执行"</span>:<span class="string">"不可执行"</span>);</span><br><span class="line">		System.out.println(f.isHidden()?<span class="string">"隐藏"</span>:<span class="string">"没隐藏"</span>);</span><br><span class="line">		System.out.println(<span class="string">"文件路径: "</span>+f.getPath());</span><br><span class="line">		System.out.println(<span class="string">"文件大小: "</span>+f.length()+<span class="string">" 字节"</span>);</span><br><span class="line">		System.out.println(<span class="string">"文件名: "</span>+f.getName());</span><br><span class="line">		System.out.println(f.isDirectory()?<span class="string">"文件夹"</span>:<span class="string">"不是文件夹"</span>);</span><br><span class="line">		System.out.println(f.isFile()?<span class="string">"文件"</span>:<span class="string">"不是文件"</span>);</span><br><span class="line">		System.out.println(f.isAbsolute()?<span class="string">"绝对"</span>:<span class="string">"不是绝对"</span>);</span><br><span class="line">		System.out.println(<span class="string">"最后修改时间: "</span>+f.lastModified());</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>brbai</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://br-bai.github.io/2018/11/25/Java使用File类操作/">https://br-bai.github.io/2018/11/25/Java使用File类操作/</a></span>
+                    </p>
+                
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Make excellence a habit.</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Java/"># Java</a>
+                    
+                        <a href="/tags/File/"># File</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2018/11/25/直接插入排序的两种方法/">直接插入排序的两种方法</a>
+            
+            
+            <a class="next" rel="next" href="/2018/11/25/Java使用File类递归输出文件夹及其目录信息/">Java使用File类递归输出文件夹及其目录信息</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+   
+
+    <div class="copyright">
+        <span>© 2019 <a href="https://www.bhy702.com" target="_blank">brbai</a> | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    
+	
+       		 <span class="post-meta-divider"> | </span>
+		 <!-- 不蒜子统计 -->
+       		 <span id="busuanzi_container_site_pv">
+                	Pageviews:<span id="busuanzi_value_site_pv"></span>
+	        </span>
+        	<span class="post-meta-divider">&</span>
+       		 <span id="busuanzi_container_site_uv" style="display:none">
+                	Visitors:<span id="busuanzi_value_site_uv"></span>
+        	</span>
+        	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+   	 
+
+
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

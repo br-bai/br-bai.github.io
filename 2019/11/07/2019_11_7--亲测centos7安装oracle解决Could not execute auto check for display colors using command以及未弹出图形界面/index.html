@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="google-site-verification" content="CJVFgKvg7DR1-BcZBWyXCBGarPIaFkj6TCRZfg5koC0">
+
+
+    <meta name="keywords" content="blog,个人博客,博客">
+
+<meta name="baidu-site-verification" content="Y5fkV0dnwS">
+
+<title>2019_11_7--亲测CentOS7安装Oracle解决Could not execute auto check for display colors using command以及未弹出图形界面 | brbai</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">brbai&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">brbai&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">2019_11_7--亲测CentOS7安装Oracle解决Could not execute auto check for display colors using command以及未弹出图形界面</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">brbai</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">November 7, 2019&nbsp;&nbsp;00:20:22</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/BUG集合/">BUG集合</a>
+                            
+                        </span>
+                    
+ 		   
+       			 <!-- 不蒜子统计 -->
+       		        <span id="busuanzi_container_page_pv" style="display:none" ">
+                         Views:
+				<a href="#"><span id="busuanzi_value_page_pv"></span></a>
+        		</span>
+		   
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h5 id="安装oracle时-runInstaller报错："><a href="#安装oracle时-runInstaller报错：" class="headerlink" title="安装oracle时./runInstaller报错："></a>安装oracle时<code>./runInstaller</code>报错：</h5><p><code>Could not execute auto check for display colors using command /usr/bin/xdpyinfo. Check if the DISPLAY variable is set.</code></p>
+<h6 id="具体错误信息如下"><a href="#具体错误信息如下" class="headerlink" title="具体错误信息如下:"></a>具体错误信息如下:</h6><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">[oracle@glxybd database]$ ./runInstaller</span><br><span class="line">Starting Oracle Universal Installer...</span><br><span class="line"></span><br><span class="line">Checking Temp space: must be greater than 120 MB.   Actual 1008384 MB    Passed</span><br><span class="line">Checking swap space: must be greater than 150 MB.   Actual 16128 MB    Passed</span><br><span class="line">Checking monitor: must be configured to display at least 256 colors</span><br><span class="line">    &gt;&gt;&gt; Could not execute auto check for display colors using command /usr/bin/xdpyinfo. Check if the DISPLAY variable is set.    Failed &lt;&lt;&lt;&lt;</span><br><span class="line"></span><br><span class="line">Some requirement checks failed. You must fulfill these requirements before</span><br><span class="line"></span><br><span class="line">continuing with the installation,</span><br><span class="line"></span><br><span class="line">Continue? (y/n) [n] y</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; Ignoring required pre-requisite failures. Continuing...</span><br><span class="line">Preparing to launch Oracle Universal Installer from /tmp/OraInstall2019-11-06_11-13-35PM. Please wait ...[oracle@glxybd database]$ Exception in thread "main" java.lang.NoClassDefFoundError</span><br><span class="line">	at java.lang.Class.forName0(Native Method)</span><br><span class="line">	at java.lang.Class.forName(Class.java:164)</span><br><span class="line">	at java.awt.Toolkit$2.run(Toolkit.java:821)</span><br><span class="line">	at java.security.AccessController.doPrivileged(Native Method)</span><br><span class="line">	at java.awt.Toolkit.getDefaultToolkit(Toolkit.java:804)</span><br><span class="line">	at com.jgoodies.looks.LookUtils.isLowResolution(Unknown Source)</span><br><span class="line">	at com.jgoodies.looks.LookUtils.<span class="tag">&lt;<span class="name">clinit</span>&gt;</span>(Unknown Source)</span><br><span class="line">	at com.jgoodies.looks.plastic.PlasticLookAndFeel.<span class="tag">&lt;<span class="name">clinit</span>&gt;</span>(PlasticLookAndFeel.java:122)</span><br><span class="line">	at java.lang.Class.forName0(Native Method)</span><br><span class="line">	at java.lang.Class.forName(Class.java:242)</span><br><span class="line">	at javax.swing.SwingUtilities.loadSystemClass(SwingUtilities.java:1783)</span><br><span class="line">	at javax.swing.UIManager.setLookAndFeel(UIManager.java:480)</span><br><span class="line">	at oracle.install.commons.util.Application.startup(Application.java:758)</span><br><span class="line">	at oracle.install.commons.flow.FlowApplication.startup(FlowApplication.java:164)</span><br><span class="line">	at oracle.install.commons.flow.FlowApplication.startup(FlowApplication.java:181)</span><br><span class="line">	at oracle.install.commons.base.driver.common.Installer.startup(Installer.java:265)</span><br><span class="line">	at oracle.install.ivw.db.driver.DBInstaller.startup(DBInstaller.java:114)</span><br><span class="line">	at oracle.install.ivw.db.driver.DBInstaller.main(DBInstaller.java:132)</span><br></pre></td></tr></table></figure>
+
+<p>原因是oracle客户端ssh认证出现问题 。</p>
+<p>当你设置的是<code>export DISPLAY=:10.0</code>时，执行<code>echo $DISPLAY</code>查看DISPLAY是正常的<br><img src="https://img-blog.csdnimg.cn/20191106232401714.png" alt="在这里插入图片描述"><br>但运行<code>xterm</code>时报错，这才是导致上面异常的原因<br><img src="https://img-blog.csdnimg.cn/20191106232038727.png" alt="未识别"></p>
+<h3 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h3><h6 id="root角色执行echo-DISPLAY，发现为-xxx-10-0"><a href="#root角色执行echo-DISPLAY，发现为-xxx-10-0" class="headerlink" title="root角色执行echo $DISPLAY，发现为 xxx:10.0"></a>root角色执行<code>echo $DISPLAY</code>，发现为 xxx:10.0</h6><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@glxybd ~]# echo $DISPLAY</span><br><span class="line">localhost:10.0</span><br></pre></td></tr></table></figure>
+
+<h6 id="xauth-list找到-10-对应的那行并复制内容"><a href="#xauth-list找到-10-对应的那行并复制内容" class="headerlink" title="xauth list找到 :10 对应的那行并复制内容"></a><code>xauth list</code>找到 <strong>:10</strong> 对应的那行并复制内容</h6><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@glxybd ~]#  xauth list</span><br><span class="line">glxybd.ctbu.edu.cn/unix:7  MIT-MAGIC-COOKIE-1  08047574ce998c3b95d87fea02ea0a9b</span><br><span class="line">glxybd.ctbu.edu.cn/unix:10  MIT-MAGIC-COOKIE-1  cb15548cf27a3b2dbfe7c50b3d1b79b3</span><br></pre></td></tr></table></figure>
+
+<h6 id="切换到oracle角色su-oracle-然后执行以下语句添加xauth到oracle认证信息中"><a href="#切换到oracle角色su-oracle-然后执行以下语句添加xauth到oracle认证信息中" class="headerlink" title="切换到oracle角色su - oracle,然后执行以下语句添加xauth到oracle认证信息中"></a>切换到oracle角色<code>su - oracle</code>,然后执行以下语句添加xauth到oracle认证信息中</h6><p><strong>注意</strong>：向oracle中添加时必须与root角色复制时处在同一次连接操作，不然重新连接服务器时<code>xauth list</code>查询时可能会变</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xauth add glxybd.ctbu.edu.cn/unix:10  MIT-MAGIC-COOKIE-1  cb15548cf27a3b2dbfe7c50b3d1b79b3</span><br></pre></td></tr></table></figure>
+
+<h6 id="执行xauth-list查看oracle的xauth-信息是否成功添加"><a href="#执行xauth-list查看oracle的xauth-信息是否成功添加" class="headerlink" title="执行xauth list查看oracle的xauth 信息是否成功添加"></a>执行<code>xauth list</code>查看oracle的xauth 信息是否成功添加</h6><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[oracle@glxybd root]$ xauth list</span><br><span class="line">glxybd.ctbu.edu.cn/unix:10  MIT-MAGIC-COOKIE-1  cb15548cf27a3b2dbfe7c50b3d1b79b3</span><br></pre></td></tr></table></figure>
+
+<h6 id="设置并查看oracle角色的DISPLAY"><a href="#设置并查看oracle角色的DISPLAY" class="headerlink" title="设置并查看oracle角色的DISPLAY"></a>设置并查看oracle角色的DISPLAY</h6><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[oracle@glxybd root]$ export DISPLAY=:10.0</span><br><span class="line">[oracle@glxybd root]$ echo $DISPLAY</span><br><span class="line">:10.0</span><br></pre></td></tr></table></figure>
+
+<hr>
+<blockquote>
+<p>如果配置了图形化界面可跳过直接执行<code>./runInstaller</code>即可成功弹出安装界面，没有配置的话不会弹出界面但也不会报错，可参考下面的图形化界面配置。</p>
+</blockquote>
+<hr>
+<h4 id="配置图形化界面"><a href="#配置图形化界面" class="headerlink" title="配置图形化界面"></a>配置图形化界面</h4><ol>
+<li>先看看是否配置，如果执行<code>xclock</code>报错，command not found<br><code>yum install xorg-x11-apps</code></li>
+<li>安装X窗口包和字体包<br><code>yum -y groupinstall &quot;X Window System&quot; &quot;Fonts&quot;</code>（安装x窗口相关包，和字体显示包）</li>
+<li>安装xmanager（步骤略…），设置xshell的隧道关联xmanager<br><img src="https://img-blog.csdnimg.cn/20191107000211207.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></li>
+<li>关闭当前窗口，重新打开新的窗口进行测试<br> <code>xclock</code>会出现时钟界面</li>
+</ol>
+<p>执行<code>./runInstaller</code>成功打开窗口，如果未成功打开窗口但也未报错，可能是没配置图形化界面，<strong>往下看</strong><br><img src="https://img-blog.csdnimg.cn/201911062347086.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>参考文章： <a href="https://www.froebe.net/blog/2008/11/14/getting-xlib-putty-x11-proxy-wrong-authentication-protocol-attempted-i-have-the-answer/" target="_blank" rel="noopener">Getting “Xlib: PuTTY X11 proxy: wrong authentication protocol attempted”? I have the answer :)</a></p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>brbai</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://br-bai.github.io/2019/11/07/2019_11_7--亲测centos7安装oracle解决Could not execute auto check for display colors using command以及未弹出图形界面/">https://br-bai.github.io/2019/11/07/2019_11_7--亲测centos7安装oracle解决Could not execute auto check for display colors using command以及未弹出图形界面/</a></span>
+                    </p>
+                
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Make excellence a habit.</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Oracle/"># Oracle</a>
+                    
+                        <a href="/tags/CentOS/"># CentOS</a>
+                    
+                        <a href="/tags/Linux/"># Linux</a>
+                    
+                        <a href="/tags/部署/"># 部署</a>
+                    
+                        <a href="/tags/Xmanager/"># Xmanager</a>
+                    
+                        <a href="/tags/Xshell/"># Xshell</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2019/11/07/Xshell 6首次连接正常，再次连接提示Could not connect to '127.0.0.1' (port 61708)_ Connection failed/">Xshell 6首次连接正常，再次连接提示Could not connect to '127.0.0.1' (port 61708)_ Connection failed</a>
+            
+            
+            <a class="next" rel="next" href="/2019/11/06/Centos7快速搭建mongodb集群/">CentOS7快速搭建MongoDB集群</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+   
+
+    <div class="copyright">
+        <span>© 2019 <a href="https://www.bhy702.com" target="_blank">brbai</a> | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    
+	
+       		 <span class="post-meta-divider"> | </span>
+		 <!-- 不蒜子统计 -->
+       		 <span id="busuanzi_container_site_pv">
+                	Pageviews:<span id="busuanzi_value_site_pv"></span>
+	        </span>
+        	<span class="post-meta-divider">&</span>
+       		 <span id="busuanzi_container_site_uv" style="display:none">
+                	Visitors:<span id="busuanzi_value_site_uv"></span>
+        	</span>
+        	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+   	 
+
+
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

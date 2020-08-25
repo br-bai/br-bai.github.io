@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="google-site-verification" content="CJVFgKvg7DR1-BcZBWyXCBGarPIaFkj6TCRZfg5koC0">
+
+
+    <meta name="keywords" content="blog,个人博客,博客">
+
+<meta name="baidu-site-verification" content="Y5fkV0dnwS">
+
+<title>LayUI实现自带table表格组件分页功能（Ajax异步），含条件查询 | brbai</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">brbai&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">brbai&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">LayUI实现自带table表格组件分页功能（Ajax异步），含条件查询</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">brbai</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">June 10, 2019&nbsp;&nbsp;15:34:15</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/前端框架/">前端框架</a>
+                            
+                        </span>
+                    
+ 		   
+       			 <!-- 不蒜子统计 -->
+       		        <span id="busuanzi_container_page_pv" style="display:none" ">
+                         Views:
+				<a href="#"><span id="busuanzi_value_page_pv"></span></a>
+        		</span>
+		   
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <blockquote>
+<p>layui实现自带的table组件分页功能，异步加载，表格渲染，含条件查询。</p>
+</blockquote>
+<hr>
+<h2 id="一：引入layUI的相关资源"><a href="#一：引入layUI的相关资源" class="headerlink" title="一：引入layUI的相关资源"></a>一：引入layUI的相关资源</h2><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">"stylesheet"</span> <span class="attr">href</span>=<span class="string">"$&#123;ctxPath&#125;/vendor/layui/css/layui.css"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"$&#123;ctxPath&#125;/vender/layui/layui.js"</span> <span class="attr">charset</span>=<span class="string">"utf-8"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="二：html页面代码"><a href="#二：html页面代码" class="headerlink" title="二：html页面代码"></a>二：html页面代码</h2><p>搜索表单：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"layui-row"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">form</span> <span class="attr">class</span>=<span class="string">"layui-form layui-col-md12 we-search"</span>&gt;</span></span><br><span class="line">		项目搜索：</span><br><span class="line">		<span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"layui-inline"</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">name</span>=<span class="string">"projectName"</span> <span class="attr">id</span>=<span class="string">"projectName"</span> <span class="attr">placeholder</span>=<span class="string">"项目名称"</span> <span class="attr">autocomplete</span>=<span class="string">"off"</span> <span class="attr">class</span>=<span class="string">"layui-input"</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"layui-input-inline"</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">select</span> <span class="attr">name</span>=<span class="string">"businessOperatorId"</span> <span class="attr">id</span>=<span class="string">"businessOperatorId"</span> <span class="attr">lay-verify</span>=<span class="string">""</span> <span class="attr">lay-search</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">""</span>&gt;</span>业务员<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"layui-input-inline"</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">select</span> <span class="attr">name</span>=<span class="string">"mftRepresentativeId"</span> <span class="attr">id</span>=<span class="string">"mftRepresentativeId"</span> <span class="attr">lay-verify</span>=<span class="string">""</span> <span class="attr">lay-search</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">""</span>&gt;</span>厂家代表<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"layui-input-inline"</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">select</span> <span class="attr">name</span>=<span class="string">"channelId"</span> <span class="attr">id</span>=<span class="string">"channelId"</span> <span class="attr">lay-search</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">""</span>&gt;</span>渠道<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"layui-input-inline"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">select</span> <span class="attr">name</span>=<span class="string">"customerId"</span> <span class="attr">id</span>=<span class="string">"customerId"</span> <span class="attr">lay-search</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">""</span>&gt;</span>客户<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"layui-input-inline"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">select</span> <span class="attr">name</span>=<span class="string">"projectPhase"</span> <span class="attr">id</span>=<span class="string">"projectPhase"</span> <span class="attr">lay-search</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">""</span>&gt;</span>项目阶段<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"layui-input-inline"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">select</span> <span class="attr">name</span>=<span class="string">"goodsCondition"</span> <span class="attr">id</span>=<span class="string">"goodsCondition"</span> <span class="attr">lay-search</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">""</span>&gt;</span>货物情况<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"layui-input-inline"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">select</span> <span class="attr">name</span>=<span class="string">"implementCondition"</span> <span class="attr">id</span>=<span class="string">"implementCondition"</span> <span class="attr">lay-search</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">""</span>&gt;</span>实施情况<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"layui-input-inline"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">select</span> <span class="attr">name</span>=<span class="string">"payCondition"</span> <span class="attr">id</span>=<span class="string">"payCondition"</span> <span class="attr">lay-search</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">""</span>&gt;</span>收款情况<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">		<span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"layui-inline"</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">input</span> <span class="attr">class</span>=<span class="string">"layui-input"</span> <span class="attr">placeholder</span>=<span class="string">"开项时间"</span> <span class="attr">name</span>=<span class="string">"startTime"</span> <span class="attr">id</span>=<span class="string">"startTime"</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"layui-inline"</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">input</span> <span class="attr">class</span>=<span class="string">"layui-input"</span> <span class="attr">placeholder</span>=<span class="string">"结项时间"</span> <span class="attr">name</span>=<span class="string">"endTime"</span> <span class="attr">id</span>=<span class="string">"endTime"</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">button</span> <span class="attr">class</span>=<span class="string">"layui-btn"</span> <span class="attr">lay-submit</span>=<span class="string">""</span> <span class="attr">lay-filter</span>=<span class="string">"sreach"</span>&gt;</span><span class="tag">&lt;<span class="name">i</span> <span class="attr">class</span>=<span class="string">"layui-icon"</span>&gt;</span>&amp;#xe615;<span class="tag">&lt;/<span class="name">i</span>&gt;</span><span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>【注】以上搜索表单中select具体下拉选项的数据为Ajax异步加载，代码就不贴了。</p>
+<p>数据表格:</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">table</span> <span class="attr">class</span>=<span class="string">"layui-hide"</span> <span class="attr">id</span>=<span class="string">"projectList"</span> <span class="attr">lay-filter</span>=<span class="string">"projectList"</span>&gt;</span><span class="tag">&lt;/<span class="name">table</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="三：后台接收分页参数以及查询条件，获取并返回数据"><a href="#三：后台接收分页参数以及查询条件，获取并返回数据" class="headerlink" title="三：后台接收分页参数以及查询条件，获取并返回数据"></a>三：后台接收分页参数以及查询条件，获取并返回数据</h2><blockquote>
+<p><strong><em>主要注意下:</em></strong><br><strong>page</strong>: 前台分页插件传入的当前页数，<br><strong>limit</strong>: 前台分页插件传入的每页个数，<br><strong>projectInfo</strong> ：接收前台传入的查询条件的实体<br><strong>jsonResult</strong> ：后台返回的相关数据的响应实体</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line">    <span class="meta">@RequestMapping</span>(<span class="string">"/project/list"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> JsonResult <span class="title">list</span><span class="params">(@RequestParam(<span class="string">"page"</span>)</span> Integer page, @<span class="title">RequestParam</span><span class="params">(<span class="string">"limit"</span>)</span> Integer size, ProjectInfoEntity projectInfo)</span>&#123;</span><br><span class="line"></span><br><span class="line">        JsonResult jsonResult = projectService.getProjectList(page,size,projectInfo);</span><br><span class="line">        <span class="keyword">return</span> jsonResult;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>后台响应类必须包含code与count字段，因为前台layui会自动获取</strong></p>
+</blockquote>
+<p><strong>自定义后台数据响应实体 JsonResult</strong>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.bhy702.jfkj.common.util;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * JSON结果响应</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JsonResult</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String SUCCESS = <span class="string">"成功"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String ERROR = <span class="string">"失败"</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 响应状态code，因为前台layui默认0为响应成功，所以此处默认为0</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> Integer code = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 数据总条数</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> Long count = <span class="number">0L</span>;</span><br><span class="line"></span><br><span class="line"> 	<span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 返回是否成功</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> Boolean result = <span class="keyword">false</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 返回提示信息</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> String msg = <span class="string">""</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 返回数据信息</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> Object data;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">JsonResult</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 成功的响应</span></span><br><span class="line"><span class="comment">     * </span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> JsonResult <span class="title">success</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> result(<span class="keyword">true</span>, SUCCESS, <span class="keyword">null</span>,<span class="keyword">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> JsonResult <span class="title">success</span><span class="params">(String msg)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> result(<span class="keyword">true</span>, msg, <span class="keyword">null</span>,<span class="keyword">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> JsonResult <span class="title">success</span><span class="params">(Object data)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> result(<span class="keyword">true</span>, SUCCESS, data,<span class="keyword">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> JsonResult <span class="title">success</span><span class="params">(Object data,Long count)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> result(<span class="keyword">true</span>, SUCCESS, data,count);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> JsonResult <span class="title">success</span><span class="params">(String msg, Object data)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> result(<span class="keyword">true</span>, msg, data,<span class="keyword">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> JsonResult <span class="title">success</span><span class="params">(String msg, Object data,Long count)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> result(<span class="keyword">true</span>, msg, data,count);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 失败的响应</span></span><br><span class="line"><span class="comment">     * </span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> JsonResult <span class="title">error</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> result(<span class="keyword">false</span>, ERROR, <span class="keyword">null</span>,<span class="keyword">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> JsonResult <span class="title">error</span><span class="params">(String msg)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> result(<span class="keyword">false</span>, msg, <span class="keyword">null</span>,<span class="keyword">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> JsonResult <span class="title">error</span><span class="params">(Object data)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> result(<span class="keyword">false</span>, ERROR, data,<span class="keyword">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> JsonResult <span class="title">error</span><span class="params">(Object data,Long count)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> result(<span class="keyword">false</span>, ERROR, data,count);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> JsonResult <span class="title">error</span><span class="params">(String msg, Object data)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> result(<span class="keyword">false</span>, msg, data,<span class="keyword">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> JsonResult <span class="title">error</span><span class="params">(String msg, Object data,Long count)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> result(<span class="keyword">false</span>, msg, data,count);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> JsonResult <span class="title">result</span><span class="params">(Boolean result, String msg, Object data,Long count)</span> </span>&#123;</span><br><span class="line">        JsonResult jsonResult = <span class="keyword">new</span> JsonResult();</span><br><span class="line">        jsonResult.setResult(result);</span><br><span class="line">        jsonResult.setMsg(msg);</span><br><span class="line">        jsonResult.setData(data);</span><br><span class="line">        jsonResult.setCount(count);</span><br><span class="line">        <span class="keyword">return</span> jsonResult;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="四：渲染table表格数据"><a href="#四：渲染table表格数据" class="headerlink" title="四：渲染table表格数据"></a>四：渲染table表格数据</h2><blockquote>
+<p><strong><em>主要注意下:</em></strong><br><strong>elem: ‘#projectList’</strong>: projectList为表格id，<br><strong>page: true</strong>: 设置表格分页，<br><strong>url: ‘/project/list’</strong> ：数据请求url<br><strong>fixed: true</strong>:固定列<br><strong>done : function(res, curr, count){…}</strong>:数据加载成功后的回调函数</p>
+</blockquote>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> tableIns = table.render(&#123;</span><br><span class="line">		elem: <span class="string">'#projectList'</span>,</span><br><span class="line">		cellMinWidth: <span class="number">150</span>,</span><br><span class="line">		url: <span class="string">'/project/list'</span>,</span><br><span class="line">		cols: [</span><br><span class="line">			[&#123;</span><br><span class="line">				<span class="comment">// type: 'checkbox',fixed: 'left'</span></span><br><span class="line">                checkbox: <span class="literal">true</span>, <span class="attr">fixed</span>: <span class="literal">true</span></span><br><span class="line">			&#125;, &#123;</span><br><span class="line">				field: <span class="string">'id'</span>,<span class="attr">title</span>: <span class="string">'ID'</span>,<span class="attr">align</span>:<span class="string">'center'</span>,<span class="attr">width</span>:<span class="number">50</span>,<span class="attr">fixed</span>: <span class="literal">true</span></span><br><span class="line">			&#125;, &#123;</span><br><span class="line">				field: <span class="string">'name'</span>,<span class="attr">title</span>: <span class="string">'项目名称'</span>,<span class="attr">align</span>:<span class="string">'center'</span>,<span class="attr">fixed</span>: <span class="literal">true</span></span><br><span class="line">			&#125;, &#123;</span><br><span class="line">				field: <span class="string">'businessOperatorStr'</span>,<span class="attr">title</span>: <span class="string">'经办人'</span>,<span class="attr">align</span>:<span class="string">'center'</span>,<span class="attr">fixed</span>: <span class="literal">true</span></span><br><span class="line">			&#125;, &#123;</span><br><span class="line">				field: <span class="string">'mftRepresentativeStr'</span>,<span class="attr">title</span>: <span class="string">'厂家代表'</span>,<span class="attr">align</span>:<span class="string">'center'</span>,<span class="attr">fixed</span>: <span class="literal">true</span></span><br><span class="line">			&#125;, &#123;</span><br><span class="line">				field: <span class="string">'channelStr'</span>,<span class="attr">title</span>: <span class="string">'渠道'</span>,<span class="attr">align</span>:<span class="string">'center'</span>,<span class="attr">fixed</span>: <span class="literal">true</span></span><br><span class="line">			&#125;, &#123;</span><br><span class="line">				field: <span class="string">'customerStr'</span>,<span class="attr">title</span>: <span class="string">'客户'</span>,<span class="attr">align</span>:<span class="string">'center'</span>,<span class="attr">fixed</span>: <span class="literal">true</span></span><br><span class="line">			&#125;, &#123;</span><br><span class="line">                field: <span class="string">'projectPhaseStr'</span>,<span class="attr">title</span>: <span class="string">'项目阶段'</span>,<span class="attr">align</span>:<span class="string">'center'</span>,<span class="attr">fixed</span>: <span class="literal">true</span></span><br><span class="line">			&#125;, &#123;</span><br><span class="line">				field: <span class="string">'amount'</span>,<span class="attr">title</span>: <span class="string">'金额'</span>,<span class="attr">align</span>:<span class="string">'center'</span></span><br><span class="line">			&#125;, &#123;</span><br><span class="line">				field: <span class="string">'businessSource'</span>,<span class="attr">title</span>: <span class="string">'商机来源'</span>,<span class="attr">align</span>:<span class="string">'center'</span></span><br><span class="line">			&#125;, &#123;</span><br><span class="line">			   field: <span class="string">'mainProduct'</span>,<span class="attr">title</span>: <span class="string">'主要产品'</span>,<span class="attr">align</span>:<span class="string">'center'</span></span><br><span class="line">			&#125;, &#123;</span><br><span class="line">			   field: <span class="string">'productLineStr'</span>,<span class="attr">title</span>: <span class="string">'产品线'</span>,<span class="attr">align</span>:<span class="string">'center'</span></span><br><span class="line">			&#125;, &#123;</span><br><span class="line">			   field: <span class="string">'goodsConditionStr'</span>,<span class="attr">title</span>: <span class="string">'货物情况'</span>,<span class="attr">align</span>:<span class="string">'center'</span></span><br><span class="line">			&#125;, &#123;</span><br><span class="line">			   field: <span class="string">'implementConditionStr'</span>,<span class="attr">title</span>: <span class="string">'实施情况'</span>,<span class="attr">align</span>:<span class="string">'center'</span></span><br><span class="line">			&#125;, &#123;</span><br><span class="line">                field: <span class="string">'payAmount'</span>,<span class="attr">title</span>: <span class="string">'已付金额'</span>,<span class="attr">align</span>:<span class="string">'center'</span></span><br><span class="line">            &#125;, &#123;</span><br><span class="line">			   field: <span class="string">'payConditionStr'</span>,<span class="attr">title</span>: <span class="string">'收款情况'</span>,<span class="attr">align</span>:<span class="string">'center'</span></span><br><span class="line">			&#125;, &#123;</span><br><span class="line">			   field: <span class="string">'startTime'</span>,<span class="attr">title</span>: <span class="string">'开项时间'</span>,<span class="attr">align</span>:<span class="string">'center'</span></span><br><span class="line">           &#125;, &#123;</span><br><span class="line">			   field: <span class="string">'endTime'</span>,<span class="attr">title</span>: <span class="string">'结项时间'</span>,<span class="attr">align</span>:<span class="string">'center'</span></span><br><span class="line">           &#125;, &#123;</span><br><span class="line">			   field: <span class="string">'remark'</span>,<span class="attr">title</span>: <span class="string">'备注'</span>,<span class="attr">align</span>:<span class="string">'center'</span></span><br><span class="line">			&#125;, &#123;</span><br><span class="line">			   field: <span class="string">'operate'</span>,<span class="attr">title</span>: <span class="string">'操作'</span>,<span class="attr">toolbar</span>: <span class="string">'#operateTpl'</span>,<span class="attr">fixed</span>: <span class="string">'right'</span>,<span class="attr">unresize</span>: <span class="literal">true</span></span><br><span class="line">			&#125;]</span><br><span class="line">		],</span><br><span class="line">		id: <span class="string">'testReload'</span>,</span><br><span class="line">		<span class="comment">// skin: 'row', //表格风格</span></span><br><span class="line">		even: <span class="literal">true</span>, <span class="comment">//隔行背景</span></span><br><span class="line">		event: <span class="literal">true</span>,</span><br><span class="line">		page: <span class="literal">true</span>,</span><br><span class="line">        done : <span class="function"><span class="keyword">function</span>(<span class="params">res, curr, count</span>)</span>&#123;</span><br><span class="line">            $(<span class="string">'#totalProjectNumber'</span>).text(<span class="string">"共有数据："</span>+count+<span class="string">" 条"</span>);</span><br><span class="line">            table_data=res.data;</span><br><span class="line">            layer.closeAll(<span class="string">'loading'</span>);</span><br><span class="line">            <span class="comment">// layer.close(layer.index); //它获取的始终是最新弹出的某个层，值是由layer内部动态递增计算的</span></span><br><span class="line">            <span class="comment">// layer.close(index);    //返回数据关闭loading</span></span><br><span class="line">        &#125;</span><br><span class="line">	&#125;);</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="五：监听搜索表单的提交事件-并重新渲染table表格数据"><a href="#五：监听搜索表单的提交事件-并重新渲染table表格数据" class="headerlink" title="五：监听搜索表单的提交事件,并重新渲染table表格数据"></a>五：监听搜索表单的提交事件,并重新渲染table表格数据</h2><blockquote>
+<p><strong><em>主要注意下:</em></strong><br><strong>sreach</strong>: 为搜索按钮对应的事件过滤器，lay-filter=”sreach”，<br><strong>where</strong> 中的数据对应搜索表单，为搜索的条件，后台使用这些条件进行筛选数据返回</p>
+</blockquote>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">form.on(<span class="string">'submit(sreach)'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">data</span>)</span>&#123;</span><br><span class="line"></span><br><span class="line">    	layer.load();</span><br><span class="line">        tableIns.reload(&#123;</span><br><span class="line">			url:<span class="string">"/project/list"</span>,</span><br><span class="line">			page: &#123;</span><br><span class="line">                curr: <span class="number">1</span> <span class="comment">//重新从第 1 页开始</span></span><br><span class="line">            &#125;,</span><br><span class="line">			where:&#123;</span><br><span class="line">				name:data.field.projectName,</span><br><span class="line">                businessOperatorId:data.field.businessOperatorId,</span><br><span class="line">				mftRepresentativeId:data.field.mftRepresentativeId,</span><br><span class="line">				channelId:data.field.channelId,</span><br><span class="line">                customerId:data.field.customerId,</span><br><span class="line">                projectPhase:data.field.projectPhase,</span><br><span class="line">                goodsCondition:data.field.goodsCondition,</span><br><span class="line">                implementCondition:data.field.implementCondition,</span><br><span class="line">                payCondition:data.field.payCondition,</span><br><span class="line">                startTime:data.field.startTime,</span><br><span class="line">                endTime:data.field.endTime</span><br><span class="line">			&#125;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>; <span class="comment">//阻止表单跳转。如果需要表单跳转，去掉这段即可。</span></span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="六：效果展示"><a href="#六：效果展示" class="headerlink" title="六：效果展示"></a>六：效果展示</h2><p><img src="https://img-blog.csdnimg.cn/20190610151850168.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>brbai</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://br-bai.github.io/2019/06/10/LayUI实现自带table表格组件分页功能（Ajax异步），含条件查询/">https://br-bai.github.io/2019/06/10/LayUI实现自带table表格组件分页功能（Ajax异步），含条件查询/</a></span>
+                    </p>
+                
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Make excellence a habit.</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/LayUI/"># LayUI</a>
+                    
+                        <a href="/tags/Ajax/"># Ajax</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2019/06/13/Linux Centos7上部署FastDFS文件服务器/">Linux Centos7上部署FastDFS文件服务器</a>
+            
+            
+            <a class="next" rel="next" href="/2019/06/10/项目部署后字体图标等font文件无法正常加载 Failed to decode downloaded font_ _URL_/">项目部署后字体图标等font文件无法正常加载 Failed to decode downloaded font_ _URL_</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+   
+
+    <div class="copyright">
+        <span>© 2019 <a href="https://www.bhy702.com" target="_blank">brbai</a> | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    
+	
+       		 <span class="post-meta-divider"> | </span>
+		 <!-- 不蒜子统计 -->
+       		 <span id="busuanzi_container_site_pv">
+                	Pageviews:<span id="busuanzi_value_site_pv"></span>
+	        </span>
+        	<span class="post-meta-divider">&</span>
+       		 <span id="busuanzi_container_site_uv" style="display:none">
+                	Visitors:<span id="busuanzi_value_site_uv"></span>
+        	</span>
+        	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+   	 
+
+
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

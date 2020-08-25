@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="google-site-verification" content="CJVFgKvg7DR1-BcZBWyXCBGarPIaFkj6TCRZfg5koC0">
+
+
+    <meta name="keywords" content="blog,个人博客,博客">
+
+<meta name="baidu-site-verification" content="Y5fkV0dnwS">
+
+<title>LayUI实现数据分页功能（Ajax异步） | brbai</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">brbai&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">brbai&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">LayUI实现数据分页功能（Ajax异步）</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">brbai</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">January 6, 2019&nbsp;&nbsp;22:13:48</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/前端框架/">前端框架</a>
+                            
+                        </span>
+                    
+ 		   
+       			 <!-- 不蒜子统计 -->
+       		        <span id="busuanzi_container_page_pv" style="display:none" ">
+                         Views:
+				<a href="#"><span id="busuanzi_value_page_pv"></span></a>
+        		</span>
+		   
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <blockquote>
+<p>最近项目要使用layUI的分页，看了官方demo感觉还是不太清晰，摸索了一下，现在记录一下。</p>
+</blockquote>
+<h2 id="一：引入layUI的相关资源"><a href="#一：引入layUI的相关资源" class="headerlink" title="一：引入layUI的相关资源"></a>一：引入layUI的相关资源</h2><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">"stylesheet"</span> <span class="attr">href</span>=<span class="string">"$&#123;ctxPath&#125;/vendor/layui-v2.4.5/layui/css/layui.css"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"$&#123;ctxPath&#125;/vendor/layui-v2.4.5/layui/layui.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"$&#123;ctxPath&#125;/vendor/jquery.min.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span>//引入jquery包</span><br></pre></td></tr></table></figure>
+
+<h2 id="二：html页面代码"><a href="#二：html页面代码" class="headerlink" title="二：html页面代码"></a>二：html页面代码</h2><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"layui-main g-main"</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"layui-row"</span>&gt;</span></span><br><span class="line">       <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"layui-col-xs12"</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">blockquote</span> <span class="attr">class</span>=<span class="string">"layui-elem-quote"</span>&gt;</span></span><br><span class="line">               当前系统排名：<span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">"layui-badge-rim badge-number"</span>&gt;</span>第$&#123;scoreRecordUtil.rank&#125;名<span class="tag">&lt;/<span class="name">span</span>&gt;</span>，</span><br><span class="line">               总积分：<span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">"layui-badge-rim badge-number"</span>&gt;</span>$&#123;scoreRecordUtil.totalScore&#125;分<span class="tag">&lt;/<span class="name">span</span>&gt;</span>，</span><br><span class="line">               和上一名相差：<span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">"layui-badge-rim badge-number"</span>&gt;</span>$&#123;scoreRecordUtil.differenceTotal&#125;分<span class="tag">&lt;/<span class="name">span</span>&gt;</span>，继续加油！</span><br><span class="line">           <span class="tag">&lt;/<span class="name">blockquote</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">table</span> <span class="attr">class</span>=<span class="string">"layui-table"</span>&gt;</span></span><br><span class="line">               <span class="tag">&lt;<span class="name">thead</span>&gt;</span></span><br><span class="line">                   <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">                       <span class="tag">&lt;<span class="name">th</span>&gt;</span>积分类型<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">                       <span class="tag">&lt;<span class="name">th</span>&gt;</span>积分原因<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">                       <span class="tag">&lt;<span class="name">th</span>&gt;</span>积分值<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">                       <span class="tag">&lt;<span class="name">th</span>&gt;</span>创建时间<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">                   <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">               <span class="tag">&lt;/<span class="name">thead</span>&gt;</span></span><br><span class="line">               </span><br><span class="line">               <span class="tag">&lt;<span class="name">tbody</span>&gt;</span></span><br><span class="line">				//存放分页加载数据</span><br><span class="line">               <span class="tag">&lt;/<span class="name">tbody</span>&gt;</span></span><br><span class="line">               </span><br><span class="line">           <span class="tag">&lt;/<span class="name">table</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"page"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">       <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="三：定义showRecord-函数异步加载数据"><a href="#三：定义showRecord-函数异步加载数据" class="headerlink" title="三：定义showRecord()函数异步加载数据"></a>三：定义showRecord()函数异步加载数据</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">showRecord</span>(<span class="params">pageNo,pageSize</span>)</span>&#123;</span><br><span class="line">    $.<span class="keyword">get</span>("$&#123;ctxPath&#125;/score-record/showRecord<span class="string">",</span></span><br><span class="line"><span class="string">        &#123;</span></span><br><span class="line"><span class="string">            pageNo:pageNo,</span></span><br><span class="line"><span class="string">            pageSize:pageSize</span></span><br><span class="line"><span class="string">        &#125;,</span></span><br><span class="line"><span class="string">        function (date) &#123;</span></span><br><span class="line"><span class="string">        	//加载后台返回的List集合数据</span></span><br><span class="line"><span class="string">            for (var i = 0; i &lt; date.length; i++) &#123;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">                var td = $("</span>&lt;td&gt;<span class="xml"><span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><span class="string">").text(date[i].typeName);</span></span><br><span class="line"><span class="string">                var td2 = $("</span>&lt;td&gt;<span class="xml"><span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><span class="string">").text(date[i].operate);</span></span><br><span class="line"><span class="string">                var td3 = $("</span>&lt;td&gt;<span class="xml"><span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><span class="string">").text(date[i].score);</span></span><br><span class="line"><span class="string">                var td4 = $("</span>&lt;td&gt;<span class="xml"><span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><span class="string">").text(date[i].createTime);</span></span><br><span class="line"><span class="string">                var tr = $("</span>&lt;tr&gt;<span class="xml"><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><span class="string">").append(td, td2, td3, td4);</span></span><br><span class="line"><span class="string">                $('tbody').append(tr);</span></span><br><span class="line"><span class="string">            &#125;</span></span><br><span class="line"><span class="string">        &#125;,</span></span><br><span class="line"><span class="string">        "</span>json<span class="string">"</span></span><br><span class="line"><span class="string">    );</span></span><br><span class="line"><span class="string">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="四：分页js"><a href="#四：分页js" class="headerlink" title="四：分页js"></a>四：分页js</h2><blockquote>
+<p><strong><em>主要注意下:</em></strong><br><strong>count: total</strong> 代表总的数据量，<br><strong>limit</strong> 代表每页行数，<br><strong>curr</strong> 代表起始页，但<strong>jump</strong>函数中的<strong>obj.curr</strong>取的是当前页数<br><strong>jump</strong> 方法中obj参数可以取到上面的属性和方法<br><strong>first</strong>  为是否首次加载 </p>
+</blockquote>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//加载总页数</span></span><br><span class="line"><span class="keyword">var</span> total = <span class="string">"$&#123;scoreRecordUtil.totalRecord&#125;"</span>;</span><br><span class="line"><span class="comment">//先初始化加载首页，十条数据</span></span><br><span class="line">showRecord(<span class="number">1</span>,<span class="number">10</span>);</span><br><span class="line"></span><br><span class="line">layui.use([<span class="string">'laypage'</span>,<span class="string">'jquery'</span>], <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">var</span> laypage = layui.laypage,$ = layui.$;</span><br><span class="line">   </span><br><span class="line">   laypage.render(&#123;</span><br><span class="line">       elem: $(<span class="string">'.page'</span>)[<span class="number">0</span>]</span><br><span class="line">       <span class="comment">//注意，这里的 elem 指向存放分页的容器，值可以是容器ID、DOM对象。</span></span><br><span class="line">       <span class="comment">//例1. elem: 'idName' 注意：这里不能加 # 号</span></span><br><span class="line">	   <span class="comment">//例2. elem: document.getElementById('idName')</span></span><br><span class="line">       ,<span class="attr">count</span>: total <span class="comment">//数据总数，从服务端得到</span></span><br><span class="line">       , <span class="attr">limit</span>: <span class="number">10</span>                      <span class="comment">//每页显示条数</span></span><br><span class="line">       , <span class="attr">limits</span>: [<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>]</span><br><span class="line">       , <span class="attr">curr</span>: <span class="number">1</span>                        <span class="comment">//起始页</span></span><br><span class="line">       , <span class="attr">groups</span>: <span class="number">5</span>                      <span class="comment">//连续页码个数</span></span><br><span class="line">       , <span class="attr">prev</span>: <span class="string">'上一页'</span>                 <span class="comment">//上一页文本</span></span><br><span class="line">       , <span class="attr">netx</span>: <span class="string">'下一页'</span>                 <span class="comment">//下一页文本</span></span><br><span class="line">       , <span class="attr">first</span>: <span class="number">1</span>                      <span class="comment">//首页文本</span></span><br><span class="line">       , <span class="attr">last</span>: <span class="number">100</span>                     <span class="comment">//尾页文本</span></span><br><span class="line">       , <span class="attr">layout</span>: [<span class="string">'prev'</span>, <span class="string">'page'</span>, <span class="string">'next'</span>,<span class="string">'limit'</span>,<span class="string">'refresh'</span>,<span class="string">'skip'</span>]</span><br><span class="line">       <span class="comment">//跳转页码时调用</span></span><br><span class="line">       , <span class="attr">jump</span>: <span class="function"><span class="keyword">function</span> (<span class="params">obj, first</span>) </span>&#123; <span class="comment">//obj为当前页的属性和方法，第一次加载first为true</span></span><br><span class="line">           <span class="comment">//非首次加载 do something</span></span><br><span class="line">           <span class="keyword">if</span> (!first) &#123;</span><br><span class="line">           	   <span class="comment">//清空以前加载的数据</span></span><br><span class="line">               $(<span class="string">'tbody'</span>).empty();</span><br><span class="line">               <span class="comment">//调用加载函数加载数据</span></span><br><span class="line">               showRecord(obj.curr,obj.limit);</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;);</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>推荐</strong>：使用layui的table组件自带分页功能（异步，含条件查询）<a href="https://br-bai.github.io/2019/06/10/LayUI%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%B8%A6table%E8%A1%A8%E6%A0%BC%E7%BB%84%E4%BB%B6%E5%88%86%E9%A1%B5%E5%8A%9F%E8%83%BD%EF%BC%88Ajax%E5%BC%82%E6%AD%A5%EF%BC%89%EF%BC%8C%E5%90%AB%E6%9D%A1%E4%BB%B6%E6%9F%A5%E8%AF%A2/">点这里</a></p>
+</blockquote>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>brbai</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://br-bai.github.io/2019/01/06/LayUI实现数据分页功能（Ajax异步）/">https://br-bai.github.io/2019/01/06/LayUI实现数据分页功能（Ajax异步）/</a></span>
+                    </p>
+                
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Make excellence a habit.</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/LayUI/"># LayUI</a>
+                    
+                        <a href="/tags/Ajax/"># Ajax</a>
+                    
+                        <a href="/tags/JavaScript/"># JavaScript</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2019/01/17/Linux系统上部署SpringBoot项目，可直接通过ip访问/">Linux系统上部署SpringBoot项目，可直接通过ip访问</a>
+            
+            
+            <a class="next" rel="next" href="/2018/12/28/Java多线程synchronized与 lock同步及交替打印/">Java多线程synchronized与 lock同步及交替打印</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+   
+
+    <div class="copyright">
+        <span>© 2019 <a href="https://www.bhy702.com" target="_blank">brbai</a> | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    
+	
+       		 <span class="post-meta-divider"> | </span>
+		 <!-- 不蒜子统计 -->
+       		 <span id="busuanzi_container_site_pv">
+                	Pageviews:<span id="busuanzi_value_site_pv"></span>
+	        </span>
+        	<span class="post-meta-divider">&</span>
+       		 <span id="busuanzi_container_site_uv" style="display:none">
+                	Visitors:<span id="busuanzi_value_site_uv"></span>
+        	</span>
+        	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+   	 
+
+
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

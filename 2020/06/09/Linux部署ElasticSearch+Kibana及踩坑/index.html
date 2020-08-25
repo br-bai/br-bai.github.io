@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="google-site-verification" content="CJVFgKvg7DR1-BcZBWyXCBGarPIaFkj6TCRZfg5koC0">
+
+
+    <meta name="keywords" content="blog,个人博客,博客">
+
+<meta name="baidu-site-verification" content="Y5fkV0dnwS">
+
+<title>Linux部署ElasticSearch+Kibana及踩坑 | brbai</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">brbai&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">brbai&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Linux部署ElasticSearch+Kibana及踩坑</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">brbai</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">June 9, 2020&nbsp;&nbsp;21:00:47</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/服务部署/">服务部署</a>
+                            
+                        </span>
+                    
+ 		   
+       			 <!-- 不蒜子统计 -->
+       		        <span id="busuanzi_container_page_pv" style="display:none" ">
+                         Views:
+				<a href="#"><span id="busuanzi_value_page_pv"></span></a>
+        		</span>
+		   
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h3 id="安装ElasticSearch："><a href="#安装ElasticSearch：" class="headerlink" title="安装ElasticSearch："></a>安装ElasticSearch：</h3><h6 id="1-下载ElasticSearch"><a href="#1-下载ElasticSearch" class="headerlink" title="1. 下载ElasticSearch"></a>1. 下载ElasticSearch</h6><ul>
+<li>ElasticSearch 7.7.1已上传我的个人云盘，点击下载 <a href="http://47.100.105.124:8000/s/Hf2goH4ZPcoByiD" target="_blank" rel="noopener">点这里</a><ul>
+<li>官方下载网址：<a href="https://www.elastic.co/cn/downloads/elasticsearch" target="_blank" rel="noopener">https://www.elastic.co/cn/downloads/elasticsearch</a><h6 id="2-解压elasticsearch-7-7-1-linux-x86-64-tar-gz到-usr-local-目录"><a href="#2-解压elasticsearch-7-7-1-linux-x86-64-tar-gz到-usr-local-目录" class="headerlink" title="2. 解压elasticsearch-7.7.1-linux-x86_64.tar.gz到/usr/local/目录"></a>2. 解压elasticsearch-7.7.1-linux-x86_64.tar.gz到/usr/local/目录</h6><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf elasticsearch-7.7.1-linux-x86_64.tar.gz -C /usr/local/</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+</li>
+</ul>
+<h6 id="3-进入bin目录，运行ElasticSearch"><a href="#3-进入bin目录，运行ElasticSearch" class="headerlink" title="3. 进入bin目录，运行ElasticSearch"></a>3. 进入bin目录，运行ElasticSearch</h6><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/local/elasticsearch-7.7.1/bin</span><br><span class="line">./elasticSearch</span><br></pre></td></tr></table></figure>
+
+<h6 id="4-常见异常解决"><a href="#4-常见异常解决" class="headerlink" title="4. 常见异常解决"></a>4. 常见异常解决</h6><h6 id="异常信息"><a href="#异常信息" class="headerlink" title="异常信息:"></a>异常信息:</h6><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">Exception in thread <span class="string">"main"</span> java.lang.RuntimeException: starting java failed with [<span class="number">1</span>]</span><br><span class="line">output:</span><br><span class="line">#</span><br><span class="line"># There is insufficient memory for the Java Runtime Environment to continue.</span><br><span class="line"># Native memory allocation (mmap) failed to map 986513408 bytes for committing reserved memory.</span><br><span class="line"># An error report file with more information is saved as:</span><br><span class="line"># logs/hs_err_pid24201.log</span><br><span class="line">error:</span><br><span class="line"><span class="function">Java <span class="title">HotSpot</span><span class="params">(TM)</span> 64-Bit Server VM warning: INFO: os::<span class="title">commit_memory</span><span class="params">(<span class="number">0x00000000c5330000</span>, <span class="number">986513408</span>, <span class="number">0</span>)</span> failed</span>; error=<span class="string">'Cannot allocate memory'</span> (errno=<span class="number">12</span>)</span><br><span class="line">	at org.elasticsearch.tools.launchers.JvmErgonomics.flagsFinal(JvmErgonomics.java:<span class="number">126</span>)</span><br><span class="line">	at org.elasticsearch.tools.launchers.JvmErgonomics.finalJvmOptions(JvmErgonomics.java:<span class="number">88</span>)</span><br><span class="line">	at org.elasticsearch.tools.launchers.JvmErgonomics.choose(JvmErgonomics.java:<span class="number">59</span>)</span><br><span class="line">	at org.elasticsearch.tools.launchers.JvmOptionsParser.jvmOptions(JvmOptionsParser.java:<span class="number">139</span>)</span><br><span class="line">	at org.elasticsearch.tools.launchers.JvmOptionsParser.main(JvmOptionsParser.java:<span class="number">95</span>)</span><br></pre></td></tr></table></figure>
+
+<p>解决：<br>编辑config文件夹中的jvm.options文件</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/local/elasticsearch-7.7.1/config</span><br><span class="line">vim /jvm.options</span><br><span class="line">修改默认的1g为128m：</span><br><span class="line">	-Xms128m</span><br><span class="line">	-Xmx128m</span><br></pre></td></tr></table></figure>
+
+<h6 id="异常信息-1"><a href="#异常信息-1" class="headerlink" title="异常信息:"></a>异常信息:</h6><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">org.elasticsearch.bootstrap.StartupException: java.lang.RuntimeException: can not run elasticsearch as root</span><br><span class="line">	at org.elasticsearch.bootstrap.Elasticsearch.init(Elasticsearch.java:<span class="number">174</span>) ~[elasticsearch-<span class="number">7.7</span>.1.jar:<span class="number">7.7</span>.1]</span><br><span class="line">	at org.elasticsearch.bootstrap.Elasticsearch.execute(Elasticsearch.java:<span class="number">161</span>) ~[elasticsearch-<span class="number">7.7</span>.1.jar:<span class="number">7.7</span>.1]</span><br><span class="line">	at org.elasticsearch.cli.EnvironmentAwareCommand.execute(EnvironmentAwareCommand.java:<span class="number">86</span>) ~[elasticsearch-<span class="number">7.7</span>.1.jar:<span class="number">7.7</span>.1]</span><br><span class="line">	at org.elasticsearch.cli.Command.mainWithoutErrorHandling(Command.java:<span class="number">127</span>) ~[elasticsearch-cli-<span class="number">7.7</span>.1.jar:<span class="number">7.7</span>.1]</span><br><span class="line">	at org.elasticsearch.cli.Command.main(Command.java:<span class="number">90</span>) ~[elasticsearch-cli-<span class="number">7.7</span>.1.jar:<span class="number">7.7</span>.1]</span><br><span class="line">	at org.elasticsearch.bootstrap.Elasticsearch.main(Elasticsearch.java:<span class="number">126</span>) ~[elasticsearch-<span class="number">7.7</span>.1.jar:<span class="number">7.7</span>.1]</span><br><span class="line">	at org.elasticsearch.bootstrap.Elasticsearch.main(Elasticsearch.java:<span class="number">92</span>) ~[elasticsearch-<span class="number">7.7</span>.1.jar:<span class="number">7.7</span>.1]</span><br><span class="line">Caused by: java.lang.RuntimeException: can not run elasticsearch as root</span><br><span class="line">	at org.elasticsearch.bootstrap.Bootstrap.initializeNatives(Bootstrap.java:<span class="number">111</span>) ~[elasticsearch-<span class="number">7.7</span>.1.jar:<span class="number">7.7</span>.1]</span><br><span class="line">	at org.elasticsearch.bootstrap.Bootstrap.setup(Bootstrap.java:<span class="number">178</span>) ~[elasticsearch-<span class="number">7.7</span>.1.jar:<span class="number">7.7</span>.1]</span><br><span class="line">	at org.elasticsearch.bootstrap.Bootstrap.init(Bootstrap.java:<span class="number">393</span>) ~[elasticsearch-<span class="number">7.7</span>.1.jar:<span class="number">7.7</span>.1]</span><br><span class="line">	at org.elasticsearch.bootstrap.Elasticsearch.init(Elasticsearch.java:<span class="number">170</span>) ~[elasticsearch-<span class="number">7.7</span>.1.jar:<span class="number">7.7</span>.1]</span><br><span class="line">	... <span class="number">6</span> more</span><br><span class="line">uncaught exception in thread [main]</span><br><span class="line">java.lang.RuntimeException: can not run elasticsearch as root</span><br><span class="line">	at org.elasticsearch.bootstrap.Bootstrap.initializeNatives(Bootstrap.java:<span class="number">111</span>)</span><br><span class="line">	at org.elasticsearch.bootstrap.Bootstrap.setup(Bootstrap.java:<span class="number">178</span>)</span><br><span class="line">	at org.elasticsearch.bootstrap.Bootstrap.init(Bootstrap.java:<span class="number">393</span>)</span><br><span class="line">	at org.elasticsearch.bootstrap.Elasticsearch.init(Elasticsearch.java:<span class="number">170</span>)</span><br><span class="line">	at org.elasticsearch.bootstrap.Elasticsearch.execute(Elasticsearch.java:<span class="number">161</span>)</span><br><span class="line">	at org.elasticsearch.cli.EnvironmentAwareCommand.execute(EnvironmentAwareCommand.java:<span class="number">86</span>)</span><br><span class="line">	at org.elasticsearch.cli.Command.mainWithoutErrorHandling(Command.java:<span class="number">127</span>)</span><br><span class="line">	at org.elasticsearch.cli.Command.main(Command.java:<span class="number">90</span>)</span><br><span class="line">	at org.elasticsearch.bootstrap.Elasticsearch.main(Elasticsearch.java:<span class="number">126</span>)</span><br><span class="line">	at org.elasticsearch.bootstrap.Elasticsearch.main(Elasticsearch.java:<span class="number">92</span>)</span><br><span class="line">For complete error details, refer to the log at /usr/local/elasticsearch-<span class="number">7.7</span>.1/logs/elasticsearch.log</span><br><span class="line">[root@iZuf65vg2nr3x1h1yzuyq1Z bin]# 2020-06-09 09:59:40,887430 UTC [25753] ERROR CNamedPipeFactory.cc@224 Unable to open named pipe /tmp/elasticsearch-48021366/controller_log_25625 for writing: Interrupted system call</span><br><span class="line"><span class="number">2020</span>-<span class="number">06</span>-<span class="number">09</span> <span class="number">09</span>:<span class="number">59</span>:<span class="number">40</span>,<span class="number">887543</span> UTC [<span class="number">25753</span>] ERROR CLogger.cc@<span class="number">298</span> Cannot log to named pipe /tmp/elasticsearch-<span class="number">4802127868216853366</span>/controller_log_25625 as it couldned <span class="keyword">for</span> writing</span><br><span class="line"><span class="number">2020</span>-<span class="number">06</span>-<span class="number">09</span> <span class="number">09</span>:<span class="number">59</span>:<span class="number">40</span>,<span class="number">887558</span> UTC [<span class="number">25753</span>] FATAL Main.cc@<span class="number">102</span> Could not reconfigure logging</span><br></pre></td></tr></table></figure>
+
+<p>解决：</p>
+<ul>
+<li>新建用户组<code>groupadd esgroup</code></li>
+<li>新增用户<code>useradd esroot -g esgroup -p esroot</code></li>
+<li>设置权限<code>chown -R esroot:esgroup /usr/local/elasticsearch-7.7.1</code></li>
+<li>切换权限<code>su esroot</code></li>
+<li>运行elasticsearch<code>./usr/local/elasticsearch-7.7.1/bin/elasticsearch</code></li>
+</ul>
+<h6 id="异常信息-2"><a href="#异常信息-2" class="headerlink" title="异常信息:"></a>异常信息:</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ERROR: [2] bootstrap checks failed</span><br><span class="line">[1]: max virtual memory areas vm.max_map_count [65530] is too low, increase to at least [262144]</span><br><span class="line">[2]: the default discovery settings are unsuitable for production use; at least one of [discovery.seed_hosts, discovery.seed_providers, cluster.initial_master_nodes] must be configured</span><br></pre></td></tr></table></figure>
+
+<p>解决：<br>问题1：<code>sudo sysctl -w vm.max_map_count=262144</code><br>问题2：修改elasticsearch.yml，取消注释保留一个节点<br><code>cluster.initial_master_nodes: [&quot;node-1&quot;]</code></p>
+<h6 id="测试本地访问：curl-localhost-9200"><a href="#测试本地访问：curl-localhost-9200" class="headerlink" title="测试本地访问：curl localhost:9200"></a>测试本地访问：<code>curl localhost:9200</code></h6><p><img src="https://img-blog.csdnimg.cn/20200609205836322.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h6 id="5-远程访问elasticsearch"><a href="#5-远程访问elasticsearch" class="headerlink" title="5. 远程访问elasticsearch"></a>5. 远程访问elasticsearch</h6><p>默认情况下，Elasticsearch 只允许本机访问，如果需要远程访问，需修改 Elasticsearch 安装目录中的config/elasticsearch.yml文件，将<code>network.host</code>的值改成<code>0.0.0.0</code>。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">vim /usr/local/elasticsearch-7.7.1/config/elasticsearch.yml</span><br><span class="line">修改为：</span><br><span class="line">  network.host: 0.0.0.0</span><br><span class="line">  http.port: 9200</span><br></pre></td></tr></table></figure>
+
+<p>开放9200端口（注意：我使用的是centos7.3的版本，防火墙是firewall）：<br><code>firewall-cmd --zone=public --add-port=9200/tcp --permanent</code><br>重启防火墙：<code>firewall-cmd --reload</code><br>查看端口是否开启：<code>firewall-cmd --query-port=9200/tcp</code></p>
+<blockquote>
+<p>如果是阿里云的服务器 ， 还需进入服务器管理控制台，给防火墙9200端口号添加规则</p>
+</blockquote>
+<p>远程访问9200端口：<br><img src="https://img-blog.csdnimg.cn/2020060920571847.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<hr>
+<h3 id="安装Kibana："><a href="#安装Kibana：" class="headerlink" title="安装Kibana："></a>安装Kibana：</h3><h6 id="1-下载Kibana，版本要与ElasticSearch一致"><a href="#1-下载Kibana，版本要与ElasticSearch一致" class="headerlink" title="1. 下载Kibana，版本要与ElasticSearch一致"></a>1. 下载Kibana，版本要与ElasticSearch一致</h6><ul>
+<li>Kibana7.7.1已上传我的个人云盘，点击下载 <a href="http://47.100.105.124:8000/s/AyMC6TptH82g4wH" target="_blank" rel="noopener">点这里</a><ul>
+<li>官方下载网址：<a href="https://www.elastic.co/cn/downloads/kibana" target="_blank" rel="noopener">https://www.elastic.co/cn/downloads/kibana</a><h6 id="2-解压kibana-7-7-1-linux-x86-64-tar-gz到-usr-local-目录"><a href="#2-解压kibana-7-7-1-linux-x86-64-tar-gz到-usr-local-目录" class="headerlink" title="2. 解压kibana-7.7.1-linux-x86_64.tar.gz到/usr/local/目录"></a>2. 解压kibana-7.7.1-linux-x86_64.tar.gz到/usr/local/目录</h6><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf kibana-7.7.1-linux-x86_64.tar.gz -C /usr/local/</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+</li>
+</ul>
+<h6 id="3-打开kibana-yml配置文件，修改配置"><a href="#3-打开kibana-yml配置文件，修改配置" class="headerlink" title="3. 打开kibana.yml配置文件，修改配置"></a>3. 打开kibana.yml配置文件，修改配置</h6><p>vim /usr/local/kibana-7.7.1-linux-x86_64/config/kibana.yml</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">server.port: 5601</span><br><span class="line">server.host: &quot;0.0.0.0&quot;</span><br><span class="line"># 之前的一些版本是这个 elasticsearch.url: &quot;http://47.100.105.124:9200&quot;</span><br><span class="line">elasticsearch.hosts: [&quot;http://47.100.105.124:9200&quot;]</span><br></pre></td></tr></table></figure>
+
+<h6 id="4-开放5601端口-参考上面9200端口"><a href="#4-开放5601端口-参考上面9200端口" class="headerlink" title="4. 开放5601端口(参考上面9200端口)"></a>4. 开放5601端口(参考上面9200端口)</h6><h6 id="5-进入bin目录，运行Kibana"><a href="#5-进入bin目录，运行Kibana" class="headerlink" title="5. 进入bin目录，运行Kibana"></a>5. 进入bin目录，运行Kibana</h6><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/local/kibana-7.7.1-linux-x86_64/bin</span><br><span class="line">./kibana</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>运行Kibana异常i情况：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">log   [<span class="number">05</span>:<span class="number">21</span>:<span class="number">32.045</span>] [error][admin][elasticsearch] Request error, retrying</span><br><span class="line">POST http:<span class="comment">//47.100.105.124:9200/.kibana/_search?ignore_unavailable=true&amp;filter_path=aggregations.types.buckets =&gt; socket hang up</span></span><br><span class="line">  log   [<span class="number">05</span>:<span class="number">21</span>:<span class="number">32.049</span>] [error][admin][elasticsearch] Request error, retrying</span><br><span class="line">GET http:<span class="comment">//47.100.105.124:9200/.kibana/doc/config%3A6.4.3 =&gt; connect ECONNREFUSED 47.100.105.124:9200</span></span><br><span class="line">  log   [<span class="number">05</span>:<span class="number">21</span>:<span class="number">32.054</span>] [error][admin][elasticsearch] Request error, retrying</span><br><span class="line">POST http:<span class="comment">//47.100.105.124:9200/.reporting-*/_search?filter_path=hits.total%2Caggregations.jobTypes.buckets%2Caggregations.objectTypes.buckets%2Caggregations.layoutTypes.buckets%2Caggregations.statusTypes.buckets =&gt; connect ECONNREFUSED 47.100.105.124:9200</span></span><br><span class="line">  log   [<span class="number">05</span>:<span class="number">21</span>:<span class="number">32.064</span>] [error][elasticsearch][monitoring-ui] Request error, retrying</span><br><span class="line">GET http:<span class="comment">//47.100.105.124:9200/_xpack =&gt; socket hang up</span></span><br><span class="line">  log   [<span class="number">05</span>:<span class="number">21</span>:<span class="number">32.065</span>] [error][admin][elasticsearch] Request error, retrying</span><br><span class="line">HEAD http:<span class="comment">//47.100.105.124:9200/ =&gt; connect ECONNREFUSED 47.100.105.124:9200</span></span><br><span class="line">  log   [<span class="number">05</span>:<span class="number">21</span>:<span class="number">32.067</span>] [warning][admin][elasticsearch] Unable to revive connection: http:<span class="comment">//47.100.105.124:9200/</span></span><br><span class="line">  log   [<span class="number">05</span>:<span class="number">21</span>:<span class="number">32.067</span>] [warning][admin][elasticsearch] No living connections</span><br></pre></td></tr></table></figure>
+
+<p>如果运行kibana的时候，出现连接ES异常，ES可能是被kill，说明内存不足，需要调低ES jvm.options中的内存参数，当出现kibana运行时被kill，则需要优化kibana内存，将可执行文件kibanad的<code>NODE_OPTIONS</code>中加入<code>--max_old_space_size=200</code>，数值可以适当调整，然后重新运行即可。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">NODE_OPTIONS=&quot;--no-warnings --max-http-header-size=65536 $&#123;NODE_OPTIONS&#125; --max-old-space-size=200&quot;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://img-blog.csdnimg.cn/20200611141500573.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>brbai</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://br-bai.github.io/2020/06/09/Linux部署ElasticSearch+Kibana及踩坑/">https://br-bai.github.io/2020/06/09/Linux部署ElasticSearch+Kibana及踩坑/</a></span>
+                    </p>
+                
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Make excellence a habit.</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Linux/"># Linux</a>
+                    
+                        <a href="/tags/ElasticSearch/"># ElasticSearch</a>
+                    
+                        <a href="/tags/Kibana/"># Kibana</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2020/03/16/MySQL序列表，自增序列生成合同编号/">MySQL序列表，自增序列生成合同编号</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+   
+
+    <div class="copyright">
+        <span>© 2019 <a href="https://www.bhy702.com" target="_blank">brbai</a> | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    
+	
+       		 <span class="post-meta-divider"> | </span>
+		 <!-- 不蒜子统计 -->
+       		 <span id="busuanzi_container_site_pv">
+                	Pageviews:<span id="busuanzi_value_site_pv"></span>
+	        </span>
+        	<span class="post-meta-divider">&</span>
+       		 <span id="busuanzi_container_site_uv" style="display:none">
+                	Visitors:<span id="busuanzi_value_site_uv"></span>
+        	</span>
+        	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+   	 
+
+
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

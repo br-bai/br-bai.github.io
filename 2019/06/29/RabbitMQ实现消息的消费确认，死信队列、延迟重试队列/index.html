@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="google-site-verification" content="CJVFgKvg7DR1-BcZBWyXCBGarPIaFkj6TCRZfg5koC0">
+
+
+    <meta name="keywords" content="blog,个人博客,博客">
+
+<meta name="baidu-site-verification" content="Y5fkV0dnwS">
+
+<title>RabbitMQ实现消息的消费确认，死信队列、延迟重试队列 | brbai</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">brbai&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">brbai&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">RabbitMQ实现消息的消费确认，死信队列、延迟重试队列</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">brbai</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">June 29, 2019&nbsp;&nbsp;17:18:07</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/消息中间件/">消息中间件</a>
+                            
+                        </span>
+                    
+ 		   
+       			 <!-- 不蒜子统计 -->
+       		        <span id="busuanzi_container_page_pv" style="display:none" ">
+                         Views:
+				<a href="#"><span id="busuanzi_value_page_pv"></span></a>
+        		</span>
+		   
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h3 id="消息的消费确认实现原理"><a href="#消息的消费确认实现原理" class="headerlink" title="消息的消费确认实现原理:"></a>消息的消费确认实现原理:</h3><p>当消费者的消息消费异常时，消息进入延迟重试队列，待超时后重新发送到重试队列指定的死信队列，死信队列重新消费信息，如果又出现死信情况，继续进入延时重试队列，依次循环，当重试超过3次后，消息进入失败队列等待相应的消费者特殊处理或人工处理。</p>
+<h3 id="死信队列"><a href="#死信队列" class="headerlink" title="死信队列"></a>死信队列</h3><p>死信队列中（dead letter）死信的消息来源：</p>
+<ol>
+<li><p>消息被拒绝（basic.reject或basic.nack）并且requeue=false</p>
+</li>
+<li><p>消息TTL过期（x-message-ttl参数值即为超时时间）</p>
+</li>
+<li><p>.队列达到最大长度（队列满了，无法再添加数据到mq中）</p>
+</li>
+</ol>
+<p>普通队列指定死信队列的相关参数:</p>
+<ul>
+<li><p>x-dead-letter-exchange: 用来设置死信后发送的交换机</p>
+</li>
+<li><p>x-dead-letter-routing-key：用来设置死信的routingKey</p>
+</li>
+<li><p>x-message-ttl: 单位毫秒，消息、队列的生命周期。超时后消息会变成dead message</p>
+</li>
+</ul>
+<h3 id="延迟队列"><a href="#延迟队列" class="headerlink" title="延迟队列"></a>延迟队列</h3><p>延迟队列存储的对象为对应的延时消息，等待指定时间后，消费者才拿到这个消息进行消费。RabbitMQ本身没有直接支持的延迟队列功能，我们可以设置 x-message-ttl，来控制消息的生存时间，如果超时，则消息成为dead letter（死信），进入死信队列，将死信队列指定为普通的消费队列即可实现延迟消费。</p>
+<hr>
+<h3 id="声明交换器"><a href="#声明交换器" class="headerlink" title="声明交换器"></a>声明交换器</h3><ul>
+<li><p>邮件交换器 emailExchange</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> TopicExchange <span class="title">emailExchange</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> (TopicExchange)ExchangeBuilder.topicExchange(<span class="string">"emailExchange"</span>).durable(<span class="keyword">true</span>).build();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ul>
+<ul>
+<li><p>重试交换器 retryExchange</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> TopicExchange <span class="title">retryExchange</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> (TopicExchange)ExchangeBuilder.topicExchange(<span class="string">"retryExchange"</span>).durable(<span class="keyword">true</span>).build();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ul>
+<ul>
+<li><p>失败交换器 faildExchange</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> TopicExchange <span class="title">faildExchange</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> (TopicExchange)ExchangeBuilder.topicExchange(<span class="string">"faildExchange"</span>).durable(<span class="keyword">true</span>).build();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<hr>
+<h3 id="声明队列"><a href="#声明队列" class="headerlink" title="声明队列"></a>声明队列</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 死信队列 交换机标识符</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String X_DEAD_LETTER_EXCHANGE = <span class="string">"x-dead-letter-exchange"</span>;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 死信队列交换机routing-key标识符</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String X_DEAD_LETTER_ROUTING_KEY = <span class="string">"x-dead-letter-routing-key"</span>;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 死信队列消息的超时时间枚举</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String X_MESSAGE_TTL = <span class="string">"x-message-ttl"</span>;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>邮件队列 emailQueue</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Queue <span class="title">emailQueue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> Queue(<span class="string">"emailQueue"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ul>
+<ul>
+<li><p>重试队列 retryQueue（此处我指定了其死信队列为emailQueue队列）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Queue <span class="title">retryQueue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Map args = <span class="keyword">new</span> ConcurrentHashMap&lt;&gt;(<span class="number">3</span>);</span><br><span class="line">    <span class="comment">// 将消息重新投递到emailExchange中</span></span><br><span class="line">    args.put(DEAD_LETTER_QUEUE_KEY, <span class="string">"emailExchange"</span>);</span><br><span class="line">    args.put(DEAD_LETTER_ROUTING_KEY, <span class="string">"email.topic.retry"</span>);</span><br><span class="line">    <span class="comment">//消息在队列中延迟30s后超时，消息会重新投递到x-dead-letter-exchage对应的队列中，routingkey为自己指定</span></span><br><span class="line">    args.put(X_MESSAGE_TTL, <span class="number">30</span> * <span class="number">1000</span>);</span><br><span class="line">    <span class="keyword">return</span> QueueBuilder.durable(<span class="string">"retryQueue"</span>).withArguments(args).build();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ul>
+<ul>
+<li><p>失败队列 faildQueue</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Queue <span class="title">faildQueue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> QueueBuilder.durable(<span class="string">"faildQueue"</span>).build();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<hr>
+<h3 id="绑定响应的交换器与队列"><a href="#绑定响应的交换器与队列" class="headerlink" title="绑定响应的交换器与队列"></a>绑定响应的交换器与队列</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Binding <span class="title">topicQueueBinding</span><span class="params">(@Qualifier(<span class="string">"emailQueue"</span>)</span> Queue queue,</span></span><br><span class="line"><span class="function">                                  @<span class="title">Qualifier</span><span class="params">(<span class="string">"emailExchange"</span>)</span> TopicExchange exchange) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> BindingBuilder.bind(queue).to(exchange).with(<span class="string">"email.topic.*"</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Binding <span class="title">retryDirectBinding</span><span class="params">(@Qualifier(<span class="string">"retryQueue"</span>)</span> Queue queue,</span></span><br><span class="line"><span class="function">                                  @<span class="title">Qualifier</span><span class="params">(<span class="string">"retryExchange"</span>)</span> TopicExchange exchange) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> BindingBuilder.bind(queue).to(exchange).with(<span class="string">"email.retry.*"</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Binding <span class="title">failDirectBinding</span><span class="params">(@Qualifier(<span class="string">"faildQueue"</span>)</span> Queue queue,</span></span><br><span class="line"><span class="function">                                 @<span class="title">Qualifier</span><span class="params">(<span class="string">"faildExchange"</span>)</span> TopicExchange exchange) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> BindingBuilder.bind(queue).to(exchange).with(<span class="string">"email.faild.*"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="配置生产者消息确认回调（具体处理逻辑需按业务情况，此处只输出了信息）"><a href="#配置生产者消息确认回调（具体处理逻辑需按业务情况，此处只输出了信息）" class="headerlink" title="配置生产者消息确认回调（具体处理逻辑需按业务情况，此处只输出了信息）"></a>配置生产者消息确认回调（具体处理逻辑需按业务情况，此处只输出了信息）</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> AmqpTemplate <span class="title">amqpTemplate</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="comment">// 在消息没有被路由到合适的队列情况下，Broker会将消息返回给生产者，</span></span><br><span class="line">    <span class="comment">// 为true时如果Exchange根据类型和消息Routing Key无法路由到一个合适的Queue存储消息，</span></span><br><span class="line">    <span class="comment">// Broker会调用Basic.Return回调给handleReturn()，再回调给ReturnCallback，将消息返回给生产者。</span></span><br><span class="line">    <span class="comment">// 为false时，丢弃该消息</span></span><br><span class="line">    rabbitTemplate.setMandatory(<span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 消息确认，需要配置 spring.rabbitmq.publisher-confirms = true</span></span><br><span class="line">    rabbitTemplate.setConfirmCallback((correlationData, ack, cause) -&gt; &#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//根据返回的状态，生产者可以处理失败与成功的相应信息，比如发送失败，可重发，转发或者存入日志等</span></span><br><span class="line">        <span class="comment">//if(ack)&#123;</span></span><br><span class="line">        <span class="comment">//    correlationData.getId()为message唯一标识，需要生产者发送message时传入自定义的correlationData才能获取到，否则为null</span></span><br><span class="line">        <span class="comment">//    //do something</span></span><br><span class="line">        <span class="comment">//&#125;else&#123;</span></span><br><span class="line">        <span class="comment">//    correlationData.getId()</span></span><br><span class="line">        <span class="comment">//    //do something    </span></span><br><span class="line">        <span class="comment">//&#125;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">//此处只做打印，不对生产者发送失败的信息处理</span></span><br><span class="line">        System.out.println(<span class="string">"------------------------------------------------"</span>);</span><br><span class="line">        System.out.println(<span class="string">"ConfirmCallBackListener：correlationData="</span> + correlationData + <span class="string">"，ack="</span> + ack + <span class="string">"，cause="</span> + cause);</span><br><span class="line">        System.out.println(<span class="string">"------------------------------------------------"</span>);</span><br><span class="line"></span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 消息发送失败返回到队列中，需要配置spring.rabbitmq.publisher-returns = true</span></span><br><span class="line">    rabbitTemplate.setReturnCallback((message, replyCode, replyText, exchange, routingKey) -&gt; &#123;</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">"------------------------------------------------"</span>);</span><br><span class="line">        System.out.println(<span class="string">"ReturnCallBackListener：message="</span> + <span class="keyword">new</span> String(message.getBody()) + <span class="string">"，replyCode="</span> + replyCode + <span class="string">"，replyText="</span> + replyText + <span class="string">"，exchange="</span> + exchange + <span class="string">"，routingKey="</span> + routingKey);</span><br><span class="line">        System.out.println(<span class="string">"------------------------------------------------"</span>);</span><br><span class="line"></span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> rabbitTemplate;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="生产者发送消息"><a href="#生产者发送消息" class="headerlink" title="生产者发送消息"></a>生产者发送消息</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.bhy702.website;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.junit.Test;</span><br><span class="line"><span class="keyword">import</span> org.junit.runner.RunWith;</span><br><span class="line"><span class="keyword">import</span> org.springframework.amqp.core.AmqpTemplate;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.test.context.SpringBootTest;</span><br><span class="line"><span class="keyword">import</span> org.springframework.test.context.junit4.SpringRunner;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span>: Hongyuan Bai</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@create</span>: 2019-06-27 13:45:43</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span>:</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@RunWith</span>(SpringRunner.class)</span><br><span class="line"><span class="meta">@SpringBootTest</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RabbitMQTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> AmqpTemplate rabbitTemplate;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String EXCHANGE = <span class="string">"emailExchange"</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String ROUTING_KEY = <span class="string">"email.topic.queue"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">100</span>; i &lt; <span class="number">105</span>; i++)&#123;</span><br><span class="line">            rabbitTemplate.convertAndSend(EXCHANGE,ROUTING_KEY,<span class="string">"message:"</span>+(i+<span class="number">1</span>));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="消费者消费消息"><a href="#消费者消费消息" class="headerlink" title="消费者消费消息"></a>消费者消费消息</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.bhy702.website.common.rabbitmq;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.rabbitmq.client.Channel;</span><br><span class="line"><span class="keyword">import</span> lombok.extern.slf4j.Slf4j;</span><br><span class="line"><span class="keyword">import</span> org.springframework.amqp.core.Message;</span><br><span class="line"><span class="keyword">import</span> org.springframework.amqp.rabbit.annotation.RabbitListener;</span><br><span class="line"><span class="keyword">import</span> org.springframework.amqp.rabbit.core.RabbitTemplate;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.mail.javamail.JavaMailSender;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Component;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span>: Hongyuan Bai</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@create</span>: 2019-06-27 13:38:46</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span>:</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RabbitConsumer2</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> JavaMailSender javaMailSender;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> RabbitTemplate rabbitTemplate;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@RabbitListener</span>(queues = <span class="string">"emailQueue"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sendMail</span><span class="params">(Message message, Channel channel)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">/** 手动抛出异常,测试消息重试 */</span></span><br><span class="line">            <span class="keyword">int</span> i = <span class="number">1</span> / <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">long</span> retryCount = getRetryCount(message.getMessageProperties());</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (retryCount &gt;= <span class="number">3</span>) &#123;</span><br><span class="line"></span><br><span class="line">                <span class="comment">/** 重试次数超过3次,则将消息发送到失败队列等待特定消费者处理或者人工处理 */</span></span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    rabbitTemplate.convertAndSend(<span class="string">"faildExchange"</span>,<span class="string">"email.faild.myfaild"</span>, message);</span><br><span class="line">                    log.info(<span class="string">"消费者消费消息在重试3次后依然失败，将消息发送到faild队列,发送消息:"</span> + <span class="keyword">new</span> String(message.getBody()));</span><br><span class="line">                &#125; <span class="keyword">catch</span> (Exception e1) &#123;</span><br><span class="line">                    log.error(<span class="string">"消息在发送到faild队列的时候报错:"</span> + e1.getMessage() + <span class="string">",原始消息:"</span>+ <span class="keyword">new</span> String(message.getBody()));</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    <span class="comment">/** 重试次数不超过3次,则将消息发送到重试队列等待重新被消费（重试队列延迟超时后信息被发送到相应死信队列重新消费，即延迟消费）*/</span></span><br><span class="line">                    rabbitTemplate.convertAndSend(<span class="string">"retryExchange"</span>, <span class="string">"email.retry.myRetry"</span>, message);</span><br><span class="line">                    log.info(<span class="string">"消费者消费失败，消息发送到重试队列;"</span> + <span class="string">"原始消息："</span> + <span class="keyword">new</span> String(message.getBody()) + <span class="string">";第"</span> + (retryCount+<span class="number">1</span>) + <span class="string">"次重试"</span>);</span><br><span class="line">                &#125; <span class="keyword">catch</span> (Exception e1) &#123;</span><br><span class="line">                    log.error(<span class="string">"消息发送到重试队列的时候，异常了:"</span> + e1.getMessage() + <span class="string">",重新发送消息"</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="comment">/**</span></span><br><span class="line"><span class="comment">             * 无论消费成功还是消费失败,都要手动进行ack,因为即使消费失败了,也已经将消息重新投递到重试队列或者失败队列</span></span><br><span class="line"><span class="comment">             * 如果不进行ack,生产者在超时后会进行消息重发,如果消费者依然不能处理，则会存在死循环</span></span><br><span class="line"><span class="comment">             */</span></span><br><span class="line">            channel.basicAck(message.getMessageProperties().getDeliveryTag(), <span class="keyword">false</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">     <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 获取消息被重试的次数</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">long</span> <span class="title">getRetryCount</span><span class="params">(MessageProperties messageProperties)</span> </span>&#123;</span><br><span class="line">        Long retryCount = <span class="number">0L</span>;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">null</span> != messageProperties) &#123;</span><br><span class="line">            List&gt; deaths = messageProperties.getXDeathHeader();</span><br><span class="line">            <span class="keyword">if</span>(deaths != <span class="keyword">null</span> &amp;&amp; deaths.size()&gt;<span class="number">0</span>)&#123;</span><br><span class="line">                Map death = (Map)deaths.get(<span class="number">0</span>);</span><br><span class="line">                retryCount = (Long) death.get(<span class="string">"count"</span>);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> retryCount;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="properties配置文件中RabbitMQ相关配置"><a href="#properties配置文件中RabbitMQ相关配置" class="headerlink" title="properties配置文件中RabbitMQ相关配置"></a>properties配置文件中RabbitMQ相关配置</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">spring.application.name=rabbitMQ-test</span><br><span class="line">spring.rabbitmq.host=RabbitMQ服务器的IP地址</span><br><span class="line">spring.rabbitmq.port=5672</span><br><span class="line">spring.rabbitmq.username=guest</span><br><span class="line">spring.rabbitmq.password=guest</span><br><span class="line">spring.rabbitmq.virtual-host=/</span><br><span class="line"></span><br><span class="line"># 开启发布者发送确认</span><br><span class="line">spring.rabbitmq.publisher-confirms=true</span><br><span class="line"># 开启发布者发送失败退回</span><br><span class="line">spring.rabbitmq.publisher-returns=true</span><br><span class="line"></span><br><span class="line"># 开启ACK手动确认</span><br><span class="line">spring.rabbitmq.listener.simple.acknowledge-mode=manual</span><br><span class="line">spring.rabbitmq.listener.direct.acknowledge-mode=manual</span><br><span class="line"></span><br><span class="line"># 参数设为 true 时，交换器无法根据自身的类型和路由键找到一个符合条件的队列，</span><br><span class="line"># 那么 RabbitMQ 会调用 Basic.Return 命令将消息返回给生产者</span><br><span class="line"> spring.rabbitmq.template.mandatory=true</span><br><span class="line"></span><br><span class="line"># 开启rabbitmq的生产端重试机制,默认是false,默认重试3次</span><br><span class="line">spring.rabbitmq.template.retry.enabled=true</span><br><span class="line"></span><br><span class="line"># 开启rabbitmq的消费端重试机制,默认是false,默认重试3次</span><br><span class="line"># spring.rabbitmq.listener.simple.retry.enabled=true</span><br><span class="line"># 设置重试的次数</span><br><span class="line"># spring.rabbitmq.listener.simple.retry.max-attempts=5</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="测试效果展示"><a href="#测试效果展示" class="headerlink" title="测试效果展示:"></a>测试效果展示:</h3><blockquote>
+<p>消息进入emailQueue邮件队列后，出现消费异常会进入retryQueue重试队列等待延迟重试</p>
+</blockquote>
+<p><img src="https://img-blog.csdnimg.cn/2019062916471334.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述">   </p>
+<blockquote>
+<p>消费异常的消息全部进入重试队列等待延迟重试，30秒后消息超时会转发到指定的死信队列，也就是回到emailQueue邮件队列    </p>
+</blockquote>
+<p><img src="https://img-blog.csdnimg.cn/20190629164747688.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<blockquote>
+<p>经过3次重试后，消息仍然未被消费，消息进入faildQueue失败队列等待相应的消费者特殊处理或人工处理   </p>
+</blockquote>
+<p><img src="https://img-blog.csdnimg.cn/20190629164756579.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<hr>
+<blockquote>
+<h6 id="当前只解决了消息的可靠性消费，要保证消息全部投递成功，就涉及到RabbitMQ的可靠性投递。"><a href="#当前只解决了消息的可靠性消费，要保证消息全部投递成功，就涉及到RabbitMQ的可靠性投递。" class="headerlink" title="当前只解决了消息的可靠性消费，要保证消息全部投递成功，就涉及到RabbitMQ的可靠性投递。"></a>当前只解决了消息的可靠性消费，要保证消息全部投递成功，就涉及到RabbitMQ的可靠性投递。</h6><h6 id="RabbitMQ消息的可靠性投递与消费的完整解决方案-可参考另一篇博客-点这里"><a href="#RabbitMQ消息的可靠性投递与消费的完整解决方案-可参考另一篇博客-点这里" class="headerlink" title="RabbitMQ消息的可靠性投递与消费的完整解决方案- -可参考另一篇博客 点这里"></a><strong>RabbitMQ消息的可靠性投递与消费的完整解决方案- -可参考另一篇博客 <a href="https://br-bai.github.io/2019/08/09/RabbitMQ%E6%B6%88%E6%81%AF%E5%8F%AF%E9%9D%A0%E6%80%A7%E6%8A%95%E9%80%92%E4%B8%8E%E6%B6%88%E8%B4%B9%EF%BC%8C%E6%B6%88%E8%B4%B9%E5%B9%82%E7%AD%89/">点这里</a></strong></h6></blockquote>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>brbai</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://br-bai.github.io/2019/06/29/RabbitMQ实现消息的消费确认，死信队列、延迟重试队列/">https://br-bai.github.io/2019/06/29/RabbitMQ实现消息的消费确认，死信队列、延迟重试队列/</a></span>
+                    </p>
+                
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Make excellence a habit.</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Java/"># Java</a>
+                    
+                        <a href="/tags/Spring-Boot/"># Spring Boot</a>
+                    
+                        <a href="/tags/RabbitMQ/"># RabbitMQ</a>
+                    
+                        <a href="/tags/死信队列/"># 死信队列</a>
+                    
+                        <a href="/tags/延迟重试/"># 延迟重试</a>
+                    
+                        <a href="/tags/消息队列/"># 消息队列</a>
+                    
+                        <a href="/tags/消息重试机制/"># 消息重试机制</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2019/07/12/Java读取CSV文件，并批量写入数据库/">Java读取CSV文件，并批量写入数据库</a>
+            
+            
+            <a class="next" rel="next" href="/2019/06/29/RabbitMQ消息中间件的了解与使用/">RabbitMQ消息中间件的了解与使用</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+   
+
+    <div class="copyright">
+        <span>© 2019 <a href="https://www.bhy702.com" target="_blank">brbai</a> | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    
+	
+       		 <span class="post-meta-divider"> | </span>
+		 <!-- 不蒜子统计 -->
+       		 <span id="busuanzi_container_site_pv">
+                	Pageviews:<span id="busuanzi_value_site_pv"></span>
+	        </span>
+        	<span class="post-meta-divider">&</span>
+       		 <span id="busuanzi_container_site_uv" style="display:none">
+                	Visitors:<span id="busuanzi_value_site_uv"></span>
+        	</span>
+        	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+   	 
+
+
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>
