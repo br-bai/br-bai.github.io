@@ -37,7 +37,7 @@ document.ready(
         const currentTheme = window.localStorage && window.localStorage.getItem('theme');
         const isDark = currentTheme !== 'dark';
 	// 此行改为--默认白色
-	//      // const isDark = currentTheme === 'dark';
+        //const isDark = currentTheme === 'dark';
         if (isDark) {
             document.getElementById("switch_default").checked = true;
             // mobile
@@ -45,7 +45,7 @@ document.ready(
         } else {
             document.getElementById("switch_default").checked = false;
             // mobile
-            document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            document.getElementById("mobile-toggle-theme").innerText = "· Light"
         }
         _Blog.toggleTheme = function () {
             if (isDark) {

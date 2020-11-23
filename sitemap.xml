@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://br-bai.github.io/about/index.html</loc>
+    
+    <lastmod>2020-11-23T07:50:27.544Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://br-bai.github.io/2020/09/14/springboot%E6%8F%90%E7%A4%BANoSuchMethodError_%20org.springframework.plugin.core.PluginRegistry.getPluginOrDefaultFor/</loc>
     
     <lastmod>2020-11-23T07:48:03.193Z</lastmod>
@@ -124,13 +131,6 @@
     <loc>https://br-bai.github.io/2019/11/07/2019_11_7--%E4%BA%B2%E6%B5%8Bcentos7%E5%AE%89%E8%A3%85oracle%E8%A7%A3%E5%86%B3Could%20not%20execute%20auto%20check%20for%20display%20colors%20using%20command%E4%BB%A5%E5%8F%8A%E6%9C%AA%E5%BC%B9%E5%87%BA%E5%9B%BE%E5%BD%A2%E7%95%8C%E9%9D%A2/</loc>
     
     <lastmod>2019-11-07T09:38:45.994Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://br-bai.github.io/about/index.html</loc>
-    
-    <lastmod>2019-11-05T02:18:14.404Z</lastmod>
     
   </url>
   
