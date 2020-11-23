@@ -38,7 +38,7 @@ document.ready(
         const isDark = currentTheme !== 'dark';
 	// 此行改为--默认白色
        //const isDark = currentTheme === 'dark';
-        if (isDark) {
+        if (!isDark) {
             document.getElementById("switch_default").checked = true;
             // mobile
             document.getElementById("mobile-toggle-theme").innerText = "· Dark"
@@ -48,7 +48,7 @@ document.ready(
             document.getElementById("mobile-toggle-theme").innerText = "· Light"
         }
         _Blog.toggleTheme = function () {
-            if (isDark) {
+            if (!isDark) {
                 document.getElementsByTagName('body')[0].classList.add('dark-theme');
                 // mobile
                 document.getElementById("mobile-toggle-theme").innerText = "· Dark"
