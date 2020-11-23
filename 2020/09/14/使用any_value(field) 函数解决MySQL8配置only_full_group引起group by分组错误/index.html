@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="google-site-verification" content="CJVFgKvg7DR1-BcZBWyXCBGarPIaFkj6TCRZfg5koC0">
+
+
+    <meta name="keywords" content="blog,个人博客,博客">
+
+<meta name="baidu-site-verification" content="Y5fkV0dnwS">
+
+<title>使用any_value(field) 函数解决MySQL8配置only_full_group引起group by分组错误 | brbai</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">brbai&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">brbai&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">使用any_value(field) 函数解决MySQL8配置only_full_group引起group by分组错误</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">brbai</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">September 14, 2020&nbsp;&nbsp;02:50:50</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/BUG集合/">BUG集合</a>
+                            
+                        </span>
+                    
+ 		   
+       			 <!-- 不蒜子统计 -->
+       		        <span id="busuanzi_container_page_pv" style="display:none" ">
+                         Views:
+				<a href="#"><span id="busuanzi_value_page_pv"></span></a>
+        		</span>
+		   
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h3 id="only-full-group引起的报错"><a href="#only-full-group引起的报错" class="headerlink" title="only_full_group引起的报错"></a>only_full_group引起的报错</h3><p><strong>由于默认的 MySQL 配置中 sql_mode 配置了 only_full_group，需要 GROUP BY中包含所有 在 SELECT 中出现的字段。因此需要在 MySQL 的配置中去掉这个配置或者使用<code>any_value(field)</code>函数。</strong></p>
+<h5 id="any-value-field-："><a href="#any-value-field-：" class="headerlink" title="any_value(field) ："></a>any_value(field) ：</h5><ul>
+<li>MySQL提供了<code>any_value(field)</code>函数允许非分组字段的出现</li>
+<li><code>any_value()</code>会选择被分到同一组的数据里第一条数据的指定列值作为返回数据</li>
+</ul>
+<p><strong>也可以改变sql</strong>：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">count</span>(<span class="keyword">id</span>), <span class="keyword">name</span> <span class="keyword">FROM</span> <span class="keyword">user</span> <span class="keyword">group</span> <span class="keyword">by</span> <span class="keyword">name</span></span><br><span class="line">  </span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">id</span>, <span class="keyword">name</span> <span class="keyword">FROM</span> <span class="keyword">user</span> <span class="keyword">left</span> <span class="keyword">join</span> (<span class="keyword">select</span> <span class="keyword">min</span>(<span class="keyword">id</span>) <span class="keyword">id</span>,<span class="keyword">count</span>(<span class="keyword">id</span>) <span class="keyword">count</span>, <span class="keyword">name</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">group</span> <span class="keyword">by</span> <span class="keyword">name</span>) u <span class="keyword">on</span> u.id = user.id</span><br></pre></td></tr></table></figure>
+
+<h6 id="【注意】：MySQL-8-0开始-group-by-默认是没有排序的"><a href="#【注意】：MySQL-8-0开始-group-by-默认是没有排序的" class="headerlink" title="【注意】：MySQL 8.0开始 group by 默认是没有排序的"></a>【注意】：MySQL 8.0开始 group by 默认是没有排序的</h6>
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>brbai</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://br-bai.github.io/2020/09/14/使用any_value(field) 函数解决MySQL8配置only_full_group引起group by分组错误/">https://br-bai.github.io/2020/09/14/使用any_value(field) 函数解决MySQL8配置only_full_group引起group by分组错误/</a></span>
+                    </p>
+                
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Make excellence a habit.</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/MySQL/"># MySQL</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2020/10/30/dynamic-datasource + druid 多数据源配置、数据源切换以及事务中切换失败的使用注意/">dynamic-datasource + druid 多数据源配置、数据源切换以及事务中切换失败的使用注意</a>
+            
+            
+            <a class="next" rel="next" href="/2020/08/29/ZXing二维码自定义绘画文字/">ZXing二维码自定义绘画文字</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+   
+
+    <div class="copyright">
+        <span>© 2019 <a href="https://www.bhy702.com" target="_blank">brbai</a> | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    
+	
+       		 <span class="post-meta-divider"> | </span>
+		 <!-- 不蒜子统计 -->
+       		 <span id="busuanzi_container_site_pv">
+                	Pageviews:<span id="busuanzi_value_site_pv"></span>
+	        </span>
+        	<span class="post-meta-divider">&</span>
+       		 <span id="busuanzi_container_site_uv" style="display:none">
+                	Visitors:<span id="busuanzi_value_site_uv"></span>
+        	</span>
+        	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+   	 
+
+
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

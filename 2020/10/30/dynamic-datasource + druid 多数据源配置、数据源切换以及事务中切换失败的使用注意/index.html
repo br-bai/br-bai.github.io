@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="google-site-verification" content="CJVFgKvg7DR1-BcZBWyXCBGarPIaFkj6TCRZfg5koC0">
+
+
+    <meta name="keywords" content="blog,个人博客,博客">
+
+<meta name="baidu-site-verification" content="Y5fkV0dnwS">
+
+<title>dynamic-datasource + druid 多数据源配置、数据源切换以及事务中切换失败的使用注意 | brbai</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">brbai&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">brbai&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">dynamic-datasource + druid 多数据源配置、数据源切换以及事务中切换失败的使用注意</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">brbai</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">October 30, 2020&nbsp;&nbsp;11:08:16</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/功能开发/">功能开发</a>
+                            
+                        </span>
+                    
+ 		   
+       			 <!-- 不蒜子统计 -->
+       		        <span id="busuanzi_container_page_pv" style="display:none" ">
+                         Views:
+				<a href="#"><span id="busuanzi_value_page_pv"></span></a>
+        		</span>
+		   
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p><strong>配置信息：</strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line">spring:</span><br><span class="line">  autoconfigure:</span><br><span class="line">    #自动化配置 例外处理</span><br><span class="line">    exclude: com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure</span><br><span class="line">  datasource:</span><br><span class="line">    type: com.alibaba.druid.pool.DruidDataSource</span><br><span class="line">    druid:</span><br><span class="line">      stat-view-servlet:</span><br><span class="line">        enabled: true</span><br><span class="line">        loginUsername: admin</span><br><span class="line">        loginPassword: 123456</span><br><span class="line"></span><br><span class="line">    #多数据源配置</span><br><span class="line">    dynamic:</span><br><span class="line">      druid: #以下是全局默认值，可以全局更改</span><br><span class="line">        #监控统计拦截的filters</span><br><span class="line">        filters: stat</span><br><span class="line">        #配置初始化大小/最小/最大</span><br><span class="line">        initial-size: 1</span><br><span class="line">        min-idle: 1</span><br><span class="line">        max-active: 20</span><br><span class="line">        #获取连接等待超时时间</span><br><span class="line">        max-wait: 60000</span><br><span class="line">        #间隔多久进行一次检测，检测需要关闭的空闲连接</span><br><span class="line">        time-between-eviction-runs-millis: 60000</span><br><span class="line">        #一个连接在池中最小生存的时间</span><br><span class="line">        min-evictable-idle-time-millis: 300000</span><br><span class="line">        validation-query: SELECT 'x'</span><br><span class="line">        test-while-idle: true</span><br><span class="line">        test-on-borrow: false</span><br><span class="line">        test-on-return: false</span><br><span class="line">        #打开PSCache，并指定每个连接上PSCache的大小。oracle设为true，mysql设为false。分库分表较多推荐设置为false</span><br><span class="line">        pool-prepared-statements: false</span><br><span class="line">        max-pool-prepared-statement-per-connection-size: 20</span><br><span class="line">        stat:</span><br><span class="line">          merge-sql: true</span><br><span class="line">          log-slow-sql: true</span><br><span class="line">          slow-sql-millis: 3000</span><br><span class="line"></span><br><span class="line">      primary: master</span><br><span class="line">      strict: false</span><br><span class="line"></span><br><span class="line">      datasource:</span><br><span class="line">        # 数据库1</span><br><span class="line">        master:</span><br><span class="line">          driver-class-name: com.mysql.cj.jdbc.Driver</span><br><span class="line">          url: jdbc:mysql://localhost:3306/test1?serverTimezone=Asia/Shanghai&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;rewriteBatchedStatements=true</span><br><span class="line">          username: root</span><br><span class="line">          password: 123456</span><br><span class="line">        # 数据库2</span><br><span class="line">        biz:</span><br><span class="line">          driver-class-name: com.mysql.cj.jdbc.Driver</span><br><span class="line">          url: jdbc:mysql://localhost:3306/test2?serverTimezone=Asia/Shanghai&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;rewriteBatchedStatements=true</span><br><span class="line">          username: root</span><br><span class="line">          password: 123456</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意事项：</strong></p>
+<ul>
+<li><code>primary: master</code>配置后，全局默认master主数据源，只要没有@DS注解显式申明切换数据源，默认就是master主数据源。</li>
+<li>在同一个事务中，数据源不能切换。</li>
+<li>@DS 可以注解在方法上和类上，同时存在方法注解优先于类上注解。</li>
+<li>官方强烈建议只在service的类和方法上添加注解，不建议在mapper上添加注解。</li>
+</ul>
+<p>解决事务内不能切换数据源：<br>可以在被调用方方法或者类上创建一个新事务：<br><code>@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRES_NEW)</code><br><strong>注意如果调用方与被调用方在同一个Service类中，<code>propagation = Propagation.REQUIRES_NEW</code>会被忽略掉，调用时不会再创建新事务。</strong></p>
+<p>mybaits plus的service1实现类注解@DS切换数据源后，其他类service2中调用service1.getBaseMapper或者直接@Autowired装载service1的mapper使用其mapper方法时数据源不会切换，除非直接在mapper层注解@DS切换数据源，不过官方不建议在mapper上添加@DS注解。</p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>brbai</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://br-bai.github.io/2020/10/30/dynamic-datasource + druid 多数据源配置、数据源切换以及事务中切换失败的使用注意/">https://br-bai.github.io/2020/10/30/dynamic-datasource + druid 多数据源配置、数据源切换以及事务中切换失败的使用注意/</a></span>
+                    </p>
+                
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Make excellence a habit.</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Mybatis-Plus/"># Mybatis Plus</a>
+                    
+                        <a href="/tags/多数据源/"># 多数据源</a>
+                    
+                        <a href="/tags/事务/"># 事务</a>
+                    
+                        <a href="/tags/dynamic-datasource/"># dynamic-datasource</a>
+                    
+                        <a href="/tags/Druid/"># Druid</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2020/11/05/javax.mail jar包冲突java.lang.NoSuchMethodError_ com.sun.mail.util.TraceInputStream.(Ljava_io_InputStre/">javax.mail jar包冲突java.lang.NoSuchMethodError:com.sun.mail.util.TraceInputStream.(Ljava/io/InputStream;Lcom/sun/mail/util/MailLogger;)V</a>
+            
+            
+            <a class="next" rel="next" href="/2020/09/14/使用any_value(field) 函数解决MySQL8配置only_full_group引起group by分组错误/">使用any_value(field) 函数解决MySQL8配置only_full_group引起group by分组错误</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+   
+
+    <div class="copyright">
+        <span>© 2019 <a href="https://www.bhy702.com" target="_blank">brbai</a> | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    
+	
+       		 <span class="post-meta-divider"> | </span>
+		 <!-- 不蒜子统计 -->
+       		 <span id="busuanzi_container_site_pv">
+                	Pageviews:<span id="busuanzi_value_site_pv"></span>
+	        </span>
+        	<span class="post-meta-divider">&</span>
+       		 <span id="busuanzi_container_site_uv" style="display:none">
+                	Visitors:<span id="busuanzi_value_site_uv"></span>
+        	</span>
+        	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+   	 
+
+
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>
