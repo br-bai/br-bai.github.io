@@ -1,6 +1,7 @@
 https://br-bai.github.io/2020/11/05/javax.mail jar包冲突java.lang.NoSuchMethodError_ com.sun.mail.util.TraceInputStream.(Ljava_io_InputStre/
 https://br-bai.github.io/2020/10/30/dynamic-datasource + druid 多数据源配置、数据源切换以及事务中切换失败的使用注意/
 https://br-bai.github.io/2020/09/14/使用any_value(field) 函数解决MySQL8配置only_full_group引起group by分组错误/
+https://br-bai.github.io/2020/09/14/springboot提示NoSuchMethodError_ org.springframework.plugin.core.PluginRegistry.getPluginOrDefaultFor/
 https://br-bai.github.io/2020/08/29/ZXing二维码自定义绘画文字/
 https://br-bai.github.io/2020/06/09/Linux部署ElasticSearch+Kibana及踩坑/
 https://br-bai.github.io/2020/03/16/MySQL序列表，自增序列生成合同编号/

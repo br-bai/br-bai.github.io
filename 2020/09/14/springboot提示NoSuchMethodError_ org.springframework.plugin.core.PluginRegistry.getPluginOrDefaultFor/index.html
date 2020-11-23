@@ -11,7 +11,7 @@
 
 <meta name="baidu-site-verification" content="Y5fkV0dnwS">
 
-<title>使用any_value(field) 函数解决MySQL8配置only_full_group引起group by分组错误 | brbai</title>
+<title>Spring Boot提示NoSuchMethodError:org.springframework.plugin.core.PluginRegistry.getPluginOrDefaultFor | brbai</title>
 
 
 
@@ -173,7 +173,7 @@
     
     <article class="post-wrap">
         <header class="post-header">
-            <h1 class="post-title">使用any_value(field) 函数解决MySQL8配置only_full_group引起group by分组错误</h1>
+            <h1 class="post-title">Spring Boot提示NoSuchMethodError:org.springframework.plugin.core.PluginRegistry.getPluginOrDefaultFor</h1>
             
                 <div class="post-meta">
                     
@@ -182,7 +182,7 @@
 
                     
                         <span class="post-time">
-                        Date: <a href="#">September 14, 2020&nbsp;&nbsp;02:50:50</a>
+                        Date: <a href="#">September 14, 2020&nbsp;&nbsp;02:42:06</a>
                         </span>
                     
                     
@@ -205,15 +205,12 @@
         </header>
 
         <div class="post-content">
-            <h3 id="only-full-group引起的报错"><a href="#only-full-group引起的报错" class="headerlink" title="only_full_group引起的报错"></a>only_full_group引起的报错</h3><p><strong>由于默认的 MySQL 配置中 sql_mode 配置了 only_full_group，需要 GROUP BY中包含所有 在 SELECT 中出现的字段。因此需要在 MySQL 的配置中去掉这个配置或者使用<code>any_value(field)</code>函数。</strong></p>
-<h5 id="any-value-field-："><a href="#any-value-field-：" class="headerlink" title="any_value(field) ："></a>any_value(field) ：</h5><ul>
-<li>MySQL提供了<code>any_value(field)</code>函数允许非分组字段的出现</li>
-<li><code>any_value()</code>会选择被分到同一组的数据里第一条数据的指定列值作为返回数据</li>
-</ul>
-<p><strong>也可以改变sql</strong>：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">count</span>(<span class="keyword">id</span>), <span class="keyword">name</span> <span class="keyword">FROM</span> <span class="keyword">user</span> <span class="keyword">group</span> <span class="keyword">by</span> <span class="keyword">name</span></span><br><span class="line">  </span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">id</span>, <span class="keyword">name</span> <span class="keyword">FROM</span> <span class="keyword">user</span> <span class="keyword">left</span> <span class="keyword">join</span> (<span class="keyword">select</span> <span class="keyword">min</span>(<span class="keyword">id</span>) <span class="keyword">id</span>,<span class="keyword">count</span>(<span class="keyword">id</span>) <span class="keyword">count</span>, <span class="keyword">name</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">group</span> <span class="keyword">by</span> <span class="keyword">name</span>) u <span class="keyword">on</span> u.id = user.id</span><br></pre></td></tr></table></figure>
+            <p>最近项目从2.0.6升级到springboot2.2.x以上版本后，启动服务出现异常。</p>
+<p>异常信息：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">Description:</span><br><span class="line"></span><br><span class="line">An attempt was made to call a method that does not exist. The attempt was made from the following location:</span><br><span class="line"></span><br><span class="line">    org.springframework.data.rest.core.support.UnwrappingRepositoryInvokerFactory.&lt;init&gt;(UnwrappingRepositoryInvokerFactory.java:57)</span><br><span class="line"></span><br><span class="line">The following method did not exist:</span><br><span class="line"></span><br><span class="line">    org.springframework.plugin.core.PluginRegistry.of(Ljava/util/List;)Lorg/springframework/plugin/core/PluginRegistry;</span><br><span class="line"></span><br><span class="line">The method's class, org.springframework.plugin.core.PluginRegistry, is available from the following locations:</span><br><span class="line"></span><br><span class="line">    jar:file:/H:/apache-maven-3.6.3/local-repository/org/springframework/plugin/spring-plugin-core/1.2.0.RELEASE/spring-plugin-core-1.2.0.RELEASE.jar!/org/springframework/plugin/core/PluginRegistry.class</span><br><span class="line"></span><br><span class="line">It was loaded from the following location:</span><br><span class="line"></span><br><span class="line">    file:/H:/apache-maven-3.6.3/local-repository/org/springframework/plugin/spring-plugin-core/1.2.0.RELEASE/spring-plugin-core-1.2.0.RELEASE.jar</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Action:</span><br><span class="line"></span><br><span class="line">Correct the classpath of your application so that it contains a single, compatible version of org.springframework.plugin.core.PluginRegistry</span><br><span class="line"></span><br><span class="line">Disconnected from the target VM, address: '127.0.0.1:59781', transport: 'socket'</span><br><span class="line"></span><br><span class="line">Process finished with exit code 1</span><br></pre></td></tr></table></figure>
 
-<h6 id="【注意】：MySQL-8-0开始-group-by-默认是没有排序的"><a href="#【注意】：MySQL-8-0开始-group-by-默认是没有排序的" class="headerlink" title="【注意】：MySQL 8.0开始 group by 默认是没有排序的"></a>【注意】：MySQL 8.0开始 group by 默认是没有排序的</h6>
+<h6 id="经测试，springboot-2-2-x以上版本会出现这个异常，将springboot版本调低到2-1-x版本不存在。"><a href="#经测试，springboot-2-2-x以上版本会出现这个异常，将springboot版本调低到2-1-x版本不存在。" class="headerlink" title="经测试，springboot 2.2.x以上版本会出现这个异常，将springboot版本调低到2.1.x版本不存在。"></a>经测试，springboot 2.2.x以上版本会出现这个异常，将springboot版本调低到2.1.x版本不存在。</h6><p><a href="https://stackoverflow.com/questions/59703461/nosuchmethoderror-org-springframework-plugin-core-pluginregistry-getpluginordef" target="_blank" rel="noopener">参考：https://stackoverflow.com/questions/59703461/nosuchmethoderror-org-springframework-plugin-core-pluginregistry-getpluginordef</a></p>
+
         </div>
 
         
@@ -227,7 +224,7 @@
                 
                     <p class="copyright-item">
                         <span>Permalink:</span>
-                        <span><a href="https://br-bai.github.io/2020/09/14/使用any_value(field) 函数解决MySQL8配置only_full_group引起group by分组错误/">https://br-bai.github.io/2020/09/14/使用any_value(field) 函数解决MySQL8配置only_full_group引起group by分组错误/</a></span>
+                        <span><a href="https://br-bai.github.io/2020/09/14/springboot提示NoSuchMethodError_ org.springframework.plugin.core.PluginRegistry.getPluginOrDefaultFor/">https://br-bai.github.io/2020/09/14/springboot提示NoSuchMethodError_ org.springframework.plugin.core.PluginRegistry.getPluginOrDefaultFor/</a></span>
                     </p>
                 
                 
@@ -246,7 +243,7 @@
                 <span class="tag">
                     
                     
-                        <a href="/tags/MySQL/"># MySQL</a>
+                        <a href="/tags/Spring-Boot/"># Spring Boot</a>
                     
                         
                 </span>
@@ -259,10 +256,10 @@
         </section>
         <section class="post-nav">
             
-                <a class="prev" rel="prev" href="/2020/10/30/dynamic-datasource + druid 多数据源配置、数据源切换以及事务中切换失败的使用注意/">dynamic-datasource + druid 多数据源配置、数据源切换以及事务中切换失败的使用注意</a>
+                <a class="prev" rel="prev" href="/2020/09/14/使用any_value(field) 函数解决MySQL8配置only_full_group引起group by分组错误/">使用any_value(field) 函数解决MySQL8配置only_full_group引起group by分组错误</a>
             
             
-            <a class="next" rel="next" href="/2020/09/14/springboot提示NoSuchMethodError_ org.springframework.plugin.core.PluginRegistry.getPluginOrDefaultFor/">Spring Boot提示NoSuchMethodError:org.springframework.plugin.core.PluginRegistry.getPluginOrDefaultFor</a>
+            <a class="next" rel="next" href="/2020/08/29/ZXing二维码自定义绘画文字/">ZXing二维码自定义绘画文字</a>
             
         </section>
 

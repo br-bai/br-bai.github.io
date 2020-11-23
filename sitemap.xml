@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://br-bai.github.io/2020/09/14/springboot%E6%8F%90%E7%A4%BANoSuchMethodError_%20org.springframework.plugin.core.PluginRegistry.getPluginOrDefaultFor/</loc>
+    
+    <lastmod>2020-11-23T07:48:03.193Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://br-bai.github.io/2020/11/05/javax.mail%20jar%E5%8C%85%E5%86%B2%E7%AA%81java.lang.NoSuchMethodError_%20com.sun.mail.util.TraceInputStream.(Ljava_io_InputStre/</loc>
     
     <lastmod>2020-11-23T07:41:57.128Z</lastmod>
