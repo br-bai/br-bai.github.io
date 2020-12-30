@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="google-site-verification" content="CJVFgKvg7DR1-BcZBWyXCBGarPIaFkj6TCRZfg5koC0">
+
+
+    <meta name="keywords" content="blog,个人博客,博客">
+
+<meta name="baidu-site-verification" content="Y5fkV0dnwS">
+
+<title>Docker部署NextCloud 20.0.4 最新版个人网盘 | brbai</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">brbai&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">brbai&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Docker部署NextCloud 20.0.4 最新版个人网盘</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">brbai</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">December 25, 2020&nbsp;&nbsp;16:57:01</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/功能开发/">功能开发</a>
+                            
+                        </span>
+                    
+ 		   
+       			 <!-- 不蒜子统计 -->
+       		        <span id="busuanzi_container_page_pv" style="display:none" ">
+                         Views:
+				<a href="#"><span id="busuanzi_value_page_pv"></span></a>
+        		</span>
+		   
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <blockquote>
+<p>两年前在我阿里云服务器上手动搭建过nextcloud 18.*版本的相关依赖环境。当时废了不少精力，服务器带宽5M，下载不限速用起来爽的一匹。后来redis惨遭挖矿病毒入侵，清理病毒的时候把服务器被搞得乱七八糟。最近打算试试最新版的nextcloud于是使用docker安装方式，并记录一下。</p>
+</blockquote>
+<h5 id="1-安装docker与数据库（MySQL或其他）"><a href="#1-安装docker与数据库（MySQL或其他）" class="headerlink" title="1 安装docker与数据库（MySQL或其他）"></a>1 安装docker与数据库（MySQL或其他）</h5><p>自行搜索…</p>
+<blockquote>
+<p>我这里用的是MySQL。数据库部署好后设置用户名密码，创建一个名为“nextcloud”的数据库。等待nextcloud部署的最后一步（即第5步），配置这个数据库连接信息以及指定这个nextcloud数据库进行初始化。</p>
+</blockquote>
+<h5 id="2-安装nextcloud"><a href="#2-安装nextcloud" class="headerlink" title="2 安装nextcloud"></a>2 安装nextcloud</h5><blockquote>
+<p>从docker镜像仓库中拉取或者更新nextcloud镜像</p>
+</blockquote>
+<p><code>docker pull nextcloud</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">Using default tag: latest</span><br><span class="line">Trying to pull repository docker.io/library/nextcloud ... </span><br><span class="line">latest: Pulling from docker.io/library/nextcloud</span><br><span class="line">6ec7b7d162b2: Pull complete </span><br><span class="line">db606474d60c: Pull complete </span><br><span class="line">afb30f0cd8e0: Pull complete </span><br><span class="line">3bb2e8051594: Pull complete </span><br><span class="line">4c761b44e2cc: Pull complete </span><br><span class="line">c2199db96575: Pull complete </span><br><span class="line">1b9a9381eea8: Pull complete </span><br><span class="line">50450ffc67ee: Pull complete </span><br><span class="line">4d1e5a768e83: Pull complete </span><br><span class="line">5e8be0d1df16: Pull complete </span><br><span class="line">7a6395859d40: Pull complete </span><br><span class="line">7306499d3dce: Pull complete </span><br><span class="line">fa6f0ba15ac6: Pull complete </span><br><span class="line">0d944dae1b06: Pull complete </span><br><span class="line">aab877fa23a7: Pull complete </span><br><span class="line">045fd88fbde3: Pull complete </span><br><span class="line">e4839d052e78: Pull complete </span><br><span class="line">929a7a0f4a1d: Pull complete </span><br><span class="line">d3d2cd8d0367: Pull complete </span><br><span class="line">eff6b1bf6724: Pull complete </span><br><span class="line">Digest: sha256:c3293496f203a92cddcfcb204d9060066b591058669d7ba12a1c655302417367</span><br><span class="line">Status: Downloaded newer image for docker.io/nextcloud:latest</span><br></pre></td></tr></table></figure>
+
+<h5 id="3-开放8000端口"><a href="#3-开放8000端口" class="headerlink" title="3 开放8000端口"></a>3 开放<code>8000</code>端口</h5><p>这里我服务器80端口被nginx占用，所以用8000端口映射docker的80端口</p>
+<blockquote>
+<p>开放<code>8000</code>端口号 , 注意：我使用的是centos7.3的版本，防火墙是firewall</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --zone=<span class="keyword">public</span> --add-port=<span class="number">8000</span>/tcp --permanent</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>重启防火墙，运行命令：</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>查看端口号是否开启，运行命令：</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --query-port=<span class="number">8000</span>/tcp</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>如果是阿里云的服务器   ， 还需进入服务器管理控制台，给防火墙<code>8000</code>端口号添加规则</p>
+</blockquote>
+<p>下面效果图是之前邮件端口截的，将就看。。。<br><img src="https://img-blog.csdnimg.cn/20190117161141376.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt></p>
+<h5 id="4-运行nextcloud容器"><a href="#4-运行nextcloud容器" class="headerlink" title="4 运行nextcloud容器"></a>4 运行nextcloud容器</h5><p><code>docker run -d --restart=always --name nextcloud -p 8000:80 nextcloud</code><br>参数：</p>
+<ul>
+<li>docker run ：启动容器</li>
+<li>-d：后台运行</li>
+<li>–restart=always：Docker 重启的时候重启容器</li>
+<li>–name nextcloud：容器命名</li>
+<li>-p 8000:80：将服务器的 <code>8000</code> 端口映射到容器的 <code>80</code> 端口</li>
+<li>nextcloud：要启动的镜像名称</li>
+</ul>
+<blockquote>
+<p>这里我服务器80端口被nginx占用，所以用8000端口映射docker的80端口,运行命令出现一串字符串则成功。<br>记得服务器<strong>防火墙</strong>以及阿里云等服务商的<strong>安全组</strong>必须设置开放<code>8000</code>端口</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">9b272c1885777c370a14a5e0cb78d3632bc7f8f8c66a7c97b2771dd75ab870cf</span><br></pre></td></tr></table></figure>
+
+<p><code>docker ps</code>查看运行的容器</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                                                                                                         NAMES</span><br><span class="line">9b272c188577        nextcloud           "/entrypoint.sh ap..."   9 seconds ago       Up 8 seconds        0.0.0.0:8000-&gt;80/tcp                                                                                          nextcloud</span><br></pre></td></tr></table></figure>
+
+<h5 id="5-访问nextcloud页面，配置账号-数据库信息，自动初始化"><a href="#5-访问nextcloud页面，配置账号-数据库信息，自动初始化" class="headerlink" title="5 访问nextcloud页面，配置账号/数据库信息，自动初始化"></a>5 访问nextcloud页面，配置账号/数据库信息，自动初始化</h5><p>访问路径：<code>http://服务器IP:8000</code></p>
+<ul>
+<li>设置管理员用户名与密码。</li>
+<li>点击<strong>存储与数据库</strong>，选择<strong>切换</strong>为MySQL的配置项，并设置之前的数据库信息。</li>
+<li>点击 <strong>安装完成</strong> 后自动进行初始化安装，如果是之前安装过nextcloud则会自动更新版本与相应组件。</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/20201225161435659.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<hr>
+<h5 id="6-安装完成效果："><a href="#6-安装完成效果：" class="headerlink" title="6 安装完成效果："></a>6 安装完成效果：</h5><p><img src="https://img-blog.csdnimg.cn/202012251702595.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20201225162012762.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>brbai</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://br-bai.github.io/2020/12/25/docker部署nextcloud 20.0.4 最新版个人网盘/">https://br-bai.github.io/2020/12/25/docker部署nextcloud 20.0.4 最新版个人网盘/</a></span>
+                    </p>
+                
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Make excellence a habit.</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Linux/"># Linux</a>
+                    
+                        <a href="/tags/Docker/"># Docker</a>
+                    
+                        <a href="/tags/NextCloud/"># NextCloud</a>
+                    
+                        <a href="/tags/Centos/"># Centos</a>
+                    
+                        <a href="/tags/网盘/"># 网盘</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2020/12/03/springboot多线程异步发送email，html模板渲染/">SpringBoot多线程异步发送Email，HTML模板渲染</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+   
+
+    <div class="copyright">
+        <span>© 2019 <a href="https://www.bhy702.com" target="_blank">brbai</a> | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    
+	
+       		 <span class="post-meta-divider"> | </span>
+		 <!-- 不蒜子统计 -->
+       		 <span id="busuanzi_container_site_pv">
+                	Pageviews:<span id="busuanzi_value_site_pv"></span>
+	        </span>
+        	<span class="post-meta-divider">&</span>
+       		 <span id="busuanzi_container_site_uv" style="display:none">
+                	Visitors:<span id="busuanzi_value_site_uv"></span>
+        	</span>
+        	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+   	 
+
+
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

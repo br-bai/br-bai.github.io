@@ -2,6 +2,27 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://br-bai.github.io/2019/09/24/Java%E5%8F%91%E9%80%81%E9%82%AE%E4%BB%B6%EF%BC%8C%E4%BC%98%E7%BE%8Ehtml%E9%82%AE%E4%BB%B6%E6%A8%A1%E6%9D%BF%E5%88%86%E4%BA%AB/</loc>
+    
+    <lastmod>2020-12-30T01:48:31.671Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://br-bai.github.io/2020/12/25/docker%E9%83%A8%E7%BD%B2nextcloud%2020.0.4%20%E6%9C%80%E6%96%B0%E7%89%88%E4%B8%AA%E4%BA%BA%E7%BD%91%E7%9B%98/</loc>
+    
+    <lastmod>2020-12-30T01:41:16.902Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://br-bai.github.io/2020/12/03/springboot%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%BC%82%E6%AD%A5%E5%8F%91%E9%80%81email%EF%BC%8Chtml%E6%A8%A1%E6%9D%BF%E6%B8%B2%E6%9F%93/</loc>
+    
+    <lastmod>2020-12-30T01:33:27.252Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://br-bai.github.io/about/index.html</loc>
     
     <lastmod>2020-11-23T07:50:27.544Z</lastmod>
@@ -194,13 +215,6 @@
     <loc>https://br-bai.github.io/2019/06/18/Linux%E6%9C%8D%E5%8A%A1%E5%99%A8CPU%E5%8D%A0%E7%94%A8100%25%EF%BC%8CError_%20No%20space%20left%20on%20device%EF%BC%8Ckhugepageds%E6%8C%96%E7%9F%BF%E7%97%85%E6%AF%92%E5%BC%95%E8%B5%B7/</loc>
     
     <lastmod>2019-10-16T07:42:53.067Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://br-bai.github.io/2019/09/24/Java%E5%8F%91%E9%80%81%E9%82%AE%E4%BB%B6%EF%BC%8Chtml%E9%82%AE%E4%BB%B6%E6%A8%A1%E6%9D%BF%E5%88%86%E4%BA%AB/</loc>
-    
-    <lastmod>2019-10-16T07:32:39.675Z</lastmod>
     
   </url>
   

@@ -1,3 +1,5 @@
+https://br-bai.github.io/2020/12/25/docker部署nextcloud 20.0.4 最新版个人网盘/
+https://br-bai.github.io/2020/12/03/springboot多线程异步发送email，html模板渲染/
 https://br-bai.github.io/2020/11/05/javax.mail jar包冲突java.lang.NoSuchMethodError_ com.sun.mail.util.TraceInputStream.(Ljava_io_InputStre/
 https://br-bai.github.io/2020/10/30/dynamic-datasource + druid 多数据源配置、数据源切换以及事务中切换失败的使用注意/
 https://br-bai.github.io/2020/09/14/使用any_value(field) 函数解决MySQL8配置only_full_group引起group by分组错误/
@@ -14,7 +16,7 @@ https://br-bai.github.io/2019/11/07/2019_11_7--亲测centos7安装oracle解决Co
 https://br-bai.github.io/2019/11/06/Centos7快速搭建mongodb集群/
 https://br-bai.github.io/2019/10/24/Swagger集成及常用注解使用场景/
 https://br-bai.github.io/2019/09/29/使用react-router-dom路由实现页面跳转传参/
-https://br-bai.github.io/2019/09/24/Java发送邮件，html邮件模板分享/
+https://br-bai.github.io/2019/09/24/Java发送邮件，优美html邮件模板分享/
 https://br-bai.github.io/2019/09/11/Linux系统Tomcat执行shutdown.sh时报错java.net.ConnectException_Connection refused/
 https://br-bai.github.io/2019/08/09/RabbitMQ消息可靠性投递与消费，消费幂等/
 https://br-bai.github.io/2019/07/12/Java读取CSV文件，并批量写入数据库/

@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://br-bai.github.io/2019/09/24/Java%E5%8F%91%E9%80%81%E9%82%AE%E4%BB%B6%EF%BC%8C%E4%BC%98%E7%BE%8Ehtml%E9%82%AE%E4%BB%B6%E6%A8%A1%E6%9D%BF%E5%88%86%E4%BA%AB/</loc>
+    <lastmod>2020-12-30</lastmod>
+  </url>  <url>
+    <loc>https://br-bai.github.io/2020/12/25/docker%E9%83%A8%E7%BD%B2nextcloud%2020.0.4%20%E6%9C%80%E6%96%B0%E7%89%88%E4%B8%AA%E4%BA%BA%E7%BD%91%E7%9B%98/</loc>
+    <lastmod>2020-12-30</lastmod>
+  </url>  <url>
+    <loc>https://br-bai.github.io/2020/12/03/springboot%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%BC%82%E6%AD%A5%E5%8F%91%E9%80%81email%EF%BC%8Chtml%E6%A8%A1%E6%9D%BF%E6%B8%B2%E6%9F%93/</loc>
+    <lastmod>2020-12-30</lastmod>
+  </url>  <url>
     <loc>https://br-bai.github.io/2020/09/14/springboot%E6%8F%90%E7%A4%BANoSuchMethodError_%20org.springframework.plugin.core.PluginRegistry.getPluginOrDefaultFor/</loc>
     <lastmod>2020-11-23</lastmod>
   </url>  <url>
@@ -80,9 +89,6 @@
     <lastmod>2019-10-16</lastmod>
   </url>  <url>
     <loc>https://br-bai.github.io/2019/06/18/Linux%E6%9C%8D%E5%8A%A1%E5%99%A8CPU%E5%8D%A0%E7%94%A8100%25%EF%BC%8CError_%20No%20space%20left%20on%20device%EF%BC%8Ckhugepageds%E6%8C%96%E7%9F%BF%E7%97%85%E6%AF%92%E5%BC%95%E8%B5%B7/</loc>
-    <lastmod>2019-10-16</lastmod>
-  </url>  <url>
-    <loc>https://br-bai.github.io/2019/09/24/Java%E5%8F%91%E9%80%81%E9%82%AE%E4%BB%B6%EF%BC%8Chtml%E9%82%AE%E4%BB%B6%E6%A8%A1%E6%9D%BF%E5%88%86%E4%BA%AB/</loc>
     <lastmod>2019-10-16</lastmod>
   </url>  <url>
     <loc>https://br-bai.github.io/2019/06/10/%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%E5%90%8E%E5%AD%97%E4%BD%93%E5%9B%BE%E6%A0%87%E7%AD%89font%E6%96%87%E4%BB%B6%E6%97%A0%E6%B3%95%E6%AD%A3%E5%B8%B8%E5%8A%A0%E8%BD%BD%20Failed%20to%20decode%20downloaded%20font_%20_URL_/</loc>
