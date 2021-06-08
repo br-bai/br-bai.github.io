@@ -1,3 +1,4 @@
+https://br-bai.github.io/2021/06/07/搭建了Shadowsocks发现电脑用不了，手机可以正常使用/
 https://br-bai.github.io/2020/12/25/docker部署nextcloud 20.0.4 最新版个人网盘/
 https://br-bai.github.io/2020/12/03/springboot多线程异步发送email，html模板渲染/
 https://br-bai.github.io/2020/11/05/javax.mail jar包冲突java.lang.NoSuchMethodError_ com.sun.mail.util.TraceInputStream.(Ljava_io_InputStre/

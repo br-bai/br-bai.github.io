@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="google-site-verification" content="CJVFgKvg7DR1-BcZBWyXCBGarPIaFkj6TCRZfg5koC0">
+
+
+    <meta name="keywords" content="blog,个人博客,博客">
+
+<meta name="baidu-site-verification" content="Y5fkV0dnwS">
+
+<title>搭建了Shadowsocks发现电脑用不了，手机可以正常使用 | brbai</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">brbai&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">brbai&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">搭建了Shadowsocks发现电脑用不了，手机可以正常使用</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">brbai</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">June 7, 2021&nbsp;&nbsp;17:47:42</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/BUG集合/">BUG集合</a>
+                            
+                        </span>
+                    
+ 		   
+       			 <!-- 不蒜子统计 -->
+       		        <span id="busuanzi_container_page_pv" style="display:none" ">
+                         Views:
+				<a href="#"><span id="busuanzi_value_page_pv"></span></a>
+        		</span>
+		   
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>所有终端都访问不了的可能被墙了啥的可以看看这个:<a href="https://baiyunju.cc/5699" target="_blank" rel="noopener">SS忽然不能使用的原因及解决方法</a></p>
+<h6 id="玄学的是我自己电脑和其他部分电脑用不了，手机或者其他部分电脑可以用。"><a href="#玄学的是我自己电脑和其他部分电脑用不了，手机或者其他部分电脑可以用。" class="headerlink" title="玄学的是我自己电脑和其他部分电脑用不了，手机或者其他部分电脑可以用。"></a>玄学的是我自己电脑和其他部分电脑用不了，手机或者其他部分电脑可以用。</h6><p>以前陆陆续续费了不少时间，mac网卡地址修改，DNS缓存刷新，各种网络调试配置，测试效果盯着ss的日志查看都丝毫没有任何请求响应。<br>刚刚突然想到可能不是不能使用，而是Google Chrome的问题，因为一直使用的是Google Chrome，于是试了下其他浏览器，发现是正常的。想到我没有搭建科学服务器之前用的是<code>google访问助手</code>，而我测试的其他电脑中也有启动<code>google访问助手</code>的，导致之前觉得异常玄学。关掉它就行了。</p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>brbai</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://br-bai.github.io/2021/06/07/搭建了Shadowsocks发现电脑用不了，手机可以正常使用/">https://br-bai.github.io/2021/06/07/搭建了Shadowsocks发现电脑用不了，手机可以正常使用/</a></span>
+                    </p>
+                
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Make excellence a habit.</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Shadowsocks/"># Shadowsocks</a>
+                    
+                        <a href="/tags/VPN/"># VPN</a>
+                    
+                        <a href="/tags/SS/"># SS</a>
+                    
+                        <a href="/tags/翻墙/"># 翻墙</a>
+                    
+                        <a href="/tags/科学上网/"># 科学上网</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2020/12/25/docker部署nextcloud 20.0.4 最新版个人网盘/">Docker部署NextCloud 20.0.4 最新版个人网盘</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+   
+
+    <div class="copyright">
+        <span>© 2019 <a href="https://www.bhy702.com" target="_blank">brbai</a> | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    
+	
+       		 <span class="post-meta-divider"> | </span>
+		 <!-- 不蒜子统计 -->
+       		 <span id="busuanzi_container_site_pv">
+                	Pageviews:<span id="busuanzi_value_site_pv"></span>
+	        </span>
+        	<span class="post-meta-divider">&</span>
+       		 <span id="busuanzi_container_site_uv" style="display:none">
+                	Visitors:<span id="busuanzi_value_site_uv"></span>
+        	</span>
+        	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+   	 
+
+
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>
