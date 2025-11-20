@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width,user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="google-site-verification" content="CJVFgKvg7DR1-BcZBWyXCBGarPIaFkj6TCRZfg5koC0" />
+<meta name="baidu-site-verification" content="Y5fkV0dnwS" />
+
+    <meta name="author" content="brbai">
+
+
+
+
+    <meta name="keywords" content="blog,个人博客,博客">
+
+
+<title>ECharts使用Ajax动态载入图表数据 | brbai</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 8.1.1"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const pagebody = document.getElementsByTagName('body')[0]
+
+            function setTheme(status) {
+
+                if (status === 'dark') {
+                    window.sessionStorage.theme = 'dark'
+                    pagebody.classList.add('dark-theme');
+
+                } else if (status === 'light') {
+                    window.sessionStorage.theme = 'light'
+                    pagebody.classList.remove('dark-theme');
+                }
+            };
+
+            setTheme(window.sessionStorage.theme)
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">brbai&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                <a class="menu-item" href="/archives">Posts</a>
+                
+                <a class="menu-item" href="/category">Categories</a>
+                
+                <a class="menu-item" href="/tag">Tags</a>
+                
+                <a class="menu-item" href="/about">About</a>
+                
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">brbai&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">
+                    <svg class="menu-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M4.5 17.27q-.213 0-.356-.145T4 16.768t.144-.356t.356-.143h15q.213 0 .356.144q.144.144.144.357t-.144.356t-.356.143zm0-4.77q-.213 0-.356-.144T4 11.999t.144-.356t.356-.143h15q.213 0 .356.144t.144.357t-.144.356t-.356.143zm0-4.77q-.213 0-.356-.143Q4 7.443 4 7.23t.144-.356t.356-.143h15q.213 0 .356.144T20 7.23t-.144.356t-.356.144z"/></svg>
+                    <svg class="close-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Material Symbols Light by Google - https://github.com/google/material-design-icons/blob/master/LICENSE --><path fill="currentColor" d="m12 12.708l-5.246 5.246q-.14.14-.344.15t-.364-.15t-.16-.354t.16-.354L11.292 12L6.046 6.754q-.14-.14-.15-.344t.15-.364t.354-.16t.354.16L12 11.292l5.246-5.246q.14-.14.345-.15q.203-.01.363.15t.16.354t-.16.354L12.708 12l5.246 5.246q.14.14.15.345q.01.203-.15.363t-.354.16t-.354-.16z"/></svg>
+                </div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                <a class="menu-item" href="/archives">Posts</a>
+                
+                <a class="menu-item" href="/category">Categories</a>
+                
+                <a class="menu-item" href="/tag">Tags</a>
+                
+                <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if (toggleMenu.classList.contains("active")) {
+            toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        } else {
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">ECharts使用Ajax动态载入图表数据</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">brbai</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">October 18, 2018&nbsp;&nbsp;10:47:03</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E5%9B%BE%E5%BD%A2%E5%8C%96%E6%8F%92%E4%BB%B6/">图形化插件</a>
+                            
+                        </span>
+                    
+		  
+                         <!-- 不蒜子统计 -->
+                        <span id="busuanzi_container_page_pv" style='display:none' ">
+                         Views:
+                                <a href="#"><span id="busuanzi_value_page_pv"></span></a>
+                        </span>
+                   
+
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>jsp代码：（根据官方demo及自己需求，适当修改原始参数，需动态添加的原始测试数据可以不删，可以覆盖）</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@ page language=&quot;java&quot; contentType=&quot;text/html; charset=UTF-8&quot;</span><br><span class="line">    pageEncoding=&quot;UTF-8&quot;%&gt;</span><br><span class="line"></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">&quot;UTF-8&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">title</span>&gt;</span>Insert title here<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- 引入 jquery --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;&lt;%=request.getContextPath() %&gt;/vendor/jquery.min.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- 引入 echarts.js --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;&lt;%=request.getContextPath() %&gt;/vendor/echarts.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- 为ECharts准备一个具备大小（宽高）的Dom --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;main&quot;</span> <span class="attr">style</span>=<span class="string">&quot;width: 800px;height:600px;&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">&quot;text/javascript&quot;</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript"> </span></span><br><span class="line"><span class="language-javascript">        <span class="comment">// 基于准备好的dom，初始化echarts实例</span></span></span><br><span class="line"><span class="language-javascript">        <span class="keyword">var</span> myChart = echarts.<span class="title function_">init</span>(<span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;main&#x27;</span>));</span></span><br><span class="line"><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">        <span class="comment">// 指定图表的配置项和数据</span></span></span><br><span class="line"><span class="language-javascript">        <span class="keyword">var</span> option = &#123;</span></span><br><span class="line"><span class="language-javascript">        				<span class="attr">title</span>: &#123;</span></span><br><span class="line"><span class="language-javascript">        			        <span class="attr">text</span>: <span class="string">&#x27;堆叠区域图&#x27;</span></span></span><br><span class="line"><span class="language-javascript">        			    &#125;,</span></span><br><span class="line"><span class="language-javascript">        			    tooltip : &#123;</span></span><br><span class="line"><span class="language-javascript">        			        <span class="attr">trigger</span>: <span class="string">&#x27;axis&#x27;</span>,</span></span><br><span class="line"><span class="language-javascript">        			        <span class="attr">axisPointer</span>: &#123;</span></span><br><span class="line"><span class="language-javascript">        			            <span class="attr">type</span>: <span class="string">&#x27;cross&#x27;</span>,</span></span><br><span class="line"><span class="language-javascript">        			            <span class="attr">label</span>: &#123;</span></span><br><span class="line"><span class="language-javascript">        			                <span class="attr">backgroundColor</span>: <span class="string">&#x27;#6a7985&#x27;</span></span></span><br><span class="line"><span class="language-javascript">        			            &#125;</span></span><br><span class="line"><span class="language-javascript">        			        &#125;</span></span><br><span class="line"><span class="language-javascript">        			    &#125;,</span></span><br><span class="line"><span class="language-javascript">        			    <span class="attr">legend</span>: &#123;</span></span><br><span class="line"><span class="language-javascript">        			    <span class="comment">//data为需动态添加的数据，原始测试数据可删可不删</span></span></span><br><span class="line"><span class="language-javascript">        			        <span class="attr">data</span>:[<span class="string">&#x27;邮件营销&#x27;</span>,<span class="string">&#x27;联盟广告&#x27;</span>,<span class="string">&#x27;视频广告&#x27;</span>,<span class="string">&#x27;直接访问&#x27;</span>,<span class="string">&#x27;搜索引擎&#x27;</span>]</span></span><br><span class="line"><span class="language-javascript">        			    &#125;,</span></span><br><span class="line"><span class="language-javascript">        			    <span class="attr">toolbox</span>: &#123;</span></span><br><span class="line"><span class="language-javascript">        			        <span class="attr">feature</span>: &#123;</span></span><br><span class="line"><span class="language-javascript">        			            <span class="attr">saveAsImage</span>: &#123;&#125;</span></span><br><span class="line"><span class="language-javascript">        			        &#125;</span></span><br><span class="line"><span class="language-javascript">        			    &#125;,</span></span><br><span class="line"><span class="language-javascript">        			    <span class="attr">grid</span>: &#123;</span></span><br><span class="line"><span class="language-javascript">        			        <span class="attr">left</span>: <span class="string">&#x27;3%&#x27;</span>,</span></span><br><span class="line"><span class="language-javascript">        			        <span class="attr">right</span>: <span class="string">&#x27;4%&#x27;</span>,</span></span><br><span class="line"><span class="language-javascript">        			        <span class="attr">bottom</span>: <span class="string">&#x27;3%&#x27;</span>,</span></span><br><span class="line"><span class="language-javascript">        			        <span class="attr">containLabel</span>: <span class="literal">true</span></span></span><br><span class="line"><span class="language-javascript">        			    &#125;,</span></span><br><span class="line"><span class="language-javascript">        			    xAxis : [</span></span><br><span class="line"><span class="language-javascript">        			        &#123;</span></span><br><span class="line"><span class="language-javascript">        			            type : <span class="string">&#x27;category&#x27;</span>,</span></span><br><span class="line"><span class="language-javascript">        			            boundaryGap : <span class="literal">false</span>,</span></span><br><span class="line"><span class="language-javascript">        			            <span class="comment">//按需求手动设置了月份参数</span></span></span><br><span class="line"><span class="language-javascript">        			            data : [<span class="string">&#x27;一月&#x27;</span>,<span class="string">&#x27;二月&#x27;</span>,<span class="string">&#x27;三月&#x27;</span>,<span class="string">&#x27;四月&#x27;</span>,<span class="string">&#x27;五月&#x27;</span>,<span class="string">&#x27;六月&#x27;</span>,<span class="string">&#x27;七月&#x27;</span>,<span class="string">&#x27;八月&#x27;</span>,<span class="string">&#x27;九月&#x27;</span>,<span class="string">&#x27;十月&#x27;</span>,<span class="string">&#x27;十一月&#x27;</span>,<span class="string">&#x27;十二月&#x27;</span>]</span></span><br><span class="line"><span class="language-javascript">        			        &#125;</span></span><br><span class="line"><span class="language-javascript">        			    ],</span></span><br><span class="line"><span class="language-javascript">        			    yAxis : [</span></span><br><span class="line"><span class="language-javascript">        			        &#123;</span></span><br><span class="line"><span class="language-javascript">        			            type : <span class="string">&#x27;value&#x27;</span></span></span><br><span class="line"><span class="language-javascript">        			        &#125;</span></span><br><span class="line"><span class="language-javascript">        			    ],</span></span><br><span class="line"><span class="language-javascript">        			    <span class="comment">//series中数据为需动态添加的数据，原始测试数据可删可不删</span></span></span><br><span class="line"><span class="language-javascript">        			    series : [</span></span><br><span class="line"><span class="language-javascript">        			        &#123;</span></span><br><span class="line"><span class="language-javascript">        			            <span class="attr">name</span>:<span class="string">&#x27;邮件营销&#x27;</span>,</span></span><br><span class="line"><span class="language-javascript">        			            <span class="attr">type</span>:<span class="string">&#x27;line&#x27;</span>,</span></span><br><span class="line"><span class="language-javascript">        			            <span class="attr">stack</span>: <span class="string">&#x27;总量&#x27;</span>,</span></span><br><span class="line"><span class="language-javascript">        			            <span class="attr">areaStyle</span>: &#123;&#125;,</span></span><br><span class="line"><span class="language-javascript">        			            <span class="attr">data</span>:[<span class="number">120</span>, <span class="number">132</span>, <span class="number">101</span>, <span class="number">134</span>, <span class="number">90</span>, <span class="number">230</span>, <span class="number">210</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>]</span></span><br><span class="line"><span class="language-javascript">        			        &#125;,</span></span><br><span class="line"><span class="language-javascript">        			        &#123;</span></span><br><span class="line"><span class="language-javascript">        			            <span class="attr">name</span>:<span class="string">&#x27;联盟广告&#x27;</span>,</span></span><br><span class="line"><span class="language-javascript">        			            <span class="attr">type</span>:<span class="string">&#x27;line&#x27;</span>,</span></span><br><span class="line"><span class="language-javascript">        			            <span class="attr">stack</span>: <span class="string">&#x27;总量&#x27;</span>,</span></span><br><span class="line"><span class="language-javascript">        			            <span class="attr">areaStyle</span>: &#123;&#125;,</span></span><br><span class="line"><span class="language-javascript">        			            <span class="attr">data</span>:[<span class="number">220</span>, <span class="number">182</span>, <span class="number">191</span>, <span class="number">234</span>, <span class="number">290</span>, <span class="number">330</span>, <span class="number">310</span>, <span class="number">100</span>, <span class="number">110</span>, <span class="number">110</span>, <span class="number">110</span>, <span class="number">110</span>]</span></span><br><span class="line"><span class="language-javascript">        			        &#125;,</span></span><br><span class="line"><span class="language-javascript">        			        &#123;</span></span><br><span class="line"><span class="language-javascript">        			            <span class="attr">name</span>:<span class="string">&#x27;视频广告&#x27;</span>,</span></span><br><span class="line"><span class="language-javascript">        			            <span class="attr">type</span>:<span class="string">&#x27;line&#x27;</span>,</span></span><br><span class="line"><span class="language-javascript">        			            <span class="attr">stack</span>: <span class="string">&#x27;总量&#x27;</span>,</span></span><br><span class="line"><span class="language-javascript">        			            <span class="attr">areaStyle</span>: &#123;&#125;,</span></span><br><span class="line"><span class="language-javascript">        			            <span class="attr">data</span>:[<span class="number">150</span>, <span class="number">232</span>, <span class="number">201</span>, <span class="number">154</span>, <span class="number">190</span>, <span class="number">330</span>, <span class="number">410</span>, <span class="number">20</span>, <span class="number">20</span>, <span class="number">20</span>, <span class="number">20</span>, <span class="number">20</span>]</span></span><br><span class="line"><span class="language-javascript">        			        &#125;,</span></span><br><span class="line"><span class="language-javascript">        			        &#123;</span></span><br><span class="line"><span class="language-javascript">        			            <span class="attr">name</span>:<span class="string">&#x27;直接访问&#x27;</span>,</span></span><br><span class="line"><span class="language-javascript">        			            <span class="attr">type</span>:<span class="string">&#x27;line&#x27;</span>,</span></span><br><span class="line"><span class="language-javascript">        			            <span class="attr">stack</span>: <span class="string">&#x27;总量&#x27;</span>,</span></span><br><span class="line"><span class="language-javascript">        			            <span class="attr">areaStyle</span>: &#123;<span class="attr">normal</span>: &#123;&#125;&#125;,</span></span><br><span class="line"><span class="language-javascript">        			            <span class="attr">data</span>:[<span class="number">320</span>, <span class="number">332</span>, <span class="number">301</span>, <span class="number">334</span>, <span class="number">390</span>, <span class="number">330</span>, <span class="number">320</span>, <span class="number">60</span>, <span class="number">60</span>, <span class="number">60</span>, <span class="number">60</span>, <span class="number">60</span>]</span></span><br><span class="line"><span class="language-javascript">        			        &#125;,</span></span><br><span class="line"><span class="language-javascript">        			        &#123;</span></span><br><span class="line"><span class="language-javascript">        			            <span class="attr">name</span>:<span class="string">&#x27;搜索引擎&#x27;</span>,</span></span><br><span class="line"><span class="language-javascript">        			            <span class="attr">type</span>:<span class="string">&#x27;line&#x27;</span>,</span></span><br><span class="line"><span class="language-javascript">        			            <span class="attr">stack</span>: <span class="string">&#x27;总量&#x27;</span>,</span></span><br><span class="line"><span class="language-javascript">        			            <span class="attr">label</span>: &#123;</span></span><br><span class="line"><span class="language-javascript">        			                <span class="attr">normal</span>: &#123;</span></span><br><span class="line"><span class="language-javascript">        			                    <span class="attr">show</span>: <span class="literal">true</span>,</span></span><br><span class="line"><span class="language-javascript">        			                    <span class="attr">position</span>: <span class="string">&#x27;top&#x27;</span></span></span><br><span class="line"><span class="language-javascript">        			                &#125;</span></span><br><span class="line"><span class="language-javascript">        			            &#125;,</span></span><br><span class="line"><span class="language-javascript">        			            <span class="attr">areaStyle</span>: &#123;<span class="attr">normal</span>: &#123;&#125;&#125;,</span></span><br><span class="line"><span class="language-javascript">        			            <span class="attr">data</span>:[<span class="number">820</span>, <span class="number">932</span>, <span class="number">901</span>, <span class="number">934</span>, <span class="number">1290</span>, <span class="number">1330</span>, <span class="number">1320</span>, <span class="number">1000</span>, <span class="number">1000</span>, <span class="number">1000</span>, <span class="number">1000</span>, <span class="number">1000</span>]</span></span><br><span class="line"><span class="language-javascript">        			        &#125;</span></span><br><span class="line"><span class="language-javascript">        			    ]</span></span><br><span class="line"><span class="language-javascript">        		</span></span><br><span class="line"><span class="language-javascript">        			&#125;;</span></span><br><span class="line"><span class="language-javascript">      </span></span><br><span class="line"><span class="language-javascript">        	<span class="keyword">var</span> url = <span class="string">&#x27;&lt;%=request.getContextPath()%&gt;/consume/photoServlet?method=photo&#x27;</span>;</span></span><br><span class="line"><span class="language-javascript">         	$.<span class="title function_">post</span>(url,<span class="keyword">function</span>(<span class="params">jsonData</span>)&#123;  </span></span><br><span class="line"><span class="language-javascript">         		<span class="comment">//更新数据			</span></span></span><br><span class="line"><span class="language-javascript">	     		option.<span class="property">legend</span>.<span class="property">data</span>=jsonData[<span class="number">0</span>];</span></span><br><span class="line"><span class="language-javascript">	     		option.<span class="property">series</span>=jsonData[<span class="number">1</span>];   			</span></span><br><span class="line"><span class="language-javascript">	     		myChart.<span class="title function_">hideLoading</span>();  </span></span><br><span class="line"><span class="language-javascript">	     		<span class="comment">// 更新显示图表。</span></span></span><br><span class="line"><span class="language-javascript">	     		myChart.<span class="title function_">setOption</span>(option);</span></span><br><span class="line"><span class="language-javascript">         	&#125;,<span class="string">&#x27;json&#x27;</span>);     	</span></span><br><span class="line"><span class="language-javascript">    </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>后台srevlet：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.consume.bhy.servlet;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.io.PrintWriter;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.InvocationTargetException;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Method;</span><br><span class="line"><span class="keyword">import</span> java.sql.SQLException;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.servlet.ServletException;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.annotation.WebServlet;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServlet;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletRequest;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletResponse;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.alibaba.fastjson.JSONArray;</span><br><span class="line"><span class="keyword">import</span> com.consume.bhy.service.PhotoService;</span><br><span class="line"></span><br><span class="line"><span class="meta">@WebServlet(urlPatterns=&quot;/consume/photoServlet&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">PhotoServlet</span> <span class="keyword">extends</span> <span class="title class_">HttpServlet</span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * </span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">long</span> <span class="variable">serialVersionUID</span> <span class="operator">=</span> <span class="number">1L</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">service</span><span class="params">(HttpServletRequest request, HttpServletResponse response)</span> <span class="keyword">throws</span> ServletException, IOException &#123;</span><br><span class="line"></span><br><span class="line">		Class&lt;?&gt; class1 = <span class="built_in">this</span>.getClass();	</span><br><span class="line">		<span class="type">String</span> <span class="variable">methodName</span> <span class="operator">=</span> request.getParameter(<span class="string">&quot;method&quot;</span>);</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			<span class="type">Method</span> <span class="variable">method</span> <span class="operator">=</span> class1.getDeclaredMethod(methodName, HttpServletRequest.class,HttpServletResponse.class);</span><br><span class="line">			method.setAccessible(<span class="literal">true</span>);</span><br><span class="line">			<span class="keyword">try</span> &#123;</span><br><span class="line">				method.invoke(<span class="built_in">this</span>, request,response);</span><br><span class="line">				</span><br><span class="line">			&#125; <span class="keyword">catch</span> (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) &#123;</span><br><span class="line">				e.printStackTrace();</span><br><span class="line">			&#125;</span><br><span class="line">			</span><br><span class="line">		&#125; <span class="keyword">catch</span> (NoSuchMethodException e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125; <span class="keyword">catch</span> (SecurityException e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">photo</span><span class="params">(HttpServletRequest request, HttpServletResponse response)</span> <span class="keyword">throws</span> ServletException, IOException, SQLException &#123;</span><br><span class="line">		</span><br><span class="line">		request.setCharacterEncoding(<span class="string">&quot;utf-8&quot;</span>);</span><br><span class="line">		response.setContentType(<span class="string">&quot;text/palin;charset=utf-8&quot;</span>);</span><br><span class="line">		</span><br><span class="line">		<span class="comment">//创建一个JSON数组存放返回的数据</span></span><br><span class="line">		<span class="type">JSONArray</span> <span class="variable">jsonData</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">JSONArray</span>();</span><br><span class="line">		</span><br><span class="line">        <span class="type">PhotoService</span> <span class="variable">ps</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">PhotoService</span>();</span><br><span class="line">        jsonData = ps.getJsonData();</span><br><span class="line"> </span><br><span class="line">        <span class="comment">//获取输出流写数据</span></span><br><span class="line">        <span class="type">PrintWriter</span> <span class="variable">writer</span> <span class="operator">=</span> response.getWriter();</span><br><span class="line">        writer.print(jsonData);</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>后台service：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.consume.bhy.service;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.sql.Connection;</span><br><span class="line"><span class="keyword">import</span> java.sql.PreparedStatement;</span><br><span class="line"><span class="keyword">import</span> java.sql.ResultSet;</span><br><span class="line"><span class="keyword">import</span> java.sql.SQLException;</span><br><span class="line"><span class="keyword">import</span> com.alibaba.fastjson.JSONArray;</span><br><span class="line"><span class="keyword">import</span> com.alibaba.fastjson.JSONObject;</span><br><span class="line"><span class="keyword">import</span> com.consume.bhy.jdbc.JDBC_Util;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">PhotoService</span> &#123;</span><br><span class="line">	<span class="keyword">public</span> JSONArray <span class="title function_">getJsonData</span><span class="params">()</span> <span class="keyword">throws</span> SQLException &#123;</span><br><span class="line">		<span class="comment">//创建数组存放legend中date数据</span></span><br><span class="line">		<span class="type">JSONArray</span> <span class="variable">legendData</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">JSONArray</span>();</span><br><span class="line">		<span class="comment">//创建数组存放series的数据</span></span><br><span class="line">		<span class="type">JSONArray</span> <span class="variable">series</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">JSONArray</span>();</span><br><span class="line">		<span class="comment">//连接操作数据库，查询数据</span></span><br><span class="line">		<span class="type">Connection</span> <span class="variable">conn</span> <span class="operator">=</span> JDBC_Util.getConnection();</span><br><span class="line">		<span class="type">String</span> <span class="variable">sql</span> <span class="operator">=</span> <span class="string">&quot;select consume_type_id,consume_type_name from consume_type&quot;</span>;</span><br><span class="line">		<span class="type">PreparedStatement</span> <span class="variable">prepared</span> <span class="operator">=</span> conn.prepareStatement(sql);</span><br><span class="line">		<span class="type">ResultSet</span> <span class="variable">resultSet</span> <span class="operator">=</span> prepared.executeQuery();</span><br><span class="line">		<span class="keyword">while</span>(resultSet.next()) &#123;</span><br><span class="line">			<span class="type">String</span> <span class="variable">sql2</span> <span class="operator">=</span> <span class="string">&quot;select month(consume_date) m, SUM(consume_price*consume_count) s from consume_info where consume_type_id=? group by month(consume_date) ORDER BY month(consume_date);&quot;</span>;</span><br><span class="line">			<span class="type">PreparedStatement</span> <span class="variable">prepared2</span> <span class="operator">=</span> conn.prepareStatement(sql2);</span><br><span class="line">			prepared2.setInt(<span class="number">1</span>, resultSet.getInt(<span class="string">&quot;consume_type_id&quot;</span>));</span><br><span class="line">			<span class="type">ResultSet</span> <span class="variable">resultSet2</span> <span class="operator">=</span> prepared2.executeQuery();</span><br><span class="line">			<span class="type">double</span>[] consumedate =<span class="keyword">new</span> <span class="title class_">double</span>[<span class="number">12</span>];</span><br><span class="line">			<span class="keyword">while</span>(resultSet2.next()) &#123;</span><br><span class="line">				consumedate[resultSet2.getInt(<span class="string">&quot;m&quot;</span>)-<span class="number">1</span>]= resultSet2.getBigDecimal(<span class="string">&quot;s&quot;</span>).doubleValue();</span><br><span class="line">			&#125;</span><br><span class="line">			JDBC_Util.clossJDBC(prepared2, resultSet2);</span><br><span class="line">			<span class="type">JSONObject</span> <span class="variable">serie</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">JSONObject</span>();</span><br><span class="line">			</span><br><span class="line">			<span class="comment">//将每种消费类型相应的参数存入serie对象并按顺序存入series数组</span></span><br><span class="line">			serie.put(<span class="string">&quot;name&quot;</span>, resultSet.getString(<span class="string">&quot;consume_type_name&quot;</span>));</span><br><span class="line">		    serie.put(<span class="string">&quot;type&quot;</span>, <span class="string">&quot;line&quot;</span>);</span><br><span class="line">		    serie.put(<span class="string">&quot;stack&quot;</span>, <span class="string">&quot;总量&quot;</span>);</span><br><span class="line">		    serie.put(<span class="string">&quot;areaStyle&quot;</span>, <span class="keyword">new</span> <span class="title class_">JSONObject</span>());</span><br><span class="line">		    serie.put(<span class="string">&quot;data&quot;</span>, consumedate);</span><br><span class="line">			</span><br><span class="line">		    series.add(serie);</span><br><span class="line">		    <span class="comment">//将消费类型顺序存入legendData</span></span><br><span class="line">			legendData.add(resultSet.getString(<span class="string">&quot;consume_type_name&quot;</span>));</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">//最后添加月总消费到legendData</span></span><br><span class="line">		legendData.add(<span class="string">&quot;月总消费&quot;</span>);</span><br><span class="line">		JDBC_Util.clossJDBC(prepared, resultSet);</span><br><span class="line">		<span class="type">String</span> <span class="variable">sql3</span> <span class="operator">=</span> <span class="string">&quot;select month(consume_date) m, SUM(consume_price*consume_count) s from consume_info group by month(consume_date) ORDER BY month(consume_date);&quot;</span>;</span><br><span class="line">		<span class="type">PreparedStatement</span> <span class="variable">prepared3</span> <span class="operator">=</span> conn.prepareStatement(sql3);</span><br><span class="line">		<span class="type">ResultSet</span> <span class="variable">resultSet3</span> <span class="operator">=</span> prepared3.executeQuery();</span><br><span class="line">		<span class="type">double</span>[] allConsume =<span class="keyword">new</span> <span class="title class_">double</span>[<span class="number">12</span>];</span><br><span class="line">		<span class="keyword">while</span>(resultSet3.next()) &#123;</span><br><span class="line">			allConsume[resultSet3.getInt(<span class="string">&quot;m&quot;</span>)-<span class="number">1</span>]= resultSet3.getBigDecimal(<span class="string">&quot;s&quot;</span>).doubleValue();</span><br><span class="line">		&#125;</span><br><span class="line">		JDBC_Util.clossJDBC(conn, prepared3, resultSet3);</span><br><span class="line">		</span><br><span class="line">		<span class="type">JSONObject</span> <span class="variable">allSerie</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">JSONObject</span>();</span><br><span class="line">		</span><br><span class="line">		allSerie.put(<span class="string">&quot;name&quot;</span>, <span class="string">&quot;月总消费&quot;</span>);</span><br><span class="line">		allSerie.put(<span class="string">&quot;type&quot;</span>, <span class="string">&quot;line&quot;</span>);</span><br><span class="line">		allSerie.put(<span class="string">&quot;stack&quot;</span>, <span class="string">&quot;总量&quot;</span>);</span><br><span class="line">		allSerie.put(<span class="string">&quot;areaStyle&quot;</span>, <span class="keyword">new</span> <span class="title class_">JSONObject</span>());</span><br><span class="line">		allSerie.put(<span class="string">&quot;data&quot;</span>, allConsume);</span><br><span class="line">		<span class="comment">//将月总消费的相应的参数存入allSerie对象并存入series数组</span></span><br><span class="line">	    series.add(allSerie);</span><br><span class="line"></span><br><span class="line">	    <span class="comment">//创建jsonData数组保存legendData和series数组并返回</span></span><br><span class="line">		<span class="type">JSONArray</span> <span class="variable">jsonData</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">JSONArray</span>();</span><br><span class="line">		jsonData.add(legendData);</span><br><span class="line">		jsonData.add(series);</span><br><span class="line"></span><br><span class="line">		<span class="keyword">return</span> jsonData;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>效果图:<img src="https://img-blog.csdn.net/20181018101903557?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="在这里插入图片描述"></p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>brbai</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://br-bai.github.io/2018/10/18/ECharts%E4%BD%BF%E7%94%A8Ajax%E5%8A%A8%E6%80%81%E8%BD%BD%E5%85%A5%E5%9B%BE%E8%A1%A8%E6%95%B0%E6%8D%AE/">https://br-bai.github.io/2018/10/18/ECharts%E4%BD%BF%E7%94%A8Ajax%E5%8A%A8%E6%80%81%E8%BD%BD%E5%85%A5%E5%9B%BE%E8%A1%A8%E6%95%B0%E6%8D%AE/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright ©2019 白鸿源个人网站(www.baihy.com). All Rights Reserved.</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Make excellence a habit.</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Java/"># Java</a>
+                    
+                        <a href="/tags/Echarts/"># Echarts</a>
+                    
+                        <a href="/tags/Ajax/"># Ajax</a>
+                    
+                        <a href="/tags/Servlet/"># Servlet</a>
+                    
+                        <a href="/tags/JSP/"># JSP</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2018/10/19/Java%E4%B8%ADIO%E6%B5%81%E6%80%BB%E7%BB%93/">Java中IO流总结</a>
+            
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+   
+
+    <div class="copyright">
+        <span>© 2019 <a href="https://www.baihy.com" target="_blank">brbai</a> | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    
+	
+       		 <span class="post-meta-divider"> | </span>
+		 <!-- 不蒜子统计 -->
+       		 <span id="busuanzi_container_site_pv">
+                	Pageviews:<span id="busuanzi_value_site_pv"></span>
+	        </span>
+        	<span class="post-meta-divider">&</span>
+       		 <span id="busuanzi_container_site_uv" style='display:none'>
+                	Visitors:<span id="busuanzi_value_site_uv"></span>
+        	</span>
+        	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+   	 
+
+	
+
+
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>

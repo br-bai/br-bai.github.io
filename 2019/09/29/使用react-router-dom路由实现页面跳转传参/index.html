@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width,user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="google-site-verification" content="CJVFgKvg7DR1-BcZBWyXCBGarPIaFkj6TCRZfg5koC0" />
+<meta name="baidu-site-verification" content="Y5fkV0dnwS" />
+
+    <meta name="author" content="brbai">
+
+
+
+
+    <meta name="keywords" content="blog,个人博客,博客">
+
+
+<title>使用react-router-dom路由实现页面跳转传参 | brbai</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 8.1.1"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const pagebody = document.getElementsByTagName('body')[0]
+
+            function setTheme(status) {
+
+                if (status === 'dark') {
+                    window.sessionStorage.theme = 'dark'
+                    pagebody.classList.add('dark-theme');
+
+                } else if (status === 'light') {
+                    window.sessionStorage.theme = 'light'
+                    pagebody.classList.remove('dark-theme');
+                }
+            };
+
+            setTheme(window.sessionStorage.theme)
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">brbai&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                <a class="menu-item" href="/archives">Posts</a>
+                
+                <a class="menu-item" href="/category">Categories</a>
+                
+                <a class="menu-item" href="/tag">Tags</a>
+                
+                <a class="menu-item" href="/about">About</a>
+                
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">brbai&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">
+                    <svg class="menu-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M4.5 17.27q-.213 0-.356-.145T4 16.768t.144-.356t.356-.143h15q.213 0 .356.144q.144.144.144.357t-.144.356t-.356.143zm0-4.77q-.213 0-.356-.144T4 11.999t.144-.356t.356-.143h15q.213 0 .356.144t.144.357t-.144.356t-.356.143zm0-4.77q-.213 0-.356-.143Q4 7.443 4 7.23t.144-.356t.356-.143h15q.213 0 .356.144T20 7.23t-.144.356t-.356.144z"/></svg>
+                    <svg class="close-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Material Symbols Light by Google - https://github.com/google/material-design-icons/blob/master/LICENSE --><path fill="currentColor" d="m12 12.708l-5.246 5.246q-.14.14-.344.15t-.364-.15t-.16-.354t.16-.354L11.292 12L6.046 6.754q-.14-.14-.15-.344t.15-.364t.354-.16t.354.16L12 11.292l5.246-5.246q.14-.14.345-.15q.203-.01.363.15t.16.354t-.16.354L12.708 12l5.246 5.246q.14.14.15.345q.01.203-.15.363t-.354.16t-.354-.16z"/></svg>
+                </div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                <a class="menu-item" href="/archives">Posts</a>
+                
+                <a class="menu-item" href="/category">Categories</a>
+                
+                <a class="menu-item" href="/tag">Tags</a>
+                
+                <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if (toggleMenu.classList.contains("active")) {
+            toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        } else {
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">使用react-router-dom路由实现页面跳转传参</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">brbai</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">September 29, 2019&nbsp;&nbsp;17:46:19</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E5%89%8D%E7%AB%AF%E6%A1%86%E6%9E%B6/">前端框架</a>
+                            
+                        </span>
+                    
+		  
+                         <!-- 不蒜子统计 -->
+                        <span id="busuanzi_container_page_pv" style='display:none' ">
+                         Views:
+                                <a href="#"><span id="busuanzi_value_page_pv"></span></a>
+                        </span>
+                   
+
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h3 id="BrowserRouter和HashRouter路由模式"><a href="#BrowserRouter和HashRouter路由模式" class="headerlink" title="BrowserRouter和HashRouter路由模式"></a>BrowserRouter和HashRouter路由模式</h3><ul>
+<li>BrowserRouter<ul>
+<li>如果前端使用了browserRouter,每次改变路由时，会向服务器发送请求，因为服务器未配置对应的路径指向对应的文件，自然导致出现404的情况.(对于初始化页面,即路由为&#x2F;时,不会发送请求)</li>
+</ul>
+</li>
+<li>HashRouter<ul>
+<li>由于hashRouter会在路径上添加<code>#</code>分隔路径，而<code>#</code>后面的所有请求都不会发送到服务器端，即对于服务器而言，路径依旧是localhost:3000，路由切换在前端完成。</li>
+</ul>
+</li>
+</ul>
+<p>如果做服务端渲染的话建议使用BrowserRouter, 在开发阶段可以在webpack devServer中配置<code>historyApiFallback: true</code>，或者在使用BrowserRouter需要再加一层服务器配置(node&#x2F;nginx),让前端发送的请求映射到对应的html文件上。不然还是建议用HashRouter。</p>
+<h4 id="HashRouter路由"><a href="#HashRouter路由" class="headerlink" title="HashRouter路由"></a>HashRouter路由</h4><ul>
+<li><strong>新建两个js文件，分别命名为“home”和“other”</strong></li>
+</ul>
+<blockquote>
+<p><strong>home.js文件</strong></p>
+</blockquote>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="title class_">React</span> <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">class</span> <span class="title class_">Home</span> <span class="keyword">extends</span> <span class="title class_ inherited__">React.Component</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="title function_">constructor</span>(<span class="params">props</span>)&#123;</span><br><span class="line">        <span class="variable language_">super</span>(props);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="title function_">render</span>(<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> (</span><br><span class="line">            <span class="language-xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">                &#123;/* 地址栏跳转 */&#125;</span></span><br><span class="line"><span class="language-xml">                &#123;/* <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&#x27;#/other/1&#x27;</span>&gt;</span>跳转到other页面<span class="tag">&lt;/<span class="name">a</span>&gt;</span> */&#125;</span></span><br><span class="line"><span class="language-xml"></span></span><br><span class="line"><span class="language-xml">                <span class="tag">&lt;<span class="name">button</span> <span class="attr">onClick</span>=<span class="string">&#123;</span> ()=&gt;</span>&#123;</span></span><br><span class="line"><span class="language-xml">                    this.props.history.push(&#123;</span></span><br><span class="line"><span class="language-xml">                        pathname : &#x27;/other&#x27;,</span></span><br><span class="line"><span class="language-xml">                        state :&#123;</span></span><br><span class="line"><span class="language-xml">                            id:3</span></span><br><span class="line"><span class="language-xml">                        &#125;</span></span><br><span class="line"><span class="language-xml">                    &#125;);</span></span><br><span class="line"><span class="language-xml"></span></span><br><span class="line"><span class="language-xml">                    //在可能会出现死循环的地方使用replace来跳转</span></span><br><span class="line"><span class="language-xml">                    // this.props.history.replace(&#x27;/other&#x27;);</span></span><br><span class="line"><span class="language-xml">                    // this.props.history.replace(&#123;</span></span><br><span class="line"><span class="language-xml">                    //     pathname:&#x27;/other&#x27;,</span></span><br><span class="line"><span class="language-xml">                    //     state : &#123;</span></span><br><span class="line"><span class="language-xml">                    //         id:4</span></span><br><span class="line"><span class="language-xml">                    //     &#125;</span></span><br><span class="line"><span class="language-xml">                    // &#125;);</span></span><br><span class="line"><span class="language-xml"></span></span><br><span class="line"><span class="language-xml">                    //返回上级页面</span></span><br><span class="line"><span class="language-xml">                    // this.props.history.goBack();</span></span><br><span class="line"><span class="language-xml">                    &#125;</span></span><br><span class="line"><span class="language-xml">            &#125;&gt; 使用函数跳转到other页面 <span class="tag">&lt;/<span class="name">button</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">            <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">        )</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><strong>other.js文件</strong></p>
+</blockquote>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="title class_">React</span> <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">class</span> <span class="title class_">Other</span> <span class="keyword">extends</span> <span class="title class_ inherited__">React.Component</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="title function_">constructor</span>(<span class="params">props</span>)&#123;</span><br><span class="line">        <span class="variable language_">super</span>(props);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="title function_">componentDidMount</span>(<span class="params"></span>)&#123;</span><br><span class="line">        <span class="comment">//地址栏跳转传参</span></span><br><span class="line">        <span class="comment">// console.log(this.props.match.params);</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">//函数跳转传参</span></span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="variable language_">this</span>.<span class="property">props</span>.<span class="property">history</span>.<span class="property">location</span>.<span class="property">state</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="title function_">render</span>(<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> (</span><br><span class="line">            <span class="language-xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">                <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&#x27;#/&#x27;</span>&gt;</span>回到home页面<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">            <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">        )</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>新建一个HashRouter路由组件</strong><blockquote>
+<p>Router.js文件</p>
+</blockquote>
+</li>
+</ul>
+ <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="title class_">React</span> <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123;<span class="title class_">HashRouter</span>, <span class="title class_">Route</span>, <span class="title class_">Switch</span>&#125; <span class="keyword">from</span> <span class="string">&#x27;react-router-dom&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="title class_">Home</span> <span class="keyword">from</span> <span class="string">&#x27;./home&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="title class_">Other</span> <span class="keyword">from</span> <span class="string">&#x27;./other&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">BasicRoute</span> = (<span class="params"></span>) =&gt; (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">HashRouter</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;<span class="name">Switch</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">            <span class="tag">&lt;<span class="name">Route</span> <span class="attr">exact</span> <span class="attr">path</span>=<span class="string">&quot;/&quot;</span> <span class="attr">component</span>=<span class="string">&#123;Home&#125;/</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">            <span class="tag">&lt;<span class="name">Route</span> <span class="attr">exact</span> <span class="attr">path</span>=<span class="string">&quot;/other&quot;</span> <span class="attr">component</span>=<span class="string">&#123;Other&#125;/</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">            &#123;/* 地址栏跳转传参 */&#125;</span></span><br><span class="line"><span class="language-xml">            &#123;/* <span class="tag">&lt;<span class="name">Route</span> <span class="attr">exact</span> <span class="attr">path</span>=<span class="string">&quot;/other/:id&quot;</span> <span class="attr">component</span>=<span class="string">&#123;Other&#125;/</span>&gt;</span> */&#125;</span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;/<span class="name">Switch</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">HashRouter</span>&gt;</span></span></span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="title class_">BasicRoute</span>;</span><br></pre></td></tr></table></figure>
+<p> 以上定义了一个HashRouter路由组件，将两个页面组件Home和Other使用Route组件包裹，外面套用Switch作路由匹配，当路由组件检测到地址栏与Route的path匹配时，就会自动加载响应的页面。</p>
+<ul>
+<li><strong>在入口文件index.js中配置</strong></li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="title class_">React</span> <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="title class_">ReactDOM</span> <span class="keyword">from</span> <span class="string">&#x27;react-dom&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="string">&#x27;./index.css&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="title class_">Router</span> <span class="keyword">from</span> <span class="string">&#x27;./Router&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="title class_">ReactDOM</span>.<span class="title function_">render</span>(</span><br><span class="line">	<span class="language-xml"><span class="tag">&lt;<span class="name">Router</span> /&gt;</span></span>,</span><br><span class="line">	<span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;root&#x27;</span>)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<h6 id="页面跳转："><a href="#页面跳转：" class="headerlink" title="页面跳转："></a>页面跳转：</h6><ul>
+<li><p>a标签跳转：<code>&lt;a href=&#39;#/&#39;&gt;回到home&lt;/a&gt;</code></p>
+</li>
+<li><p>函数跳转：</p>
+<ul>
+<li><code>this.props.history.push(&#39;/other&#39;);</code></li>
+<li><code>this.props.history.replace(&#39;/other&#39;);</code>&#x2F;&#x2F;避免重复使用push或a标签跳转产生死循环时使用</li>
+<li><code>this.props.history.goBack(&#39;/other&#39;);</code>&#x2F;&#x2F;返回上级页面</li>
+</ul>
+</li>
+</ul>
+<h6 id="跳转传参："><a href="#跳转传参：" class="headerlink" title="跳转传参："></a>跳转传参：</h6><ul>
+<li>url传参<ul>
+<li>路由组件配置<code>&lt;Route exact path=&quot;/other/:id&quot; component={Other}/&gt;</code>跳转时配置<code>&lt;a href=&#39;#/other/1&#39;&gt;跳转到other页面&lt;/a&gt;</code>，react-router-dom就是通过<code>/:</code>去匹配url传递的参数</li>
+</ul>
+</li>
+<li>函数隐式传参<ul>
+<li>向跳转函数添加参数（以push()函数为例）<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"> 	<span class="comment">//push()与replace()、goBack()同理</span></span><br><span class="line"> <span class="variable language_">this</span>.<span class="property">props</span>.<span class="property">history</span>.<span class="title function_">push</span>(&#123;</span><br><span class="line">     pathname : <span class="string">&#x27;/other&#x27;</span>,</span><br><span class="line">     state :&#123;</span><br><span class="line">           <span class="attr">id</span>:<span class="number">3</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+ 查看参数集：<ul>
+<li>url传参方式：<code>this.props.match.params</code></li>
+</ul>
+</li>
+<li>函数隐式传参方式：<code>this.props.history.location.state</code></li>
+</ul>
+</li>
+</ul>
+<hr>
+<h4 id="BrowserRouter路由"><a href="#BrowserRouter路由" class="headerlink" title="BrowserRouter路由"></a>BrowserRouter路由</h4><ul>
+<li><strong>修改Router.js文件，成为一个BrowserRouter路由组件</strong><blockquote>
+<p>Router.js文件</p>
+</blockquote>
+</li>
+</ul>
+ <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="title class_">React</span> <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123;<span class="title class_">BrowserRouter</span>, <span class="title class_">Route</span>, <span class="title class_">Switch</span>&#125; <span class="keyword">from</span> <span class="string">&#x27;react-router-dom&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="title class_">Home</span> <span class="keyword">from</span> <span class="string">&#x27;./home&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="title class_">Other</span> <span class="keyword">from</span> <span class="string">&#x27;./other&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">BasicRoute</span> = (<span class="params"></span>) =&gt; (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">HashRouter</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;<span class="name">BrowserRouter</span>&gt;</span>     </span></span><br><span class="line"><span class="language-xml">	    <span class="tag">&lt;<span class="name">Route</span>  <span class="attr">exact</span>  <span class="attr">path</span>=<span class="string">&quot;/&quot;</span>   <span class="attr">component</span>=<span class="string">&#123;Home&#125;/</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">	    <span class="tag">&lt;<span class="name">Route</span>  <span class="attr">path</span>=<span class="string">&quot;/other&quot;</span>  <span class="attr">name</span>=<span class="string">&quot;other&quot;</span> <span class="attr">component</span>=<span class="string">&#123;Other&#125;/</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">	    <span class="tag">&lt;/<span class="name">BrowserRouter</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">HashRouter</span>&gt;</span></span></span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="title class_">BasicRoute</span>;</span><br></pre></td></tr></table></figure>
+<h6 id="页面跳转：-1"><a href="#页面跳转：-1" class="headerlink" title="页面跳转："></a>页面跳转：</h6><ul>
+<li><p>a标签跳转：<code>&lt;Link exact to=&quot;/other&quot;&gt;点击跳转&lt;/Link&gt;</code>，<strong>注意：</strong> 引入<code>import {Link} from &#39;react-router-dom&#39;;</code></p>
+</li>
+<li><p>函数跳转：与<strong>HashRouter</strong>路由方式相同</p>
+</li>
+</ul>
+<h6 id="跳转传参：-1"><a href="#跳转传参：-1" class="headerlink" title="跳转传参："></a>跳转传参：</h6><ul>
+<li><p>url传参</p>
+<ul>
+<li>HTML方式：<code>&lt;Link to={ pathname : &#39; /user&#39; , state : { day: &#39;Friday&#39; }}&gt;点击跳转&lt;/Link&gt; </code>，<strong>注意：</strong> 引入<code>import {Link} from &#39;react-router-dom&#39;;</code></li>
+</ul>
+</li>
+<li><p>函数隐式传参</p>
+<ul>
+<li>向跳转函数添加参数与<strong>HashRouter</strong>路由方式相同</li>
+</ul>
+<p> 查看参数集：</p>
+<ul>
+<li>函数隐式传参方式：与<strong>HashRouter</strong>路由方式相同</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>brbai</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://br-bai.github.io/2019/09/29/%E4%BD%BF%E7%94%A8react-router-dom%E8%B7%AF%E7%94%B1%E5%AE%9E%E7%8E%B0%E9%A1%B5%E9%9D%A2%E8%B7%B3%E8%BD%AC%E4%BC%A0%E5%8F%82/">https://br-bai.github.io/2019/09/29/%E4%BD%BF%E7%94%A8react-router-dom%E8%B7%AF%E7%94%B1%E5%AE%9E%E7%8E%B0%E9%A1%B5%E9%9D%A2%E8%B7%B3%E8%BD%AC%E4%BC%A0%E5%8F%82/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright ©2019 白鸿源个人网站(www.baihy.com). All Rights Reserved.</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Make excellence a habit.</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/React/"># React</a>
+                    
+                        <a href="/tags/react-router-dom/"># react-router-dom</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2019/10/24/Swagger%E9%9B%86%E6%88%90%E5%8F%8A%E5%B8%B8%E7%94%A8%E6%B3%A8%E8%A7%A3%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF/">Swagger集成及常用注解使用场景</a>
+            
+            
+            <a class="next" rel="next" href="/2019/09/24/Java%E5%8F%91%E9%80%81%E9%82%AE%E4%BB%B6%EF%BC%8C%E4%BC%98%E7%BE%8Ehtml%E9%82%AE%E4%BB%B6%E6%A8%A1%E6%9D%BF%E5%88%86%E4%BA%AB/">Java发送邮件，优美HTML邮件模板分享</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+   
+
+    <div class="copyright">
+        <span>© 2019 <a href="https://www.baihy.com" target="_blank">brbai</a> | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    
+	
+       		 <span class="post-meta-divider"> | </span>
+		 <!-- 不蒜子统计 -->
+       		 <span id="busuanzi_container_site_pv">
+                	Pageviews:<span id="busuanzi_value_site_pv"></span>
+	        </span>
+        	<span class="post-meta-divider">&</span>
+       		 <span id="busuanzi_container_site_uv" style='display:none'>
+                	Visitors:<span id="busuanzi_value_site_uv"></span>
+        	</span>
+        	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+   	 
+
+	
+
+
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width,user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="google-site-verification" content="CJVFgKvg7DR1-BcZBWyXCBGarPIaFkj6TCRZfg5koC0" />
+<meta name="baidu-site-verification" content="Y5fkV0dnwS" />
+
+    <meta name="author" content="brbai">
+
+
+
+
+    <meta name="keywords" content="blog,个人博客,博客">
+
+
+<title>Java发送邮件，优美HTML邮件模板分享 | brbai</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 8.1.1"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const pagebody = document.getElementsByTagName('body')[0]
+
+            function setTheme(status) {
+
+                if (status === 'dark') {
+                    window.sessionStorage.theme = 'dark'
+                    pagebody.classList.add('dark-theme');
+
+                } else if (status === 'light') {
+                    window.sessionStorage.theme = 'light'
+                    pagebody.classList.remove('dark-theme');
+                }
+            };
+
+            setTheme(window.sessionStorage.theme)
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">brbai&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                <a class="menu-item" href="/archives">Posts</a>
+                
+                <a class="menu-item" href="/category">Categories</a>
+                
+                <a class="menu-item" href="/tag">Tags</a>
+                
+                <a class="menu-item" href="/about">About</a>
+                
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">brbai&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">
+                    <svg class="menu-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M4.5 17.27q-.213 0-.356-.145T4 16.768t.144-.356t.356-.143h15q.213 0 .356.144q.144.144.144.357t-.144.356t-.356.143zm0-4.77q-.213 0-.356-.144T4 11.999t.144-.356t.356-.143h15q.213 0 .356.144t.144.357t-.144.356t-.356.143zm0-4.77q-.213 0-.356-.143Q4 7.443 4 7.23t.144-.356t.356-.143h15q.213 0 .356.144T20 7.23t-.144.356t-.356.144z"/></svg>
+                    <svg class="close-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Material Symbols Light by Google - https://github.com/google/material-design-icons/blob/master/LICENSE --><path fill="currentColor" d="m12 12.708l-5.246 5.246q-.14.14-.344.15t-.364-.15t-.16-.354t.16-.354L11.292 12L6.046 6.754q-.14-.14-.15-.344t.15-.364t.354-.16t.354.16L12 11.292l5.246-5.246q.14-.14.345-.15q.203-.01.363.15t.16.354t-.16.354L12.708 12l5.246 5.246q.14.14.15.345q.01.203-.15.363t-.354.16t-.354-.16z"/></svg>
+                </div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                <a class="menu-item" href="/archives">Posts</a>
+                
+                <a class="menu-item" href="/category">Categories</a>
+                
+                <a class="menu-item" href="/tag">Tags</a>
+                
+                <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if (toggleMenu.classList.contains("active")) {
+            toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        } else {
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Java发送邮件，优美HTML邮件模板分享</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">brbai</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">September 24, 2019&nbsp;&nbsp;13:20:10</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E5%8A%9F%E8%83%BD%E5%BC%80%E5%8F%91/">功能开发</a>
+                            
+                        </span>
+                    
+		  
+                         <!-- 不蒜子统计 -->
+                        <span id="busuanzi_container_page_pv" style='display:none' ">
+                         Views:
+                                <a href="#"><span id="busuanzi_value_page_pv"></span></a>
+                        </span>
+                   
+
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>以前有用JavaMail写过发送html邮件，当时在benchmark自己设计了个html模板，分享记录一下。</p>
+<ul>
+<li><ul>
+<li><ul>
+<li><pre><code>2020-12-03 更新
+</code></pre>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>最近做了一个email通知功能，又优化设计了一下之前的邮件通知模板。<br>效果如下:<br><img src="https://img-blog.csdnimg.cn/20201203095903688.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>以上模板的html文件下载<br><a target="_blank" rel="noopener" href="https://gitee.com/bhy702/email-template.html">https://gitee.com/bhy702/email-template.html</a></p>
+<p><strong>以上html邮件模板对应的html邮件发送代码可参考</strong>：<a href="https://br-bai.github.io/2020/12/03/springboot%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%BC%82%E6%AD%A5%E5%8F%91%E9%80%81email%EF%BC%8Chtml%E6%A8%A1%E6%9D%BF%E6%B8%B2%E6%9F%93/">SpringBoot多线程异步发送Email，HTML模板渲染</a></p>
+<hr>
+<ul>
+<li><ul>
+<li><ul>
+<li><pre><code>原文
+</code></pre>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>以下模板的邮件通知演示地址：<a target="_blank" rel="noopener" href="https://www.bhy702.com/">点这里</a>   点击联系我，留言后，会接收到访客留言反馈邮件。</p>
+<p>预览：</p>
+<blockquote>
+<p>访客反馈端</p>
+</blockquote>
+<p><img src="https://img-blog.csdnimg.cn/20190924124654993.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>以上模板的html文件下载<br><a target="_blank" rel="noopener" href="http://47.100.105.124:8000/s/YELgHaSBNtRxXFr">下载点这里</a><br>云盘密码: <code>emailpw1</code></p>
+<hr>
+<blockquote>
+<p>留言通知端</p>
+</blockquote>
+<p><img src="https://img-blog.csdnimg.cn/20190924124840874.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>以上模板的html文件下载<br><a target="_blank" rel="noopener" href="http://47.100.105.124:8000/s/Fia3FJdPkz9xQna">下载点这里</a><br>密码: <code>emailpw2</code></p>
+<hr>
+<ul>
+<li>2020-12-03  建议使用springboot+thymeleaf完成模板的变量数据填充，完善代码可参考上面最新的html邮件发送代码链接。</li>
+</ul>
+<p>Java实现发送html邮件可参考博客<a href="https://br-bai.github.io/2019/01/17/SpringBoot%E4%BD%BF%E7%94%A8JavaMailSender%E5%AE%9E%E7%8E%B0%E5%8F%91%E9%80%81%E9%82%AE%E4%BB%B6%E5%8A%9F%E8%83%BD/">SpringBoot使用JavaMailSender实现发送邮件功能</a>，<strong>【注意】</strong> 需要将博客中邮件发送方法sendSimpleMail改为以下sendHtmlMail方法实现即可。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 发送html格式邮件</span></span><br><span class="line">   <span class="keyword">public</span> <span class="keyword">static</span> JsonResult <span class="title function_">sendHtmlMail</span><span class="params">(JavaMailSender javaMailSender,String email, String subject, String content)</span> &#123;</span><br><span class="line"></span><br><span class="line">       <span class="type">MimeMessage</span> <span class="variable">message</span> <span class="operator">=</span> javaMailSender.createMimeMessage();</span><br><span class="line">       <span class="keyword">try</span> &#123;</span><br><span class="line">           <span class="comment">//true表示需要创建一个multipart message</span></span><br><span class="line">           <span class="type">MimeMessageHelper</span> <span class="variable">helper</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">MimeMessageHelper</span>(message, <span class="literal">true</span>);</span><br><span class="line">           helper.setFrom(<span class="string">&quot;xxx&quot;</span>+<span class="string">&quot;&lt;&quot;</span>+<span class="string">&quot;xxxxxxx@qq.com&quot;</span>+<span class="string">&quot;&gt;&quot;</span>);</span><br><span class="line">           helper.setTo(email);</span><br><span class="line">           helper.setSubject(subject);</span><br><span class="line">           helper.setText(content, <span class="literal">true</span>);</span><br><span class="line"></span><br><span class="line">           javaMailSender.send(message);</span><br><span class="line">       &#125; <span class="keyword">catch</span> (MessagingException e) &#123;</span><br><span class="line">           e.printStackTrace();</span><br><span class="line">           <span class="keyword">return</span> JsonResult.error(<span class="string">&quot;哎呀~邮件服务器抽风了&quot;</span>);</span><br><span class="line">       &#125; <span class="keyword">catch</span> (MailAuthenticationException e) &#123;</span><br><span class="line">           e.printStackTrace();</span><br><span class="line">           <span class="keyword">return</span> JsonResult.error(<span class="string">&quot;哎呀~邮件服务器抽风了&quot;</span>);</span><br><span class="line">       &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">           e.printStackTrace();</span><br><span class="line">           <span class="keyword">return</span> JsonResult.error(<span class="string">&quot;邮件发送失败&quot;</span>);</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="keyword">return</span> JsonResult.success(<span class="string">&quot;邮件发送成功&quot;</span>);</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<hr>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>brbai</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://br-bai.github.io/2019/09/24/Java%E5%8F%91%E9%80%81%E9%82%AE%E4%BB%B6%EF%BC%8C%E4%BC%98%E7%BE%8Ehtml%E9%82%AE%E4%BB%B6%E6%A8%A1%E6%9D%BF%E5%88%86%E4%BA%AB/">https://br-bai.github.io/2019/09/24/Java%E5%8F%91%E9%80%81%E9%82%AE%E4%BB%B6%EF%BC%8C%E4%BC%98%E7%BE%8Ehtml%E9%82%AE%E4%BB%B6%E6%A8%A1%E6%9D%BF%E5%88%86%E4%BA%AB/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright ©2019 白鸿源个人网站(www.baihy.com). All Rights Reserved.</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Make excellence a habit.</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Java/"># Java</a>
+                    
+                        <a href="/tags/Java-Mail/"># Java Mail</a>
+                    
+                        <a href="/tags/%E9%82%AE%E4%BB%B6%E6%A8%A1%E6%9D%BF/"># 邮件模板</a>
+                    
+                        <a href="/tags/HTML/"># HTML</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2019/09/29/%E4%BD%BF%E7%94%A8react-router-dom%E8%B7%AF%E7%94%B1%E5%AE%9E%E7%8E%B0%E9%A1%B5%E9%9D%A2%E8%B7%B3%E8%BD%AC%E4%BC%A0%E5%8F%82/">使用react-router-dom路由实现页面跳转传参</a>
+            
+            
+            <a class="next" rel="next" href="/2019/09/11/Linux%E7%B3%BB%E7%BB%9FTomcat%E6%89%A7%E8%A1%8Cshutdown.sh%E6%97%B6%E6%8A%A5%E9%94%99java.net.ConnectException_Connection%20refused/">Linux系统Tomcat执行shutdown.sh时报错java.net.ConnectException_Connection refused</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+   
+
+    <div class="copyright">
+        <span>© 2019 <a href="https://www.baihy.com" target="_blank">brbai</a> | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    
+	
+       		 <span class="post-meta-divider"> | </span>
+		 <!-- 不蒜子统计 -->
+       		 <span id="busuanzi_container_site_pv">
+                	Pageviews:<span id="busuanzi_value_site_pv"></span>
+	        </span>
+        	<span class="post-meta-divider">&</span>
+       		 <span id="busuanzi_container_site_uv" style='display:none'>
+                	Visitors:<span id="busuanzi_value_site_uv"></span>
+        	</span>
+        	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+   	 
+
+	
+
+
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>

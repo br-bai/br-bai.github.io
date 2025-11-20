@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width,user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="google-site-verification" content="CJVFgKvg7DR1-BcZBWyXCBGarPIaFkj6TCRZfg5koC0" />
+<meta name="baidu-site-verification" content="Y5fkV0dnwS" />
+
+    <meta name="author" content="brbai">
+
+
+
+
+    <meta name="keywords" content="blog,个人博客,博客">
+
+
+<title>Java实现代码自动生成工具，基于Spring Boot | brbai</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 8.1.1"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const pagebody = document.getElementsByTagName('body')[0]
+
+            function setTheme(status) {
+
+                if (status === 'dark') {
+                    window.sessionStorage.theme = 'dark'
+                    pagebody.classList.add('dark-theme');
+
+                } else if (status === 'light') {
+                    window.sessionStorage.theme = 'light'
+                    pagebody.classList.remove('dark-theme');
+                }
+            };
+
+            setTheme(window.sessionStorage.theme)
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">brbai&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                <a class="menu-item" href="/archives">Posts</a>
+                
+                <a class="menu-item" href="/category">Categories</a>
+                
+                <a class="menu-item" href="/tag">Tags</a>
+                
+                <a class="menu-item" href="/about">About</a>
+                
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">brbai&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">
+                    <svg class="menu-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M4.5 17.27q-.213 0-.356-.145T4 16.768t.144-.356t.356-.143h15q.213 0 .356.144q.144.144.144.357t-.144.356t-.356.143zm0-4.77q-.213 0-.356-.144T4 11.999t.144-.356t.356-.143h15q.213 0 .356.144t.144.357t-.144.356t-.356.143zm0-4.77q-.213 0-.356-.143Q4 7.443 4 7.23t.144-.356t.356-.143h15q.213 0 .356.144T20 7.23t-.144.356t-.356.144z"/></svg>
+                    <svg class="close-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Material Symbols Light by Google - https://github.com/google/material-design-icons/blob/master/LICENSE --><path fill="currentColor" d="m12 12.708l-5.246 5.246q-.14.14-.344.15t-.364-.15t-.16-.354t.16-.354L11.292 12L6.046 6.754q-.14-.14-.15-.344t.15-.364t.354-.16t.354.16L12 11.292l5.246-5.246q.14-.14.345-.15q.203-.01.363.15t.16.354t-.16.354L12.708 12l5.246 5.246q.14.14.15.345q.01.203-.15.363t-.354.16t-.354-.16z"/></svg>
+                </div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                <a class="menu-item" href="/archives">Posts</a>
+                
+                <a class="menu-item" href="/category">Categories</a>
+                
+                <a class="menu-item" href="/tag">Tags</a>
+                
+                <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if (toggleMenu.classList.contains("active")) {
+            toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        } else {
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Java实现代码自动生成工具，基于Spring Boot</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">brbai</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">December 26, 2019&nbsp;&nbsp;22:37:17</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E5%8A%9F%E8%83%BD%E5%BC%80%E5%8F%91/">功能开发</a>
+                            
+                        </span>
+                    
+		  
+                         <!-- 不蒜子统计 -->
+                        <span id="busuanzi_container_page_pv" style='display:none' ">
+                         Views:
+                                <a href="#"><span id="busuanzi_value_page_pv"></span></a>
+                        </span>
+                   
+
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h4 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h4><p>此项目主要解决在项目搭建初期，创建项目时很多代码手动创建太过繁琐，耗费不必要的开发时间。通过此代码生成工具可以自动生成相关代码，当然不局限于controller层、service层、entity层、mapper层的代码生成！因为<strong>本项目中自定义代码生成规则的配置比较简单，只需自定义模板并创建工厂实例即可</strong>。同时可自定义代码的生成路径，未设置则默认生成在本项目下（可更直观查看生成的结构效果，文末有效果图）。</p>
+<blockquote>
+<p>本项目基于SpringBoot，通过beetl模板引擎自动渲染生成代码。</p>
+</blockquote>
+<p>项目源码地址：<strong><a target="_blank" rel="noopener" href="https://gitee.com/bhy702/bhy702-generator">bhy702-generator</a></strong></p>
+<hr>
+<h5 id="项目结构"><a href="#项目结构" class="headerlink" title="项目结构"></a>项目结构</h5><p><img src="https://img-blog.csdnimg.cn/20191226205802952.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<hr>
+<h5 id="一：-导入pom文件相关依赖"><a href="#一：-导入pom文件相关依赖" class="headerlink" title="一： 导入pom文件相关依赖"></a>一： 导入pom文件相关依赖</h5><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.projectlombok<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>lombok<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">optional</span>&gt;</span>true<span class="tag">&lt;/<span class="name">optional</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-test<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">scope</span>&gt;</span>test<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- mybatis --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.mybatis.spring.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mybatis-spring-boot-starter<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.3.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.ibeetl<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>beetl-framework-starter<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.1.68.RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- 升级beetl的依赖，保证在1.8上不出现警告 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.antlr<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>antlr4-runtime<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>4.7.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>mysql<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mysql-connector-java<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<hr>
+<h5 id="二：-编写beetl配置类"><a href="#二：-编写beetl配置类" class="headerlink" title="二： 编写beetl配置类"></a>二： 编写beetl配置类</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span>: brbai</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@create</span>: 2019-10-16 17:12:45</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span>:</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">BeetlConfiguration</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Value(&quot;$&#123;beetl.template-path&#125;&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String templatePath;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Value(&quot;$&#123;beetl.delimiter-statement-start&#125;&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String delimiterStatementStart;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Value(&quot;$&#123;beetl.delimiter-statement-end&#125;&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String delimiterStatementEnd;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean(name = &quot;beetlConfig&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> BeetlGroupUtilConfiguration <span class="title function_">beetlGroupUtilConfiguration</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">BeetlGroupUtilConfiguration</span> <span class="variable">beetlGroupUtilConfiguration</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">BeetlGroupUtilConfiguration</span>();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Beetl的配置</span></span><br><span class="line">        <span class="type">Properties</span> <span class="variable">properties</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Properties</span>();</span><br><span class="line">        properties.setProperty(<span class="string">&quot;statementStart&quot;</span>,delimiterStatementStart);</span><br><span class="line">        properties.setProperty(<span class="string">&quot;statementEnd&quot;</span>,delimiterStatementEnd);</span><br><span class="line">        properties.setProperty(<span class="string">&quot;DELIMITER_STATEMENT_START&quot;</span>, delimiterStatementStart);</span><br><span class="line">        properties.setProperty(<span class="string">&quot;DELIMITER_STATEMENT_END&quot;</span>, delimiterStatementEnd);</span><br><span class="line">        beetlGroupUtilConfiguration.setConfigProperties(properties);</span><br><span class="line"></span><br><span class="line">        <span class="type">ClasspathResourceLoader</span> <span class="variable">resourceLoader</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ClasspathResourceLoader</span>(templatePath);</span><br><span class="line"></span><br><span class="line">        beetlGroupUtilConfiguration.setResourceLoader(resourceLoader);</span><br><span class="line">        <span class="comment">// 调用Beetl的初始化方法</span></span><br><span class="line">        beetlGroupUtilConfiguration.init();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> beetlGroupUtilConfiguration;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h5 id="三：-配置properties文件"><a href="#三：-配置properties文件" class="headerlink" title="三： 配置properties文件"></a>三： 配置properties文件</h5><p>application.properties文件：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">server.port=8090</span><br><span class="line">server.servlet.context-path=/</span><br><span class="line"></span><br><span class="line">spring.datasource.url=jdbc:mysql://localhost:3306/building_materials?useUnicode=true&amp;characterEncoding=UTF-8&amp;nullCatalogMeansCurrent=true&amp;tinyInt1isBit=false</span><br><span class="line">spring.datasource.username=root</span><br><span class="line">spring.datasource.password=bhy702</span><br><span class="line"></span><br><span class="line"># beetl模板引擎的加载路径。以resources为根路径，此时表示加载resources/template文件夹中的模板文件</span><br><span class="line">beetl.template-path = template</span><br><span class="line"># beetl模板引擎语法开始标记</span><br><span class="line">beetl.delimiter-statement-start = @</span><br><span class="line"># beetl模板引擎语法结束标记。为空时在有开始标记@的行末结束</span><br><span class="line">beetl.delimiter-statement-end =</span><br><span class="line"></span><br><span class="line"># 代码文件的保存路径，注释后默认保存在本项目中</span><br><span class="line">#project.base-path = F:\\360MoveData\\Users\\n551\\Desktop</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>为了便于查看代码生成效果，默认代码生成在此项目内，同时提供自定义代码生成位置。自定义代码生成位置只需配置<code>application.properties</code>中的<code>project.base-path</code></p>
+</blockquote>
+<hr>
+<h5 id="四：-设计代码模板（代码模板没限制，想怎么设计都行）"><a href="#四：-设计代码模板（代码模板没限制，想怎么设计都行）" class="headerlink" title="四： 设计代码模板（代码模板没限制，想怎么设计都行）"></a>四： 设计代码模板（代码模板没限制，想怎么设计都行）</h5><h6 id="下面以Entity-tpl代码模板文件为例："><a href="#下面以Entity-tpl代码模板文件为例：" class="headerlink" title="下面以Entity.tpl代码模板文件为例："></a>下面以<code>Entity.tpl</code>代码模板文件为例：</h6><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">package $&#123;props.params.packageName&#125;;</span><br><span class="line"></span><br><span class="line">import lombok.Data;</span><br><span class="line">@for(column in props.columnList)&#123;</span><br><span class="line">@if(column.type==&#x27;Date&#x27;)&#123;</span><br><span class="line">import java.util.Date;</span><br><span class="line">@break;</span><br><span class="line">@&#125;&#125;</span><br><span class="line"></span><br><span class="line">\@Data</span><br><span class="line">public class $&#123;props.className&#125;&#123;</span><br><span class="line"></span><br><span class="line">    @for(column in props.columnList)&#123;</span><br><span class="line">    private $&#123;column.type&#125; $&#123;column.lowerPropertyName&#125;;</span><br><span class="line"></span><br><span class="line">    @&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<hr>
+<h5 id="五：-根据代码模板确定所需参数数据，添加代码模板的工厂实例。"><a href="#五：-根据代码模板确定所需参数数据，添加代码模板的工厂实例。" class="headerlink" title="五： 根据代码模板确定所需参数数据，添加代码模板的工厂实例。"></a>五： 根据代码模板确定所需参数数据，添加代码模板的工厂实例。</h5><p>为了便于开发，我封装了一个模板所需的参数类<code>TplProperties</code></p>
+<h6 id="TplProperties参数类："><a href="#TplProperties参数类：" class="headerlink" title="TplProperties参数类："></a>TplProperties参数类：</h6><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span>: brbai</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@create</span>: 2019-12-26 11:13:42</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span>: 模板参数</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TplProperties</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String basePath;</span><br><span class="line">    <span class="keyword">private</span> String rootPackage;</span><br><span class="line">    <span class="keyword">private</span> String tableName;</span><br><span class="line">    <span class="keyword">private</span> List&lt;Column&gt; columnList;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Map&lt;String,Object&gt; params = <span class="keyword">new</span> <span class="title class_">HashMap</span>();;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 表名格式转换</span></span><br><span class="line"><span class="comment">     * xxx_yyy-&gt;XxxYyy</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> String className;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 表名格式转换</span></span><br><span class="line"><span class="comment">     * xxx_yyy-&gt;xxxYyy</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> String propertyName;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">TplProperties</span><span class="params">(String basePath, String rootPackage, String tableName, List&lt;Column&gt; columnList)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.basePath = basePath;</span><br><span class="line">        <span class="built_in">this</span>.rootPackage = rootPackage;</span><br><span class="line">        <span class="built_in">this</span>.tableName = tableName;</span><br><span class="line">        <span class="built_in">this</span>.columnList = columnList;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">TplProperties</span><span class="params">(String rootPackage, String tableName, List&lt;Column&gt; columnList)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.rootPackage = rootPackage;</span><br><span class="line">        <span class="built_in">this</span>.tableName = tableName;</span><br><span class="line">        <span class="built_in">this</span>.columnList = columnList;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getClassName</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> StringUtil.mapTableNameToClassName(tableName);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getPropertyName</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> StringUtil.mapTableNameToPropertyName(tableName);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setParam</span><span class="params">(String key,Object value)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.params.put(key,value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getBasePath</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">if</span>(basePath == <span class="literal">null</span>)&#123;</span><br><span class="line">            <span class="comment">//未在properties文件中设置代码生成路径时，代码默认生成在此项目下</span></span><br><span class="line">            <span class="keyword">return</span> System.getProperty(<span class="string">&quot;user.dir&quot;</span>) + <span class="string">&quot;/src&quot;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> basePath;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h6 id="工厂实例："><a href="#工厂实例：" class="headerlink" title="工厂实例："></a>工厂实例：</h6><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span>: brbai</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@create</span>: 2019-12-14 19:12:59</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span>:</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Entity</span> <span class="keyword">implements</span> <span class="title class_">Code</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">create</span><span class="params">(GroupTemplate gt, TplProperties properties, String tplPath)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line"></span><br><span class="line">        <span class="type">String</span> <span class="variable">packageName</span> <span class="operator">=</span>  properties.getRootPackage()+ <span class="string">&quot;.entity&quot;</span>;</span><br><span class="line">        properties.setParam(<span class="string">&quot;packageName&quot;</span>,packageName);</span><br><span class="line"></span><br><span class="line">        <span class="type">Template</span> <span class="variable">t</span> <span class="operator">=</span> gt.getTemplate(tplPath);</span><br><span class="line">        t.binding(<span class="string">&quot;props&quot;</span>, properties);</span><br><span class="line"></span><br><span class="line">        GenerateUtil.createFile(t,properties.getBasePath()+<span class="string">&quot;/main/java/&quot;</span></span><br><span class="line">                + packageName.replace(<span class="string">&quot;.&quot;</span>, <span class="string">&quot;/&quot;</span>) + <span class="string">&quot;/&quot;</span> + properties.getClassName() + <span class="string">&quot;.java&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h5 id="六：-识别数据库类型，读取数据库表结构"><a href="#六：-识别数据库类型，读取数据库表结构" class="headerlink" title="六： 识别数据库类型，读取数据库表结构"></a>六： 识别数据库类型，读取数据库表结构</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>: 获取数据库表结构</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Param</span>: [sqlSessionFactory]</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span>: java.util.Map&lt;java.lang.String,java.util.Map&lt;java.lang.String,java.lang.String&gt;&gt;</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> Map&lt;String, Map&lt;String, String&gt;&gt; <span class="title function_">getDatabaseAttribute</span><span class="params">(SqlSession sqlSession)</span> <span class="keyword">throws</span> SQLException &#123;</span><br><span class="line"></span><br><span class="line">    Map&lt;String, Map&lt;String, String&gt;&gt; databaseAttribute = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="type">Connection</span> <span class="variable">connection</span> <span class="operator">=</span> sqlSession.getConnection();</span><br><span class="line"></span><br><span class="line">    <span class="comment">//获得数据库信息</span></span><br><span class="line">    <span class="type">DatabaseMetaData</span> <span class="variable">metaData</span> <span class="operator">=</span> connection.getMetaData();</span><br><span class="line"></span><br><span class="line">    <span class="type">String</span> <span class="variable">databaseName</span> <span class="operator">=</span> metaData.getDatabaseProductName();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (<span class="string">&quot;MySQL&quot;</span>.equals(databaseName)) &#123;</span><br><span class="line">        <span class="comment">//获得数据库表</span></span><br><span class="line">        <span class="type">ResultSet</span> <span class="variable">resultSet</span> <span class="operator">=</span> metaData.getTables(<span class="literal">null</span>, <span class="literal">null</span>, <span class="literal">null</span>, <span class="keyword">new</span> <span class="title class_">String</span>[]&#123;<span class="string">&quot;TABLE&quot;</span>&#125;);</span><br><span class="line">        <span class="keyword">while</span> (resultSet.next()) &#123;</span><br><span class="line">            <span class="type">String</span> <span class="variable">tableName</span> <span class="operator">=</span> resultSet.getString(<span class="number">3</span>);</span><br><span class="line">            <span class="type">String</span> <span class="variable">sql</span> <span class="operator">=</span> <span class="string">&quot;SELECT * FROM &quot;</span> + tableName;</span><br><span class="line">            <span class="type">PreparedStatement</span> <span class="variable">preparedStatement</span> <span class="operator">=</span> connection.prepareStatement(sql);</span><br><span class="line">            <span class="type">ResultSet</span> <span class="variable">set</span> <span class="operator">=</span> preparedStatement.executeQuery();</span><br><span class="line">            <span class="comment">//获得表信息</span></span><br><span class="line">            <span class="type">ResultSetMetaData</span> <span class="variable">md</span> <span class="operator">=</span> set.getMetaData();</span><br><span class="line">            <span class="comment">//获得表字段数</span></span><br><span class="line">            <span class="type">int</span> <span class="variable">columnCount</span> <span class="operator">=</span> md.getColumnCount();</span><br><span class="line"></span><br><span class="line">            Map&lt;String, String&gt; attributes = <span class="keyword">new</span> <span class="title class_">LinkedHashMap</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">1</span>; i &lt;= columnCount; i++) &#123;</span><br><span class="line">                <span class="comment">//字段名</span></span><br><span class="line">                <span class="type">String</span> <span class="variable">columnName</span> <span class="operator">=</span> md.getColumnName(i);</span><br><span class="line">                <span class="comment">//字段属性</span></span><br><span class="line">                <span class="type">String</span> <span class="variable">columnType</span> <span class="operator">=</span> md.getColumnTypeName(i);</span><br><span class="line"></span><br><span class="line">                attributes.put(columnName, columnType);</span><br><span class="line">            &#125;</span><br><span class="line">            databaseAttribute.put(tableName,attributes);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;<span class="keyword">else</span> <span class="keyword">if</span>(<span class="string">&quot;Oracle&quot;</span>.equals(databaseName))&#123;</span><br><span class="line">    		<span class="comment">//DEVTEST是oracle的用户名。此Oracle代码还没怎么测试。</span></span><br><span class="line">            <span class="type">ResultSet</span> <span class="variable">rs</span> <span class="operator">=</span> metaData.getTables(<span class="string">&quot;null&quot;</span>, <span class="string">&quot;DEVTEST&quot;</span>, <span class="string">&quot;%&quot;</span>, <span class="keyword">new</span> <span class="title class_">String</span>[]&#123;<span class="string">&quot;TABLE&quot;</span>&#125;);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">while</span> (rs.next()) &#123;</span><br><span class="line">                <span class="type">String</span> <span class="variable">tableName</span> <span class="operator">=</span> rs.getString(<span class="string">&quot;TABLE_NAME&quot;</span>);</span><br><span class="line">                <span class="type">ResultSet</span> <span class="variable">columns</span> <span class="operator">=</span> metaData</span><br><span class="line">                        .getColumns(<span class="literal">null</span>, <span class="string">&quot;DEVTEST&quot;</span>, tableName, <span class="string">&quot;%&quot;</span>);</span><br><span class="line"></span><br><span class="line">                Map&lt;String, String&gt; attributes = <span class="keyword">new</span> <span class="title class_">LinkedHashMap</span>&lt;&gt;();</span><br><span class="line">                <span class="keyword">while</span> (columns.next()) &#123;</span><br><span class="line">                    attributes.put(columns.getString(<span class="string">&quot;COLUMN_NAME&quot;</span>), columns.getString(<span class="string">&quot;TYPE_NAME&quot;</span>));</span><br><span class="line">                &#125;</span><br><span class="line">                databaseAttribute.put(tableName, attributes);</span><br><span class="line">            &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> databaseAttribute;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h5 id="七：-数据清洗，设置生成代码的包名，获取工厂实例生成代码文件"><a href="#七：-数据清洗，设置生成代码的包名，获取工厂实例生成代码文件" class="headerlink" title="七： 数据清洗，设置生成代码的包名，获取工厂实例生成代码文件"></a>七： 数据清洗，设置生成代码的包名，获取工厂实例生成代码文件</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span>: brbai</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@create</span>: 2019-11-20 14:12:12</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span>: test</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@RunWith(SpringRunner.class)</span></span><br><span class="line"><span class="meta">@SpringBootTest</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CodeTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> SqlSessionFactory sqlSessionFactory;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> BeetlGroupUtilConfiguration beetlConfig;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> CodeFactory codeFactory;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Value(&quot;$&#123;project.base-path:#&#123;null&#125;&#125;&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String basePath;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">codeGeneratorTest</span><span class="params">()</span> <span class="keyword">throws</span> SQLException&#123;</span><br><span class="line"></span><br><span class="line">		<span class="comment">//生成代码的项目包名</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">rootPackage</span> <span class="operator">=</span> <span class="string">&quot;aaa.bbb.ccc&quot;</span>;</span><br><span class="line">        </span><br><span class="line">        <span class="type">GroupTemplate</span> <span class="variable">gt</span> <span class="operator">=</span> beetlConfig.getGroupTemplate();</span><br><span class="line">        <span class="comment">//获取数据库表结构</span></span><br><span class="line">        <span class="type">SqlSession</span> <span class="variable">sqlSession</span> <span class="operator">=</span> sqlSessionFactory.openSession();</span><br><span class="line">        Map&lt;String, Map&lt;String, String&gt;&gt; databaseAttribute = DBUtil.getDatabaseAttribute(sqlSession);</span><br><span class="line"></span><br><span class="line">        <span class="type">String</span> <span class="variable">databaseName</span> <span class="operator">=</span> sqlSession.getConnection().getMetaData().getDatabaseProductName();</span><br><span class="line">  </span><br><span class="line">        databaseAttribute.forEach((tableName,columnMap)-&gt;&#123;</span><br><span class="line">            List&lt;Column&gt; columnList = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">            columnMap.forEach((name,type)-&gt;&#123;</span><br><span class="line">                <span class="type">String</span> <span class="variable">javaType</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">                <span class="comment">//数据库行字段类型以及字段名格式转换，并存入模板参数集合</span></span><br><span class="line">                <span class="keyword">if</span>(<span class="string">&quot;MySQL&quot;</span>.equals(databaseName))&#123;</span><br><span class="line">                    javaType = DBUtil.sqlTypeToJavaType(type);</span><br><span class="line">                &#125;<span class="keyword">else</span> <span class="keyword">if</span>(<span class="string">&quot;Oracle&quot;</span>.equals(databaseName))&#123;</span><br><span class="line">                    javaType = DBUtil.oracleSqlTypeToJavaType(type);</span><br><span class="line">                &#125;</span><br><span class="line">                columnList.add(<span class="keyword">new</span> <span class="title class_">Column</span>(name, javaType, StringUtil.mapUnderscoreToCamelCase(name), StringUtil.mapTableNameToClassName(name)));</span><br><span class="line">            &#125;);</span><br><span class="line">            </span><br><span class="line">            <span class="comment">//构建参数</span></span><br><span class="line">            <span class="type">TplProperties</span> <span class="variable">properties</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">            <span class="keyword">if</span>(basePath != <span class="literal">null</span>)&#123;</span><br><span class="line">                properties = <span class="keyword">new</span> <span class="title class_">TplProperties</span>(basePath,rootPackage,tableName,columnList);</span><br><span class="line">            &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                properties = <span class="keyword">new</span> <span class="title class_">TplProperties</span>(rootPackage,tableName,columnList);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="comment">//代码生成</span></span><br><span class="line">                codeFactory.getCodeInstance(<span class="string">&quot;CONTROLLER&quot;</span>).create(gt,properties,<span class="string">&quot;/Controller.tpl&quot;</span>);</span><br><span class="line">                codeFactory.getCodeInstance(<span class="string">&quot;SERVICE&quot;</span>).create(gt,properties,<span class="string">&quot;/Service.tpl&quot;</span>);</span><br><span class="line">                codeFactory.getCodeInstance(<span class="string">&quot;ENTITY&quot;</span>).create(gt,properties,<span class="string">&quot;/Entity.tpl&quot;</span>);</span><br><span class="line">                codeFactory.getCodeInstance(<span class="string">&quot;MAPPER&quot;</span>).create(gt,properties,<span class="string">&quot;/Mapper.tpl&quot;</span>);</span><br><span class="line">                codeFactory.getCodeInstance(<span class="string">&quot;MAPPER_XML&quot;</span>).create(gt,properties,<span class="string">&quot;/MapperXml.tpl&quot;</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="运行codeGeneratorTest-方法"><a href="#运行codeGeneratorTest-方法" class="headerlink" title="运行codeGeneratorTest()方法"></a>运行codeGeneratorTest()方法</h3><h6 id="效果图如下"><a href="#效果图如下" class="headerlink" title="效果图如下:"></a>效果图如下:</h6><p> <img src="https://img-blog.csdnimg.cn/20191226234653699.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br> 未配置代码生成路径时：<br><img src="https://img-blog.csdnimg.cn/20191226221430600.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>配置了代码生成路径时：<br><img src="https://img-blog.csdnimg.cn/20191226220534907.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<hr>
+<p><strong>由于项目代码比较多，没能全部贴出来，源码我已经上传码云了，想看源码的小伙伴可以点这里。<a target="_blank" rel="noopener" href="https://gitee.com/bhy702/bhy702-generator">bhy702-generator</a></strong></p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>brbai</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://br-bai.github.io/2019/12/26/Java%E5%AE%9E%E7%8E%B0%E4%BB%A3%E7%A0%81%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E5%B7%A5%E5%85%B7%EF%BC%8C%E5%9F%BA%E4%BA%8ESpring%20Boot/">https://br-bai.github.io/2019/12/26/Java%E5%AE%9E%E7%8E%B0%E4%BB%A3%E7%A0%81%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E5%B7%A5%E5%85%B7%EF%BC%8C%E5%9F%BA%E4%BA%8ESpring%20Boot/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright ©2019 白鸿源个人网站(www.baihy.com). All Rights Reserved.</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Make excellence a habit.</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Java/"># Java</a>
+                    
+                        <a href="/tags/Spring-Boot/"># Spring Boot</a>
+                    
+                        <a href="/tags/Generator/"># Generator</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2020/03/12/%E8%A7%A3%E5%86%B3Ant%20Design%E8%A1%A8%E5%8D%95%E8%87%AA%E5%AE%9A%E4%B9%89%E9%AA%8C%E8%AF%81%E8%A7%84%E5%88%99%E5%A4%B1%E6%95%88%E4%BB%A5%E5%8F%8A%E5%AF%BC%E8%87%B4%E6%89%80%E6%9C%89rule%E9%AA%8C%E8%AF%81%E5%A4%B1%E6%95%88%E9%97%AE%E9%A2%98/">解决Ant Design表单自定义验证规则失效以及导致所有rule验证失效问题</a>
+            
+            
+            <a class="next" rel="next" href="/2019/11/07/Xshell%206%E9%A6%96%E6%AC%A1%E8%BF%9E%E6%8E%A5%E6%AD%A3%E5%B8%B8%EF%BC%8C%E5%86%8D%E6%AC%A1%E8%BF%9E%E6%8E%A5%E6%8F%90%E7%A4%BACould%20not%20connect%20to%20'127.0.0.1'%20(port%2061708)_%20Connection%20failed/">Xshell 6首次连接正常，再次连接提示Could not connect to '127.0.0.1' (port 61708)_ Connection failed</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+   
+
+    <div class="copyright">
+        <span>© 2019 <a href="https://www.baihy.com" target="_blank">brbai</a> | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    
+	
+       		 <span class="post-meta-divider"> | </span>
+		 <!-- 不蒜子统计 -->
+       		 <span id="busuanzi_container_site_pv">
+                	Pageviews:<span id="busuanzi_value_site_pv"></span>
+	        </span>
+        	<span class="post-meta-divider">&</span>
+       		 <span id="busuanzi_container_site_uv" style='display:none'>
+                	Visitors:<span id="busuanzi_value_site_uv"></span>
+        	</span>
+        	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+   	 
+
+	
+
+
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>

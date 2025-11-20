@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width,user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="google-site-verification" content="CJVFgKvg7DR1-BcZBWyXCBGarPIaFkj6TCRZfg5koC0" />
+<meta name="baidu-site-verification" content="Y5fkV0dnwS" />
+
+    <meta name="author" content="brbai">
+
+
+
+
+    <meta name="keywords" content="blog,个人博客,博客">
+
+
+<title>RabbitMQ消息可靠性投递与消费，消费幂等 | brbai</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 8.1.1"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const pagebody = document.getElementsByTagName('body')[0]
+
+            function setTheme(status) {
+
+                if (status === 'dark') {
+                    window.sessionStorage.theme = 'dark'
+                    pagebody.classList.add('dark-theme');
+
+                } else if (status === 'light') {
+                    window.sessionStorage.theme = 'light'
+                    pagebody.classList.remove('dark-theme');
+                }
+            };
+
+            setTheme(window.sessionStorage.theme)
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">brbai&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                <a class="menu-item" href="/archives">Posts</a>
+                
+                <a class="menu-item" href="/category">Categories</a>
+                
+                <a class="menu-item" href="/tag">Tags</a>
+                
+                <a class="menu-item" href="/about">About</a>
+                
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">brbai&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">
+                    <svg class="menu-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M4.5 17.27q-.213 0-.356-.145T4 16.768t.144-.356t.356-.143h15q.213 0 .356.144q.144.144.144.357t-.144.356t-.356.143zm0-4.77q-.213 0-.356-.144T4 11.999t.144-.356t.356-.143h15q.213 0 .356.144t.144.357t-.144.356t-.356.143zm0-4.77q-.213 0-.356-.143Q4 7.443 4 7.23t.144-.356t.356-.143h15q.213 0 .356.144T20 7.23t-.144.356t-.356.144z"/></svg>
+                    <svg class="close-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Material Symbols Light by Google - https://github.com/google/material-design-icons/blob/master/LICENSE --><path fill="currentColor" d="m12 12.708l-5.246 5.246q-.14.14-.344.15t-.364-.15t-.16-.354t.16-.354L11.292 12L6.046 6.754q-.14-.14-.15-.344t.15-.364t.354-.16t.354.16L12 11.292l5.246-5.246q.14-.14.345-.15q.203-.01.363.15t.16.354t-.16.354L12.708 12l5.246 5.246q.14.14.15.345q.01.203-.15.363t-.354.16t-.354-.16z"/></svg>
+                </div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                <a class="menu-item" href="/archives">Posts</a>
+                
+                <a class="menu-item" href="/category">Categories</a>
+                
+                <a class="menu-item" href="/tag">Tags</a>
+                
+                <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if (toggleMenu.classList.contains("active")) {
+            toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        } else {
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">RabbitMQ消息可靠性投递与消费，消费幂等</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">brbai</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">August 9, 2019&nbsp;&nbsp;11:34:09</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E6%B6%88%E6%81%AF%E4%B8%AD%E9%97%B4%E4%BB%B6/">消息中间件</a>
+                            
+                        </span>
+                    
+		  
+                         <!-- 不蒜子统计 -->
+                        <span id="busuanzi_container_page_pv" style='display:none' ">
+                         Views:
+                                <a href="#"><span id="busuanzi_value_page_pv"></span></a>
+                        </span>
+                   
+
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>由于网络闪断、MQ Broker端异常等原因可能导致回送confirmCallback的ask消息失败或者异常，无法确认数据是否真的已经成功到达，导致消息丢失。</p>
+<h4 id="解决思路"><a href="#解决思路" class="headerlink" title="解决思路"></a>解决思路</h4><ul>
+<li>判断confirmCallback()消息发送成功与否，成功则修改redis中correlationDataId对应的message的<code>message.getMessageProperties().getHeaders()</code>中存入的自定义标识<code>is_success_send_to_exchange</code>为true，更新失败记录表；失败则判断投递重试次数的自定义记录变量<code>failed_count_for_send_to_exchange</code>是否大于等于3；如果小于3则将标识符设为false，重试次数+1，更新message的缓存，发送message到重试队列，否则清除缓存，直接发送到失败队列处理。</li>
+<li>使用定时任务，定时扫描缓存的数据，将<code>is_success_send_to_exchange</code>不为true的消息进行重发。</li>
+<li>消费端消费前读取缓存，查看消息是否存在，不存在则直接return，存在则消费，消费成功删除缓存数据，实现消费的幂等。</li>
+</ul>
+<p>跟踪<code>convertAndSend</code>方法中的<code>correlationData</code>，发现在<code>RabbitTemplate</code>类中调用了<code>setupConfirm</code>方法，将correlationData的id赋值给了Message的MessageProperties中的headers集合，所以我们可以通过message获取到correlationData的id，而不仅限在confirmCallback()中。</p>
+<h6 id="setupConfirm方法"><a href="#setupConfirm方法" class="headerlink" title="setupConfirm方法:"></a>setupConfirm方法:</h6><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">setupConfirm</span><span class="params">(Channel channel, Message message, <span class="meta">@Nullable</span> CorrelationData correlationDataArg)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> ((<span class="built_in">this</span>.publisherConfirms || <span class="built_in">this</span>.confirmCallback != <span class="literal">null</span>) &amp;&amp; channel <span class="keyword">instanceof</span> PublisherCallbackChannel) &#123;</span><br><span class="line">            <span class="type">PublisherCallbackChannel</span> <span class="variable">publisherCallbackChannel</span> <span class="operator">=</span> (PublisherCallbackChannel)channel;</span><br><span class="line">            <span class="type">CorrelationData</span> <span class="variable">correlationData</span> <span class="operator">=</span> <span class="built_in">this</span>.correlationDataPostProcessor != <span class="literal">null</span> ? <span class="built_in">this</span>.correlationDataPostProcessor.postProcess(message, correlationDataArg) : correlationDataArg;</span><br><span class="line">            <span class="type">long</span> <span class="variable">nextPublishSeqNo</span> <span class="operator">=</span> channel.getNextPublishSeqNo();</span><br><span class="line">            message.getMessageProperties().setPublishSequenceNumber(nextPublishSeqNo);</span><br><span class="line">            publisherCallbackChannel.addPendingConfirm(<span class="built_in">this</span>, nextPublishSeqNo, <span class="keyword">new</span> <span class="title class_">PendingConfirm</span>(correlationData, System.currentTimeMillis()));</span><br><span class="line">            <span class="comment">//此处将correlationDataId赋值给了Message的MessageProperties中的headers集合</span></span><br><span class="line">            <span class="keyword">if</span> (correlationData != <span class="literal">null</span> &amp;&amp; StringUtils.hasText(correlationData.getId())) &#123;</span><br><span class="line">                message.getMessageProperties().setHeader(<span class="string">&quot;spring_returned_message_correlation&quot;</span>, correlationData.getId());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (channel <span class="keyword">instanceof</span> ChannelProxy &amp;&amp; ((ChannelProxy)channel).isConfirmSelected()) &#123;</span><br><span class="line">            <span class="type">long</span> <span class="variable">nextPublishSeqNo</span> <span class="operator">=</span> channel.getNextPublishSeqNo();</span><br><span class="line">            message.getMessageProperties().setPublishSequenceNumber(nextPublishSeqNo);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h6 id="setHeader-String-key-Object-value"><a href="#setHeader-String-key-Object-value" class="headerlink" title="setHeader(String key, Object value)"></a>setHeader(String key, Object value)</h6><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setHeader</span><span class="params">(String key, Object value)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.headers.put(key, value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h6 id="获取Message中存入的correlationData的id"><a href="#获取Message中存入的correlationData的id" class="headerlink" title="获取Message中存入的correlationData的id"></a>获取Message中存入的correlationData的id</h6><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">String</span> <span class="variable">correlationDataId</span> <span class="operator">=</span> (String)message.getMessageProperties().getHeaders().get(<span class="string">&quot;spring_returned_message_correlation&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>注意</strong>：使用<code>message.getMessageProperties().getCorrelationId()</code>获取的并不是correlationData的id，而是MessageProperties类自带的普通变量</p>
+</blockquote>
+<blockquote>
+<p> <strong>所以如果想要给message全局标识或记录，可以将标识以key-value的形式存入Message.getMessageProperties()的headers这个Map集合中</strong>。<br>如投递成功后写入投递标识 “is_success_send_to_exchange”: <code>message.getMessageProperties().getHeaders().put(&quot;is_success_send_to_exchange&quot;,true);</code></p>
+</blockquote>
+<h6 id="获取消息消费重试的次数，Message的MessageProperties可以获取到"><a href="#获取消息消费重试的次数，Message的MessageProperties可以获取到" class="headerlink" title="获取消息消费重试的次数，Message的MessageProperties可以获取到"></a>获取消息消费重试的次数，Message的MessageProperties可以获取到</h6><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="type">long</span> <span class="title function_">getRetryCount</span><span class="params">(MessageProperties messageProperties)</span> &#123;</span><br><span class="line">   <span class="type">Long</span> <span class="variable">retryCount</span> <span class="operator">=</span> <span class="number">0L</span>;</span><br><span class="line">   <span class="keyword">if</span> (<span class="literal">null</span> != messageProperties) &#123;</span><br><span class="line"></span><br><span class="line">     List&lt;Map&lt;String, ?&gt;&gt; deaths = messageProperties.getXDeathHeader();</span><br><span class="line">     <span class="keyword">if</span>(deaths != <span class="literal">null</span> &amp;&amp; deaths.size()&gt;<span class="number">0</span>)&#123;</span><br><span class="line">       Map&lt;String, Object&gt; death = (Map&lt;String, Object&gt;)deaths.get(<span class="number">0</span>);</span><br><span class="line">       retryCount = (Long) death.get(<span class="string">&quot;count&quot;</span>);</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">return</span> retryCount;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h6 id="存入headers集合中的相关自定义变量说明"><a href="#存入headers集合中的相关自定义变量说明" class="headerlink" title="存入headers集合中的相关自定义变量说明"></a>存入headers集合中的相关自定义变量说明</h6><ul>
+<li><strong>is_success_send_to_exchange</strong>     布尔类型，  投递成功标识，默认不含此变量，回调时写入</li>
+<li><strong>failed_count_for_send_to_exchange</strong>      int类型，  投递失败次数，默认不含此变量，每次失败时写入记录次数</li>
+</ul>
+<p>例如:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">message.getMessageProperties().getHeaders().put(<span class="string">&quot;is_success_send_to_exchange&quot;</span>,<span class="literal">true</span>);</span><br></pre></td></tr></table></figure>
+<hr>
+<h4 id="交换器、队列声明绑定"><a href="#交换器、队列声明绑定" class="headerlink" title="交换器、队列声明绑定"></a>交换器、队列声明绑定</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">  * 声明交换机,支持持久化.</span></span><br><span class="line"><span class="comment">  * rabbitmq常用几种exchange,比如direct, fanout, topic,可根据具体业务需求配置</span></span><br><span class="line"><span class="comment">  * 命名规范参考 scm3.services,scm3.services.retry,scm3.services.failed</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@return</span> the exchange</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"> <span class="meta">@Bean</span></span><br><span class="line"> <span class="keyword">public</span> TopicExchange <span class="title function_">emailExchange</span><span class="params">()</span> &#123;</span><br><span class="line">     <span class="keyword">return</span> (TopicExchange)ExchangeBuilder.topicExchange(<span class="string">&quot;emailExchange&quot;</span>).durable(<span class="literal">true</span>).build();</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="meta">@Bean</span></span><br><span class="line"> <span class="keyword">public</span> TopicExchange <span class="title function_">retryExchange</span><span class="params">()</span> &#123;</span><br><span class="line">     <span class="keyword">return</span> (TopicExchange)ExchangeBuilder.topicExchange(<span class="string">&quot;retryExchange&quot;</span>).durable(<span class="literal">true</span>).build();</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="meta">@Bean</span></span><br><span class="line"> <span class="keyword">public</span> TopicExchange <span class="title function_">failedExchange</span><span class="params">()</span> &#123;</span><br><span class="line">     <span class="keyword">return</span> (TopicExchange)ExchangeBuilder.topicExchange(<span class="string">&quot;failedExchange&quot;</span>).durable(<span class="literal">true</span>).build();</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"> <span class="meta">@Bean</span></span><br><span class="line"> <span class="keyword">public</span> Queue <span class="title function_">emailQueue</span><span class="params">()</span> &#123;</span><br><span class="line">     <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Queue</span>(<span class="string">&quot;emailQueue&quot;</span>);</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="meta">@Bean</span></span><br><span class="line"> <span class="keyword">public</span> Queue <span class="title function_">retryQueue</span><span class="params">()</span> &#123;</span><br><span class="line">     Map&lt;String, Object&gt; args = <span class="keyword">new</span> <span class="title class_">ConcurrentHashMap</span>&lt;&gt;(<span class="number">3</span>);</span><br><span class="line">     <span class="comment">// 将消息重新投递到exchange中</span></span><br><span class="line">     args.put(DEAD_LETTER_QUEUE_KEY, <span class="string">&quot;emailExchange&quot;</span>);</span><br><span class="line">     args.put(DEAD_LETTER_ROUTING_KEY, <span class="string">&quot;email.topic.retry&quot;</span>);</span><br><span class="line">     <span class="comment">//在队列中延迟30s后，消息重新投递到x-dead-letter-exchage对应的队列中,routingkey是自己配置的</span></span><br><span class="line">     args.put(X_MESSAGE_TTL, <span class="number">30</span> * <span class="number">1000</span>);</span><br><span class="line">     <span class="keyword">return</span> QueueBuilder.durable(<span class="string">&quot;retryQueue&quot;</span>).withArguments(args).build();</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="comment">/**</span></span><br><span class="line"><span class="comment">  * 失败队列</span></span><br><span class="line"><span class="comment">  *</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"> <span class="meta">@Bean</span></span><br><span class="line"> <span class="keyword">public</span> Queue <span class="title function_">failedQueue</span><span class="params">()</span> &#123;</span><br><span class="line">     <span class="keyword">return</span> QueueBuilder.durable(<span class="string">&quot;failedQueue&quot;</span>).build();</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"> <span class="meta">@Bean</span></span><br><span class="line"> <span class="keyword">public</span> Binding <span class="title function_">topicQueueBinding</span><span class="params">(<span class="meta">@Qualifier(&quot;emailQueue&quot;)</span> Queue queue,</span></span><br><span class="line"><span class="params">                                   <span class="meta">@Qualifier(&quot;emailExchange&quot;)</span> TopicExchange exchange)</span> &#123;</span><br><span class="line">     <span class="keyword">return</span> BindingBuilder.bind(queue).to(exchange).with(<span class="string">&quot;email.topic.*&quot;</span>);</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="meta">@Bean</span></span><br><span class="line"> <span class="keyword">public</span> Binding <span class="title function_">retryDirectBinding</span><span class="params">(<span class="meta">@Qualifier(&quot;retryQueue&quot;)</span> Queue queue,</span></span><br><span class="line"><span class="params">                                   <span class="meta">@Qualifier(&quot;retryExchange&quot;)</span> TopicExchange exchange)</span> &#123;</span><br><span class="line">     <span class="keyword">return</span> BindingBuilder.bind(queue).to(exchange).with(<span class="string">&quot;email.retry.*&quot;</span>);</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="meta">@Bean</span></span><br><span class="line"> <span class="keyword">public</span> Binding <span class="title function_">failDirectBinding</span><span class="params">(<span class="meta">@Qualifier(&quot;failedQueue&quot;)</span> Queue queue,</span></span><br><span class="line"><span class="params">                                  <span class="meta">@Qualifier(&quot;failedExchange&quot;)</span> TopicExchange exchange)</span> &#123;</span><br><span class="line">     <span class="keyword">return</span> BindingBuilder.bind(queue).to(exchange).with(<span class="string">&quot;email.failed.*&quot;</span>);</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h4 id="发送邮件"><a href="#发送邮件" class="headerlink" title="发送邮件"></a>发送邮件</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Map</span> <span class="variable">messageMap</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">HashMap</span>();</span><br><span class="line">messageMap.put(<span class="string">&quot;email&quot;</span>,<span class="string">&quot;1956969397@qq.com&quot;</span>);</span><br><span class="line">messageMap.put(<span class="string">&quot;subject&quot;</span>,<span class="string">&quot;【个人网站通知】:老大，有新的留言信息通知~~&quot;</span>);</span><br><span class="line">messageMap.put(<span class="string">&quot;content&quot;</span>,<span class="string">&quot;【个人网站通知】content内容。。。。。&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="type">MessageConverter</span> <span class="variable">converter</span> <span class="operator">=</span> rabbitTemplate.getMessageConverter();</span><br><span class="line"><span class="type">MessageProperties</span> <span class="variable">messageProperties</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">MessageProperties</span>();</span><br><span class="line"><span class="comment">//存入数据库中message表中对应的消息id，方便失败队列处理消息时写入failed_message表时关联message表</span></span><br><span class="line">messageProperties.setMessageId(message.getId().toString());</span><br><span class="line">org.springframework.amqp.core.<span class="type">Message</span> <span class="variable">message</span> <span class="operator">=</span> converter</span><br><span class="line">        .toMessage(messageMap, messageProperties);</span><br><span class="line"><span class="comment">//生成消息的唯一性标识</span></span><br><span class="line"><span class="type">String</span> <span class="variable">correlationDataId</span> <span class="operator">=</span> UUID.randomUUID().toString().replaceAll(<span class="string">&quot;-&quot;</span>,<span class="string">&quot;&quot;</span>);</span><br><span class="line">log.info(<span class="string">&quot;++++++ 存储message到redis缓存中！&#123;&#125;&quot;</span>,correlationDataId);</span><br><span class="line">redisTemplate.opsForValue().set(<span class="string">&quot;CORRELATION_DATA_ID:&quot;</span>+correlationDataId,JSONObject.toJSONString(message));</span><br><span class="line">log.info(<span class="string">&quot;++++++ 生产者发送message！&#123;&#125;&quot;</span>,message);</span><br><span class="line">rabbitTemplate.convertAndSend(<span class="string">&quot;emailExchange&quot;</span>,<span class="string">&quot;email.topic.leave&quot;</span>,message,<span class="keyword">new</span> <span class="title class_">CorrelationData</span>(correlationDataId));</span><br></pre></td></tr></table></figure>
+<hr>
+<h4 id="可靠性投递"><a href="#可靠性投递" class="headerlink" title="可靠性投递"></a>可靠性投递</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="keyword">public</span> RabbitTemplate <span class="title function_">rabbitTemplate</span><span class="params">()</span>&#123;</span><br><span class="line"></span><br><span class="line">   <span class="type">RabbitTemplate</span> <span class="variable">rabbitTemplate</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">RabbitTemplate</span>(connectionFactory);</span><br><span class="line"></span><br><span class="line">   <span class="comment">// 必须开启回调才会生效</span></span><br><span class="line"><span class="comment">//        rabbitTemplate.setMandatory(true);</span></span><br><span class="line"></span><br><span class="line">   <span class="comment">// 消息确认，需要配置 spring.rabbitmq.publisher-returns = true</span></span><br><span class="line">   rabbitTemplate.setConfirmCallback((correlationData, ack, cause) -&gt; &#123;</span><br><span class="line"></span><br><span class="line">       log.info(<span class="string">&quot;++++++ 进入回调setConfirmCallback()&quot;</span>);</span><br><span class="line">       <span class="keyword">if</span>(correlationData != <span class="literal">null</span>)&#123;</span><br><span class="line"></span><br><span class="line">           <span class="comment">//message缓存的key值</span></span><br><span class="line">           <span class="type">String</span> <span class="variable">messageKey</span> <span class="operator">=</span> <span class="string">&quot;CORRELATION_DATA_ID:&quot;</span>+correlationData.getId();</span><br><span class="line"></span><br><span class="line">           <span class="keyword">if</span>(redisTemplate.hasKey(messageKey))&#123;</span><br><span class="line"></span><br><span class="line">               <span class="type">String</span> <span class="variable">messageMap</span> <span class="operator">=</span> redisTemplate.opsForValue().get(messageKey);</span><br><span class="line">               <span class="type">Message</span> <span class="variable">message</span> <span class="operator">=</span> JSONObject.parseObject(messageMap,Message.class);</span><br><span class="line">               Map&lt;String, Object&gt; headers = message.getMessageProperties().getHeaders();</span><br><span class="line"></span><br><span class="line">               <span class="keyword">if</span>( !headers.containsKey(<span class="string">&quot;is_success_send_to_exchange&quot;</span>) || !(Boolean) headers.get(<span class="string">&quot;is_success_send_to_exchange&quot;</span>))&#123;</span><br><span class="line">                   <span class="keyword">if</span>(ack)&#123;</span><br><span class="line">                       <span class="comment">//标识投递成功</span></span><br><span class="line">                       headers.put(<span class="string">&quot;is_success_send_to_exchange&quot;</span>,<span class="literal">true</span>);</span><br><span class="line">                       <span class="comment">//更新message的redis缓存</span></span><br><span class="line">                       redisTemplate.opsForValue().set(messageKey,JSONObject.toJSONString(message));</span><br><span class="line"></span><br><span class="line">                       <span class="comment">//更新failed_message表中的消息投递失败记录</span></span><br><span class="line">                       <span class="type">FailedMessage</span> <span class="variable">failedMessage</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FailedMessage</span>();</span><br><span class="line">                       failedMessage.setMessageId(Integer.parseInt(message.getMessageProperties().getMessageId()));</span><br><span class="line">                       failedMessage.setStatus(<span class="string">&quot;failed&quot;</span>);</span><br><span class="line">                       <span class="comment">//查询数据库失败的信息</span></span><br><span class="line">                       <span class="type">FailedMessage</span> <span class="variable">failedMessage1</span> <span class="operator">=</span> failedMessageMapper.selectOne(failedMessage);</span><br><span class="line">                       <span class="keyword">if</span>(failedMessage1 != <span class="literal">null</span>)&#123;</span><br><span class="line">                           failedMessage1.setStatus(<span class="string">&quot;success&quot;</span>);</span><br><span class="line">                           failedMessage1.setStatusTime(<span class="keyword">new</span> <span class="title class_">Date</span>());</span><br><span class="line">                           failedMessageMapper.updateByPrimaryKey(failedMessage1);</span><br><span class="line">                       &#125;</span><br><span class="line"></span><br><span class="line">                       log.info(<span class="string">&quot;++++++ 消息投递成功，更新redis，更新失败记录数据库:&#123;&#125;&quot;</span>,message);</span><br><span class="line"></span><br><span class="line">                   &#125;<span class="keyword">else</span>&#123;</span><br><span class="line"></span><br><span class="line">                       log.info(<span class="string">&quot;++++++ 消息投递失败:&#123;&#125;&quot;</span>,message);</span><br><span class="line"></span><br><span class="line">                       <span class="keyword">if</span>(!headers.containsKey(<span class="string">&quot;is_success_send_to_exchange&quot;</span>))&#123;</span><br><span class="line">                           headers.put(<span class="string">&quot;is_success_send_to_exchange&quot;</span>,<span class="literal">false</span>);</span><br><span class="line">                       &#125;</span><br><span class="line"></span><br><span class="line">                       log.info(<span class="string">&quot;ConfirmCallback消息发送失败，id:&#123;&#125;，原因:&#123;&#125;&quot;</span>,correlationData.getId(),cause);</span><br><span class="line">                       <span class="type">int</span> count ;</span><br><span class="line">                       <span class="keyword">if</span>(headers.containsKey(<span class="string">&quot;failed_count_for_send_to_exchange&quot;</span>))&#123;</span><br><span class="line">                           count = (<span class="type">int</span>) headers.get(<span class="string">&quot;failed_count_for_send_to_exchange&quot;</span>);</span><br><span class="line">                       &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                           count = <span class="number">0</span>;</span><br><span class="line">                       &#125;</span><br><span class="line"></span><br><span class="line">                       <span class="keyword">if</span>(count &gt;= <span class="number">3</span>)&#123;</span><br><span class="line"></span><br><span class="line">                           <span class="comment">//清除message缓存</span></span><br><span class="line">                           redisTemplate.delete(<span class="string">&quot;CORRELATION_DATA_ID:&quot;</span>+correlationData.getId());</span><br><span class="line"></span><br><span class="line">                           log.info(<span class="string">&quot;ConfirmCallback消息发送失败三次，id:&#123;&#125;，停止重试&quot;</span>,correlationData.getId(),cause);</span><br><span class="line">                           rabbitTemplate.convertAndSend(<span class="string">&quot;failedExchange&quot;</span>,<span class="string">&quot;email.failed.deliver&quot;</span>, message);</span><br><span class="line">                           </span><br><span class="line">                           <span class="keyword">return</span>;</span><br><span class="line">                       &#125;</span><br><span class="line"></span><br><span class="line">                       count++;</span><br><span class="line"></span><br><span class="line">                       headers.put(<span class="string">&quot;failed_count_for_send_to_exchange&quot;</span>,count);</span><br><span class="line"></span><br><span class="line">                       redisTemplate.opsForValue().set(messageKey,JSONObject.toJSONString(message));</span><br><span class="line">                       log.info(<span class="string">&quot;++++++ 生产者投递消息重试中:&#123;&#125;次，&#123;&#125;&quot;</span>,count,message);</span><br><span class="line">                       <span class="comment">// 重发的时候到redis里面取,消费成功了，删除redis里面的msgId</span></span><br><span class="line">                       rabbitTemplate.convertAndSend(<span class="string">&quot;emailExchange&quot;</span>, <span class="string">&quot;email.topic.retry&quot;</span>,message, correlationData);</span><br><span class="line">                   &#125;</span><br><span class="line">               &#125;</span><br><span class="line">           &#125;</span><br><span class="line"></span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">   &#125;);</span><br><span class="line"></span><br><span class="line">   <span class="comment">// 消息发送失败返回到队列中，需要配置spring.rabbitmq.publisher-confirms = true</span></span><br><span class="line">   rabbitTemplate.setReturnCallback((message, replyCode, replyText, exchange, routingKey) -&gt; &#123;</span><br><span class="line">       log.info(<span class="string">&quot;ReturnCallback消息发送队列不可达，message:&#123;&#125;，exchange:&#123;&#125;，routingKey:&#123;&#125;，原因:&#123;&#125;&quot;</span>,message,exchange,routingKey,replyText);</span><br><span class="line">   &#125;);</span><br><span class="line"></span><br><span class="line">   <span class="keyword">return</span> rabbitTemplate;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h4 id="可靠性消费，消费幂等"><a href="#可靠性消费，消费幂等" class="headerlink" title="可靠性消费，消费幂等"></a>可靠性消费，消费幂等</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RabbitListener(queues = &quot;emailQueue&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">sendMail</span><span class="params">(Message message, Channel channel)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//获取correlationDataId</span></span><br><span class="line">    <span class="type">String</span> <span class="variable">correlationDataId</span> <span class="operator">=</span> (String)message.getMessageProperties().getHeaders().get(<span class="string">&quot;spring_returned_message_correlation&quot;</span>);</span><br><span class="line">    <span class="comment">//message缓存的key值</span></span><br><span class="line">   	<span class="type">String</span> <span class="variable">messageKey</span> <span class="operator">=</span> <span class="string">&quot;CORRELATION_DATA_ID:&quot;</span>+correlationDataId;</span><br><span class="line">    <span class="comment">//消息消费</span></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">    	<span class="comment">//消息幂等处理</span></span><br><span class="line">        <span class="keyword">if</span>(!redisTemplate.hasKey(messageKey))&#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">		<span class="comment">//获取消息内容</span></span><br><span class="line">        Map&lt;String,String&gt; map = (Map) SerializationUtils.deserialize(message.getBody());</span><br><span class="line">        <span class="comment">//调用邮件发送接口消费消息</span></span><br><span class="line">		SendToMail.sendHtmlMail(javaMailSender, map.get(<span class="string">&quot;email&quot;</span>), map.get(<span class="string">&quot;subject&quot;</span>), map.get(<span class="string">&quot;content&quot;</span>));</span><br><span class="line">		</span><br><span class="line">		<span class="comment">//模拟消息消费完成</span></span><br><span class="line">        log.info(<span class="string">&quot;++++++ 消息消费成功:&#123;&#125;&quot;</span>,correlationDataId);</span><br><span class="line"></span><br><span class="line">        log.info(<span class="string">&quot;++++++ 清除message缓存:&#123;&#125;&quot;</span>,correlationDataId);</span><br><span class="line">        <span class="comment">//清除message缓存</span></span><br><span class="line">        redisTemplate.delete(messageKey);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//更新failed_message中消息消费失败记录</span></span><br><span class="line">        <span class="type">FailedMessage</span> <span class="variable">failedMessage</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FailedMessage</span>();</span><br><span class="line"> 		failedMessage.setMessageId(Integer.parseInt(message.getMessageProperties().getMessageId()));</span><br><span class="line">        failedMessage.setStatus(<span class="string">&quot;failed&quot;</span>);</span><br><span class="line">        <span class="comment">//查询数据库失败的信息</span></span><br><span class="line">        <span class="type">FailedMessage</span> <span class="variable">failedMessage1</span> <span class="operator">=</span> failedMessageMapper.selectOne(failedMessage);</span><br><span class="line">        <span class="keyword">if</span>(failedMessage1 != <span class="literal">null</span>)&#123;</span><br><span class="line">            failedMessage1.setStatus(<span class="string">&quot;success&quot;</span>);</span><br><span class="line">            failedMessage1.setStatusTime(<span class="keyword">new</span> <span class="title class_">Date</span>());</span><br><span class="line">            failedMessageMapper.updateByPrimaryKey(failedMessage1);</span><br><span class="line">        &#125;</span><br><span class="line">        log.info(<span class="string">&quot;++++++ 更新failed_message中消息消费失败记录:&#123;&#125;&quot;</span>,correlationDataId);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        <span class="comment">//获取重试次数</span></span><br><span class="line">        <span class="type">long</span> <span class="variable">retryCount</span> <span class="operator">=</span> RabbitMqUtil.getRetryCount(message.getMessageProperties());</span><br><span class="line">        <span class="type">Message</span> <span class="variable">newMessage</span> <span class="operator">=</span> message;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (retryCount &gt;= <span class="number">3</span>) &#123;</span><br><span class="line"></span><br><span class="line">            <span class="comment">//重试超过3次的，直接存入失败队列</span></span><br><span class="line">            <span class="comment">/** 如果重试次数大于3,则将消息发送到失败队列等待人工处理 */</span></span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">            	<span class="comment">//清除message缓存</span></span><br><span class="line">            	redisTemplate.delete(messageKey);</span><br><span class="line">            	</span><br><span class="line">                log.info(<span class="string">&quot;++++++ 重试超过3次，直接存入失败队列:&#123;&#125;次，重发消息&#123;&#125;&quot;</span>,retryCount+<span class="number">1</span>,correlationDataId);</span><br><span class="line">                rabbitTemplate.convertAndSend(<span class="string">&quot;failedExchange&quot;</span>,</span><br><span class="line">                        <span class="string">&quot;email.failed.resume&quot;</span>, newMessage);</span><br><span class="line">                log.info(<span class="string">&quot;用户体系服务消费者消费消息在重试3次后依然失败，将消息发送到fail队列,发送消息:&quot;</span> + <span class="keyword">new</span> <span class="title class_">String</span>(newMessage.getBody()));</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Exception e1) &#123;</span><br><span class="line">                log.error(<span class="string">&quot;用户体系服务消息在发送到fail队列的时候报错:&quot;</span> + e1.getMessage() + <span class="string">&quot;,原始消息:&quot;</span></span><br><span class="line">                        + <span class="keyword">new</span> <span class="title class_">String</span>(newMessage.getBody()));</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                log.info(<span class="string">&quot;++++++ 消息消费重试:&#123;&#125;次，&#123;&#125;&quot;</span>,retryCount+<span class="number">1</span>,correlationDataId);</span><br><span class="line">                log.info(<span class="string">&quot;++++++ 消息消费重试:&#123;&#125;次，更新缓存&#123;&#125;&quot;</span>,retryCount+<span class="number">1</span>,correlationDataId);</span><br><span class="line">                <span class="comment">//更新缓存</span></span><br><span class="line">                redisTemplate.opsForValue().set(messageKey,JSONObject.toJSONString(newMessage));</span><br><span class="line">                log.info(<span class="string">&quot;++++++ 消息消费重试:&#123;&#125;次，重发消息&#123;&#125;&quot;</span>,retryCount+<span class="number">1</span>,correlationDataId);</span><br><span class="line">                <span class="comment">/** 如果当前消息被重试的次数小于3,则将消息发送到重试队列,等待重新被消费&#123;延迟消费&#125; */</span></span><br><span class="line">                rabbitTemplate.convertAndSend(<span class="string">&quot;retryExchange&quot;</span>,</span><br><span class="line">                        <span class="string">&quot;email.retry.myRetry&quot;</span>, newMessage,<span class="keyword">new</span> <span class="title class_">CorrelationData</span>(correlationDataId));</span><br><span class="line">                log.info(<span class="string">&quot;用户服务消费者消费失败，消息发送到重试队列;&quot;</span> + <span class="string">&quot;原始消息：&quot;</span> + <span class="keyword">new</span> <span class="title class_">String</span>(newMessage.getBody()) + <span class="string">&quot;;第&quot;</span></span><br><span class="line">                        + (retryCount+<span class="number">1</span>) + <span class="string">&quot;次重试&quot;</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Exception e1) &#123;</span><br><span class="line">                <span class="comment">// 如果消息在重发的时候,出现了问题,可用nack,经过开发中的实际测试，当消息回滚到消息队列时，</span></span><br><span class="line">                <span class="comment">// 这条消息不会回到队列尾部，而是仍是在队列头部，这时消费者会立马又接收到这条消息，进行处理，接着抛出异常，</span></span><br><span class="line">                <span class="comment">// 进行回滚，如此反复进行。这种情况会导致消息队列处理出现阻塞，消息堆积，导致正常消息也无法运行</span></span><br><span class="line">                <span class="comment">// channel.basicNack(message.getMessageProperties().getDeliveryTag(), false, true);</span></span><br><span class="line">                <span class="comment">// 改为重新发送消息,经过多次重试后，如果重试次数大于3,就不会再走这，直接丢到了fail queue等待人工处理</span></span><br><span class="line">                log.error(<span class="string">&quot;消息发送到重试队列的时候，异常了:&quot;</span> + e1.getMessage() + <span class="string">&quot;,重新发送消息&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * 关闭rabbitmq的自动ack,改为手动ack 1、因为自动ack的话，其实不管是否成功消费了，rmq都会在收到消息后立即返给生产者ack,但是很有可能 这条消息我并没有成功消费</span></span><br><span class="line"><span class="comment">         * 2、无论消费成功还是消费失败,都要手动进行ack,因为即使消费失败了,也已经将消息重新投递到重试队列或者失败队列</span></span><br><span class="line"><span class="comment">         * 如果不进行ack,生产者在超时后会进行消息重发,如果消费者依然不能处理，则会存在死循环</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        channel.basicAck(message.getMessageProperties().getDeliveryTag(), <span class="literal">false</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="失败队列，消息处理"><a href="#失败队列，消息处理" class="headerlink" title="失败队列，消息处理"></a>失败队列，消息处理</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RabbitListener(queues = &quot;failedQueue&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">dealMail</span><span class="params">(Message message, Channel channel)</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="type">String</span> <span class="variable">correlationDataId</span> <span class="operator">=</span> (String)message.getMessageProperties().getHeaders()</span><br><span class="line">            .get(<span class="string">&quot;spring_returned_message_correlation&quot;</span>);</span><br><span class="line">	<span class="comment">//幂等处理</span></span><br><span class="line">    <span class="keyword">if</span>(!redisTemplate.hasKey(<span class="string">&quot;CORRELATION_DATA_ID:&quot;</span>+correlationDataId))&#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="type">FailedMessage</span> <span class="variable">failedMessage</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FailedMessage</span>();</span><br><span class="line">	<span class="comment">//获取message表对应的关联的messageId，存入failed_message表记录中</span></span><br><span class="line">	failedMessage.setMessageId(Integer.parseInt(message.getMessageProperties().getMessageId()));</span><br><span class="line">	</span><br><span class="line">    failedMessage.setStatus(<span class="string">&quot;failed&quot;</span>);</span><br><span class="line">    failedMessage.setStatusTime(<span class="keyword">new</span> <span class="title class_">Date</span>());</span><br><span class="line"></span><br><span class="line">    failedMessageMapper.insert(failedMessage);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h4 id="定时扫描缓存，处理未消费的消息"><a href="#定时扫描缓存，处理未消费的消息" class="headerlink" title="定时扫描缓存，处理未消费的消息"></a>定时扫描缓存，处理未消费的消息</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SaticScheduleTask</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> RedisTemplate&lt;String,String&gt; redisTemplate;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> RabbitTemplate rabbitTemplate;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//3.添加定时任务</span></span><br><span class="line">    <span class="comment">//按业务需求指定时间间隔</span></span><br><span class="line">    <span class="meta">@Scheduled(cron = &quot;0 0 0/1 * * ?&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">configureTasks</span><span class="params">()</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//获取</span></span><br><span class="line">        Set&lt;String&gt; keys = redisTemplate.keys(<span class="string">&quot;CORRELATION_DATA_ID:&quot;</span> + <span class="string">&quot;*&quot;</span>);</span><br><span class="line">        keys.stream().forEach(key -&gt; &#123;</span><br><span class="line"></span><br><span class="line">            <span class="type">String</span> <span class="variable">correlationDataId</span> <span class="operator">=</span> key.replaceFirst(<span class="string">&quot;CORRELATION_DATA_ID:&quot;</span>, <span class="string">&quot;&quot;</span>);</span><br><span class="line"></span><br><span class="line">            <span class="type">String</span> <span class="variable">messageMap</span> <span class="operator">=</span> redisTemplate.opsForValue().get(key);</span><br><span class="line">            <span class="type">Message</span> <span class="variable">message</span> <span class="operator">=</span> JSONObject.parseObject(messageMap,Message.class);</span><br><span class="line">            Map&lt;String, Object&gt; headers = message.getMessageProperties().getHeaders();</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span>( !headers.containsKey(<span class="string">&quot;is_success_send_to_exchange&quot;</span>) || !(Boolean) headers.get(<span class="string">&quot;is_success_send_to_exchange&quot;</span>))&#123;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span>(!headers.containsKey(<span class="string">&quot;is_success_send_to_exchange&quot;</span>))&#123;</span><br><span class="line">                    headers.put(<span class="string">&quot;is_success_send_to_exchange&quot;</span>,<span class="literal">false</span>);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="type">int</span> count ;</span><br><span class="line">                <span class="keyword">if</span>(headers.containsKey(<span class="string">&quot;failed_count_for_send_to_exchange&quot;</span>))&#123;</span><br><span class="line">                    count = (<span class="type">int</span>) headers.get(<span class="string">&quot;failed_count_for_send_to_exchange&quot;</span>);</span><br><span class="line">                &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                    count = <span class="number">0</span>;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span>(count &gt;= <span class="number">3</span>)&#123;</span><br><span class="line">                    <span class="comment">//清除message缓存</span></span><br><span class="line">                    redisTemplate.delete(<span class="string">&quot;CORRELATION_DATA_ID:&quot;</span>+correlationDataId);</span><br><span class="line">                	rabbitTemplate.convertAndSend(<span class="string">&quot;failedExchange&quot;</span>,<span class="string">&quot;email.failed.deliver&quot;</span>, message);</span><br><span class="line">                    <span class="keyword">return</span>;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                count++;</span><br><span class="line"></span><br><span class="line">                headers.put(<span class="string">&quot;failed_count_for_send_to_exchange&quot;</span>,count);</span><br><span class="line"></span><br><span class="line">                redisTemplate.opsForValue().set(key,JSONObject.toJSONString(message));</span><br><span class="line">                <span class="comment">// 重发的时候到redis里面取,消费成功了，删除redis里面的msgId</span></span><br><span class="line">                rabbitTemplate.convertAndSend(<span class="string">&quot;emailExchange&quot;</span>, <span class="string">&quot;email.topic.retry&quot;</span>,message, <span class="keyword">new</span> <span class="title class_">CorrelationData</span>(correlationDataId));</span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<hr>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>brbai</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://br-bai.github.io/2019/08/09/RabbitMQ%E6%B6%88%E6%81%AF%E5%8F%AF%E9%9D%A0%E6%80%A7%E6%8A%95%E9%80%92%E4%B8%8E%E6%B6%88%E8%B4%B9%EF%BC%8C%E6%B6%88%E8%B4%B9%E5%B9%82%E7%AD%89/">https://br-bai.github.io/2019/08/09/RabbitMQ%E6%B6%88%E6%81%AF%E5%8F%AF%E9%9D%A0%E6%80%A7%E6%8A%95%E9%80%92%E4%B8%8E%E6%B6%88%E8%B4%B9%EF%BC%8C%E6%B6%88%E8%B4%B9%E5%B9%82%E7%AD%89/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright ©2019 白鸿源个人网站(www.baihy.com). All Rights Reserved.</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Make excellence a habit.</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Spring-Boot/"># Spring Boot</a>
+                    
+                        <a href="/tags/RabbitMQ/"># RabbitMQ</a>
+                    
+                        <a href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/"># 消息队列</a>
+                    
+                        <a href="/tags/%E5%8F%AF%E9%9D%A0%E6%80%A7%E6%8A%95%E9%80%92/"># 可靠性投递</a>
+                    
+                        <a href="/tags/%E5%8F%AF%E9%9D%A0%E6%80%A7%E6%B6%88%E8%B4%B9/"># 可靠性消费</a>
+                    
+                        <a href="/tags/%E5%B9%82%E7%AD%89/"># 幂等</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2019/09/11/Linux%E7%B3%BB%E7%BB%9FTomcat%E6%89%A7%E8%A1%8Cshutdown.sh%E6%97%B6%E6%8A%A5%E9%94%99java.net.ConnectException_Connection%20refused/">Linux系统Tomcat执行shutdown.sh时报错java.net.ConnectException_Connection refused</a>
+            
+            
+            <a class="next" rel="next" href="/2019/07/12/Java%E8%AF%BB%E5%8F%96CSV%E6%96%87%E4%BB%B6%EF%BC%8C%E5%B9%B6%E6%89%B9%E9%87%8F%E5%86%99%E5%85%A5%E6%95%B0%E6%8D%AE%E5%BA%93/">Java读取CSV文件，并批量写入数据库</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+   
+
+    <div class="copyright">
+        <span>© 2019 <a href="https://www.baihy.com" target="_blank">brbai</a> | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    
+	
+       		 <span class="post-meta-divider"> | </span>
+		 <!-- 不蒜子统计 -->
+       		 <span id="busuanzi_container_site_pv">
+                	Pageviews:<span id="busuanzi_value_site_pv"></span>
+	        </span>
+        	<span class="post-meta-divider">&</span>
+       		 <span id="busuanzi_container_site_uv" style='display:none'>
+                	Visitors:<span id="busuanzi_value_site_uv"></span>
+        	</span>
+        	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+   	 
+
+	
+
+
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>
