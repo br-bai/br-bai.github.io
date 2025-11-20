@@ -303,15 +303,19 @@
 <h3 id="测试效果展示"><a href="#测试效果展示" class="headerlink" title="测试效果展示:"></a>测试效果展示:</h3><blockquote>
 <p>消息进入emailQueue邮件队列后，出现消费异常会进入retryQueue重试队列等待延迟重试</p>
 </blockquote>
-<p><img src="https://img-blog.csdnimg.cn/2019062916471334.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述">   </p>
+<p><img src="/images/0e9a2bed0708f19d4f50039846383f1e-31.png" alt="在这里插入图片描述">   </p>
 <blockquote>
 <p>消费异常的消息全部进入重试队列等待延迟重试，30秒后消息超时会转发到指定的死信队列，也就是回到emailQueue邮件队列    </p>
 </blockquote>
-<p><img src="https://img-blog.csdnimg.cn/20190629164747688.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p><img src="/images/618fce63c7dd7687f60b573fcb74b8b4-32.png" alt="在这里插入图片描述"></p>
 <blockquote>
 <p>经过3次重试后，消息仍然未被消费，消息进入faildQueue失败队列等待相应的消费者特殊处理或人工处理   </p>
 </blockquote>
-<p><img src="https://img-blog.csdnimg.cn/20190629164756579.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p><img src="/images/42a3c2b76f67cbd7229bb7e3b9c9eb47-33.png" alt="在这里插入图片描述"></p>
+<blockquote>
+<p>查看faildQueue失败队列中消息的相关信息如下</p>
+</blockquote>
+<p><img src="/images/38a0dd2516cb975576a4fb600219b06a-34.png" alt="在这里插入图片描述"></p>
 <hr>
 <blockquote>
 <h6 id="当前只解决了消息的可靠性消费，要保证消息全部投递成功，就涉及到RabbitMQ的可靠性投递。"><a href="#当前只解决了消息的可靠性消费，要保证消息全部投递成功，就涉及到RabbitMQ的可靠性投递。" class="headerlink" title="当前只解决了消息的可靠性消费，要保证消息全部投递成功，就涉及到RabbitMQ的可靠性投递。"></a>当前只解决了消息的可靠性消费，要保证消息全部投递成功，就涉及到RabbitMQ的可靠性投递。</h6><h6 id="RabbitMQ消息的可靠性投递与消费的完整解决方案-可参考另一篇博客-点这里"><a href="#RabbitMQ消息的可靠性投递与消费的完整解决方案-可参考另一篇博客-点这里" class="headerlink" title="RabbitMQ消息的可靠性投递与消费的完整解决方案- -可参考另一篇博客 点这里"></a><strong>RabbitMQ消息的可靠性投递与消费的完整解决方案- -可参考另一篇博客 <a href="https://br-bai.github.io/2019/08/09/RabbitMQ%E6%B6%88%E6%81%AF%E5%8F%AF%E9%9D%A0%E6%80%A7%E6%8A%95%E9%80%92%E4%B8%8E%E6%B6%88%E8%B4%B9%EF%BC%8C%E6%B6%88%E8%B4%B9%E5%B9%82%E7%AD%89/">点这里</a></strong></h6></blockquote>

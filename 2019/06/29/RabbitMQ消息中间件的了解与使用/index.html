@@ -244,7 +244,7 @@
 <li><strong>消息</strong>即是信息的载体，为了方便消息的生产者和消费者都能明白，它在传递时需要一定的数据格式（即<strong>消息协议</strong>），根据消息送达的实时性，它分为即时消息和延迟消息两类。</li>
 <li>即时消息，关注消息送达的实时性，如HTTP、RPC请求等</li>
 <li>延迟消息，即消息从某一端发出后，首先进入一个容器进行临时存储，当达到某种条件后，再由这个容器发送给另一端。 这个容器的一种具体实现就是<strong>消息队列</strong>。</li>
-<li>实现消息队列的组件称之为<strong>消息中间件</strong>。对于消息中间件，关注于数据的发送和接收，利用高效可靠的异步消息传递机制集成分布式系统，也通常用于服务与服务解耦。常见的角色大致也就有Producer（生产者发送消息）、Consumer（消费者订阅消息）<img src="https://img-blog.csdnimg.cn/20190629133745836.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></li>
+<li>实现消息队列的组件称之为<strong>消息中间件</strong>。对于消息中间件，关注于数据的发送和接收，利用高效可靠的异步消息传递机制集成分布式系统，也通常用于服务与服务解耦。常见的角色大致也就有Producer（生产者发送消息）、Consumer（消费者订阅消息）<img src="/images/6bf5a722560b5048eca4323dd49ef629-21.png" alt="在这里插入图片描述"></li>
 </ol>
 <h5 id="2-RabbitMQ简介"><a href="#2-RabbitMQ简介" class="headerlink" title="2. RabbitMQ简介"></a>2. RabbitMQ简介</h5><p>RabbitMQ是实现了高级消息队列协议（AMQP）的开源消息代理软件（亦称面向消息的中间件）。RabbitMQ服务器是用Erlang语言编写的，而群集和故障转移是构建在开放电信平台框架上的。所有主要的编程语言均有与代理接口通讯的客户端库。</p>
 <h6 id="详见RabbitMQ官网-点这里"><a href="#详见RabbitMQ官网-点这里" class="headerlink" title="详见RabbitMQ官网:点这里"></a>详见RabbitMQ官网:<a target="_blank" rel="noopener" href="https://www.rabbitmq.com/">点这里</a></h6><h5 id="3-RabbitMQ应用场景"><a href="#3-RabbitMQ应用场景" class="headerlink" title="3. RabbitMQ应用场景"></a>3. RabbitMQ应用场景</h5><ol>
@@ -255,12 +255,12 @@
 <li>消息通讯</li>
 </ol>
 <h6 id="详细应用场景介绍-点这里"><a href="#详细应用场景介绍-点这里" class="headerlink" title="详细应用场景介绍:点这里"></a>详细应用场景介绍:<a target="_blank" rel="noopener" href="https://www.cnblogs.com/stopfalling/p/5375492.html">点这里</a></h6><h5 id="4-RabbitMQ消息类型"><a href="#4-RabbitMQ消息类型" class="headerlink" title="4. RabbitMQ消息类型"></a>4. RabbitMQ消息类型</h5><ul>
-<li>simple，简单模式<br>一条消息对应一个消费者<br><img src="https://img-blog.csdnimg.cn/20190629134703210.png" alt="在这里插入图片描述"></li>
-<li>work，工作模式<br>一条消息可以被多个消费者尝试接，但是最终只能有一个消费者能获取<br><img src="https://img-blog.csdnimg.cn/20190629134722837.png" alt="在这里插入图片描述"></li>
-<li>Pub&#x2F;Sub，订阅模式<br>一条消息可以被多个消费者同时获取，<br>生产者将消息发送到交换机，消费者将自己对应的队列注册到交换机，<br>当发送消息后，所有注册的队列的消费者都可以收到消息<br><img src="https://img-blog.csdnimg.cn/20190629134812606.png" alt="在这里插入图片描述"></li>
-<li>routing，路由模式<br>生产者将消息发送到了 type 为 direct 模式的交换机<br>消费者的队列再将自己绑定到路由的时候会给自己绑定一个 key<br>只有消费者发送对应 key 格式的消息时候 队列才会收到消息<br><img src="https://img-blog.csdnimg.cn/20190629134838756.png" alt="在这里插入图片描述"></li>
-<li>topic，通配符模式<br>将路由键和某模式进行匹配。<br>此时队列需要绑定到一个模式上。<br>符号“#”匹配一个或多个词，符号“*”匹配不多不少一个词。<br>因此“audit.#”能够匹配到“audit.irs.corporate”，但是“audit.*” 只会匹配到“audit.irs”<br><img src="https://img-blog.csdnimg.cn/20190629134851557.png" alt="在这里插入图片描述"></li>
-<li>RPC模式<br>客户端启动后，创建一个独有的回调队列，某个应用将请求信息交给客户端，然后客户端发送RPC请求，在发送RPC请求到RPC请求队列时，客户端至少发送带有reply_to以及correlation_id两个属性的信息。服务器端等待接受客户端发来RPC请求，当请求出现的时候，服务器从RPC请求队列中取出请求，然后处理后，将响应发送到reply_to指定的回调队列中，客户端等待回调队列中出现响应，当响应出现时，它会根据响应中correlation_id字段的值，将其返回给对应的应用<br><img src="https://img-blog.csdnimg.cn/20190629174541115.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></li>
+<li>simple，简单模式<br>一条消息对应一个消费者<br><img src="/images/9e736677a34d3c864a1747161d626de4-22.png" alt="在这里插入图片描述"></li>
+<li>work，工作模式<br>一条消息可以被多个消费者尝试接，但是最终只能有一个消费者能获取<br><img src="/images/486162f824432e14aef3b9d6345fc48f-23.png" alt="在这里插入图片描述"></li>
+<li>Pub&#x2F;Sub，订阅模式<br>一条消息可以被多个消费者同时获取，<br>生产者将消息发送到交换机，消费者将自己对应的队列注册到交换机，<br>当发送消息后，所有注册的队列的消费者都可以收到消息<br><img src="/images/9599713242e1a243a12b5557fee5914c-24.png" alt="在这里插入图片描述"></li>
+<li>routing，路由模式<br>生产者将消息发送到了 type 为 direct 模式的交换机<br>消费者的队列再将自己绑定到路由的时候会给自己绑定一个 key<br>只有消费者发送对应 key 格式的消息时候 队列才会收到消息<br><img src="/images/31c711bd13211b4c731adcd4af38aeec-25.png" alt="在这里插入图片描述"></li>
+<li>topic，通配符模式<br>将路由键和某模式进行匹配。<br>此时队列需要绑定到一个模式上。<br>符号“#”匹配一个或多个词，符号“*”匹配不多不少一个词。<br>因此“audit.#”能够匹配到“audit.irs.corporate”，但是“audit.*” 只会匹配到“audit.irs”<br><img src="/images/aab7b17389b5b301be73c6430dc0b022-26.png" alt="在这里插入图片描述"></li>
+<li>RPC模式<br>客户端启动后，创建一个独有的回调队列，某个应用将请求信息交给客户端，然后客户端发送RPC请求，在发送RPC请求到RPC请求队列时，客户端至少发送带有reply_to以及correlation_id两个属性的信息。服务器端等待接受客户端发来RPC请求，当请求出现的时候，服务器从RPC请求队列中取出请求，然后处理后，将响应发送到reply_to指定的回调队列中，客户端等待回调队列中出现响应，当响应出现时，它会根据响应中correlation_id字段的值，将其返回给对应的应用<br><img src="/images/a274b319e0616c0b51d4ddf1483cbfe4-27.png" alt="在这里插入图片描述"></li>
 </ul>
 <h5 id="5-RabbitMQ的两种应答模式"><a href="#5-RabbitMQ的两种应答模式" class="headerlink" title="5. RabbitMQ的两种应答模式"></a>5. RabbitMQ的两种应答模式</h5><p>当我们发送消息后，服务端如何知道消息已经被消费，在RabbitMQ里有两种模式：</p>
 <ul>

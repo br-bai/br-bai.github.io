@@ -246,23 +246,23 @@
 <blockquote>
 <p>-&gt;Project</p>
 </blockquote>
-<p><img src="https://img-blog.csdnimg.cn/20181124173207102.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p><img src="/images/c1a89831d7c532e9f84d118bf64f2bc7-1.png" alt="在这里插入图片描述"></p>
 <blockquote>
 <p>-&gt;Modules</p>
 </blockquote>
-<p><img src="https://img-blog.csdnimg.cn/20181124173401818.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p><img src="/images/4f66f349fcdfdd08d43e4ee0d2e0da30-2.png" alt="在这里插入图片描述"></p>
 <blockquote>
 <p>-&gt;SDKs</p>
 </blockquote>
-<p><img src="https://img-blog.csdnimg.cn/20181124173433985.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>2. File-Settings:</p>
+<p><img src="/images/94e9ece881604ad367265e606c10db62-3.png" alt="在这里插入图片描述"><br>2. File-Settings:</p>
 <blockquote>
 <p>-&gt;Importing</p>
 </blockquote>
-<p><img src="https://img-blog.csdnimg.cn/20181124174110979.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p><img src="/images/465e650a6cb92ff8b79f60907d53e554-4.png" alt="在这里插入图片描述"></p>
 <blockquote>
 <p>   -&gt;Runner</p>
 </blockquote>
-<p><img src="https://img-blog.csdnimg.cn/20181124173855641.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p><img src="/images/133c1d81a3e1d740747998b3d27003d2-5.png" alt="在这里插入图片描述"></p>
 <blockquote>
 <h6 id="【注意】如果以前在Maven的setting文件中配置指定了JDK版本，则还需修改setting文件的如下参数设置："><a href="#【注意】如果以前在Maven的setting文件中配置指定了JDK版本，则还需修改setting文件的如下参数设置：" class="headerlink" title="【注意】如果以前在Maven的setting文件中配置指定了JDK版本，则还需修改setting文件的如下参数设置："></a><strong>【注意】<strong>如果以前在</strong>Maven</strong>的<strong>setting</strong>文件中配置指定了<strong>JDK</strong>版本，则还需修改<strong>setting</strong>文件的如下参数设置：</h6></blockquote>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&lt;profile&gt;     </span><br><span class="line">   &lt;id&gt;jdk&lt;/id&gt;   </span><br><span class="line">   &lt;activation&gt;        </span><br><span class="line">      &lt;activeByDefault&gt;true&lt;/activeByDefault&gt;    </span><br><span class="line">      &lt;jdk&gt;10&lt;/jdk&gt;      </span><br><span class="line">   &lt;/activation&gt;  </span><br><span class="line">   &lt;properties&gt;  </span><br><span class="line">      &lt;maven.compiler.source&gt;10&lt;/maven.compiler.source&gt; </span><br><span class="line">      &lt;maven.compiler.target&gt;10&lt;/maven.compiler.target&gt; </span><br><span class="line">      &lt;maven.compiler.compilerVersion&gt;10&lt;/maven.compiler.compilerVersion&gt;   </span><br><span class="line">   &lt;/properties&gt;</span><br><span class="line">&lt;/profile&gt;</span><br></pre></td></tr></table></figure>

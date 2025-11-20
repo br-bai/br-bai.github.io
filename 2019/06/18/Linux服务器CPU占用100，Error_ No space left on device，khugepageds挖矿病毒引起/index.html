@@ -243,18 +243,18 @@
             <h4 id="最近部署RabbitMQ运行的时候提示-Error-No-space-left-on-device（磁盘空间不足）"><a href="#最近部署RabbitMQ运行的时候提示-Error-No-space-left-on-device（磁盘空间不足）" class="headerlink" title="最近部署RabbitMQ运行的时候提示:Error: No space left on device（磁盘空间不足）"></a>最近部署RabbitMQ运行的时候提示:<code>Error: No space left on device</code>（磁盘空间不足）</h4><blockquote>
 <p><strong><code>df -h</code> 查看磁盘使用情况，发现磁盘并没有占用满</strong></p>
 </blockquote>
-<p><img src="https://img-blog.csdnimg.cn/20190618134356341.png" alt="在这里插入图片描述"></p>
+<p><img src="/images/d1d159b44254a386942ffc7e417f60ad-11.png" alt="在这里插入图片描述"></p>
 <blockquote>
 <p><strong><code> df -i</code>        继续查看 inode 使用情况，发现也没有占用满</strong></p>
 </blockquote>
-<p><img src="https://img-blog.csdnimg.cn/20190618134401127.png" alt="在这里插入图片描述"></p>
+<p><img src="/images/63866eb3bb139fbb3d6abd0317b48aa6-12.png" alt="在这里插入图片描述"></p>
 <blockquote>
 <p>查看阿里云服务器控制台，CPU使用显示占用100%</p>
 </blockquote>
 <blockquote>
 <p>运行<code># top</code>发现<code>%Cpu(s):  2.0 us,  1.7 sy,  0.0 ni,96.0 id,  0.0 wa,  0.0 hi,  0.3 si,  0.0 st</code>中 id 为96%，说明CPU闲置96%，CPU占用不为100%，与事实情况不符。这个时候你就要怀疑是否病毒造成了。</p>
 </blockquote>
-<p><img src="https://img-blog.csdnimg.cn/20190618144658726.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p><img src="/images/8c9218131958eefad026039431759bdd-13.png" alt="在这里插入图片描述"></p>
 <blockquote>
 <p><strong>Top 命令显示参数解释</strong></p>
 </blockquote>
@@ -270,10 +270,10 @@
 <p>排查清理 <code>/etc/ld.so.preload</code> 中是否加载有恶意动态链接库</p>
 </blockquote>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/ld.so.preload</span><br></pre></td></tr></table></figure>
-<h5 id="发现存在恶意动态链接库"><a href="#发现存在恶意动态链接库" class="headerlink" title="发现存在恶意动态链接库"></a>发现存在恶意动态链接库</h5><p><img src="https://img-blog.csdnimg.cn/20190618140236923.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h5 id="发现存在恶意动态链接库"><a href="#发现存在恶意动态链接库" class="headerlink" title="发现存在恶意动态链接库"></a>发现存在恶意动态链接库</h5><p><img src="/images/827854387c5efce42d9103813893eb7d-14.png" alt="在这里插入图片描述"></p>
 <h5 id="删除-usr-local-lib-libcryptod-so恶意动态链接库"><a href="#删除-usr-local-lib-libcryptod-so恶意动态链接库" class="headerlink" title="删除/usr/local/lib/libcryptod.so恶意动态链接库"></a>删除<code>/usr/local/lib/libcryptod.so</code>恶意动态链接库</h5><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rm -rf /usr/local/lib/libcryptod.so</span><br></pre></td></tr></table></figure>
 <h5 id="修改-etc-ld-so-preload此文件中的内容"><a href="#修改-etc-ld-so-preload此文件中的内容" class="headerlink" title="修改/etc/ld.so.preload此文件中的内容"></a>修改<code>/etc/ld.so.preload</code>此文件中的内容</h5><p>按i键进入编辑模式，删除<code>/usr/local/lib/libcryptod.so</code>字段，按Esc键退出编辑模式，<code>w!</code>强制保存，<code>q</code>退出</p>
-<p>使用top，查看发现为Linux挖矿病毒khugepageds，记住其PID，并杀死：<code>kill -9 17957</code><br><img src="https://img-blog.csdnimg.cn/20190618141434910.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>使用top，查看发现为Linux挖矿病毒khugepageds，记住其PID，并杀死：<code>kill -9 17957</code><br><img src="/images/dd285a506ef29562397dda0255c7b47c-15.png" alt="在这里插入图片描述"></p>
 <h5 id="排查清理可能残留的恶意文件："><a href="#排查清理可能残留的恶意文件：" class="headerlink" title="排查清理可能残留的恶意文件："></a>排查清理可能残留的恶意文件：</h5><ul>
 <li>删除文件<code>rm -f /usr/sbin/watchdogs /etc/init.d/watchdogs</code></li>
 <li>分别编辑 <code>vim /var/spool/cron/root</code>，<code>vim /etc/cron.d/root</code>文件，删除定时内容</li>
@@ -283,8 +283,8 @@
 <blockquote>
 <p><strong>执行<code>crontab -l</code>此时发现病毒的定时任务已删除</strong></p>
 </blockquote>
-<p><img src="https://img-blog.csdnimg.cn/2019061816384857.png" alt="在这里插入图片描述"></p>
-<h4 id="再查看阿里云服务器CPU占用情况，发现CPU占用恢复正常"><a href="#再查看阿里云服务器CPU占用情况，发现CPU占用恢复正常" class="headerlink" title="再查看阿里云服务器CPU占用情况，发现CPU占用恢复正常"></a>再查看阿里云服务器CPU占用情况，发现CPU占用恢复正常</h4><p><img src="https://img-blog.csdnimg.cn/20190618143529731.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p><img src="/images/00c1e11ec189f47375ea90960da47f5e-17.png" alt="在这里插入图片描述"></p>
+<h4 id="再查看阿里云服务器CPU占用情况，发现CPU占用恢复正常"><a href="#再查看阿里云服务器CPU占用情况，发现CPU占用恢复正常" class="headerlink" title="再查看阿里云服务器CPU占用情况，发现CPU占用恢复正常"></a>再查看阿里云服务器CPU占用情况，发现CPU占用恢复正常</h4><p><img src="/images/1ad64fbfefc2425e9bc346cd8a3f657f-16.png" alt="在这里插入图片描述"></p>
 
         </div>
 

@@ -240,12 +240,12 @@
         </header>
 
         <div class="post-content">
-            <h4 id="报错信息"><a href="#报错信息" class="headerlink" title="报错信息:"></a>报错信息:</h4><p><img src="https://img-blog.csdnimg.cn/20191107154820299.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>我遇到的情况是运维平台调用xshell连接虚拟机时，第一次可以连接上，关闭后就连不上了。<br>当我尝试了无数次后，重装了xshell，结果又可以连上了，第二次又一直连不上……</p>
-<p>怀疑是session的问题，于是在<code>C:\Users\n551\AppData\Roaming\NetSarang\Xshell\Sessions</code>找到了连接不上的连接对应的xshell session文件<br><img src="https://img-blog.csdnimg.cn/20191107155647730.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+            <h4 id="报错信息"><a href="#报错信息" class="headerlink" title="报错信息:"></a>报错信息:</h4><p><img src="/images/8f68e8de5293f4782f7a4e40e29913b5-51.png" alt="在这里插入图片描述"><br>我遇到的情况是运维平台调用xshell连接虚拟机时，第一次可以连接上，关闭后就连不上了。<br>当我尝试了无数次后，重装了xshell，结果又可以连上了，第二次又一直连不上……</p>
+<p>怀疑是session的问题，于是在<code>C:\Users\n551\AppData\Roaming\NetSarang\Xshell\Sessions</code>找到了连接不上的连接对应的xshell session文件<br><img src="/images/a43cfec15546def83618b6c94986a4f7-52.png" alt="在这里插入图片描述"></p>
 <blockquote>
 <p><strong>删除对应的<code>.xsh</code>文件后xshell即可正常连接上，但是下次连接依然连接拒绝。</strong></p>
 </blockquote>
-<h5 id="查看xshell的session文件配置路径：工具-选项-常规-会话"><a href="#查看xshell的session文件配置路径：工具-选项-常规-会话" class="headerlink" title="查看xshell的session文件配置路径：工具-&gt;选项-&gt;常规-&gt;会话"></a>查看xshell的session文件配置路径：<code>工具</code>-&gt;<code>选项</code>-&gt;<code>常规</code>-&gt;<code>会话</code></h5><p><img src="https://img-blog.csdnimg.cn/2019110716005576.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h5 id="查看xshell的session文件配置路径：工具-选项-常规-会话"><a href="#查看xshell的session文件配置路径：工具-选项-常规-会话" class="headerlink" title="查看xshell的session文件配置路径：工具-&gt;选项-&gt;常规-&gt;会话"></a>查看xshell的session文件配置路径：<code>工具</code>-&gt;<code>选项</code>-&gt;<code>常规</code>-&gt;<code>会话</code></h5><p><img src="/images/24980e2fa4c3d7fd2bfd42bafa30878f-53.png" alt="在这里插入图片描述"></p>
 <h6 id="发现xshell中的session文件存放路径与上面异常的连接不同，而经过测试，配置路径的session文件可以正常访问，多次连接使用，而C-Users-n551-AppData-Roaming-NetSarang-Xshell-Sessions中的不行。"><a href="#发现xshell中的session文件存放路径与上面异常的连接不同，而经过测试，配置路径的session文件可以正常访问，多次连接使用，而C-Users-n551-AppData-Roaming-NetSarang-Xshell-Sessions中的不行。" class="headerlink" title="发现xshell中的session文件存放路径与上面异常的连接不同，而经过测试，配置路径的session文件可以正常访问，多次连接使用，而C:\Users\n551\AppData\Roaming\NetSarang\Xshell\Sessions中的不行。"></a>发现xshell中的session文件存放路径与上面异常的连接不同，而经过测试，配置路径的session文件可以正常访问，多次连接使用，而<code>C:\Users\n551\AppData\Roaming\NetSarang\Xshell\Sessions</code>中的不行。</h6><blockquote>
 <p>怀疑是运维平台客户端调用xshell的连接配置问题导致（还未验证） 未完待续。。。</p>
 </blockquote>

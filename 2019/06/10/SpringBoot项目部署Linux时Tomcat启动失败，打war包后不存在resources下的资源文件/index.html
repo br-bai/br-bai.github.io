@@ -254,7 +254,7 @@
 <p><strong>如果只配置.properties文件可能会导致进入tomcat运行成功后访问项目静态资源文件报错。</strong></p>
 </blockquote>
 <p>异常:<br><code>This application has no explicit mapping for /error, so you are seeing this as a fallback.</code></p>
-<p><code>javax.servlet.ServletException: Circular view path [login]: would dispatch back to the current handler URL [/login] again. Check your ViewResolver setup! (Hint: This may be the result of an unspecified view, due to default view name generation.) </code><br><img src="https://img-blog.csdnimg.cn/20190610113341398.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZUJsYWNreW95b3lv,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p><code>javax.servlet.ServletException: Circular view path [login]: would dispatch back to the current handler URL [/login] again. Check your ViewResolver setup! (Hint: This may be the result of an unspecified view, due to default view name generation.) </code><br><img src="/images/b99031949adc664276fedae52f630743.png" alt="在这里插入图片描述"></p>
 <blockquote>
 <p>此时需要设置扫描src&#x2F;main&#x2F;resources下的全部文件</p>
 </blockquote>
